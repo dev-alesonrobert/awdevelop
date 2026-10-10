@@ -1,55 +1,258 @@
-# Painel awdevelop
+<p align="center">
+  <img src="dist/assets/logo-dark.png" alt="AWDevelop" width="280">
+</p>
 
-Landing page com painel em /admin/, Express, Better Auth, Neon Postgres e Vercel Blob. A identidade dark e roxa, o globo e o portfólio rotativo permanecem no site.
+<h1 align="center">AWDevelop</h1>
 
-## Migração Angular — primeira etapa
+<p align="center">
+  Site institucional · Painel administrativo · CRM comercial
+</p>
 
-Frontend Angular 22.2.2 e TypeScript 6.0.3 em frontend/. A rota /painel/ oferece login, sessão, saída, navegação por permissão e visão geral real do CRM. A tela Angular /painel/sections gerencia a estrutura da landing page. O editor e as operações completas do CRM permanecem em /admin/; a landing page permanece na raiz. Os links entre as duas interfaces compartilham o cookie de sessão e abrem a seção desejada. A migração completa ainda não terminou.
+<p align="center">
+  <a href="https://awdevelop-globe.vercel.app/">Site</a> ·
+  <a href="https://awdevelop-globe.vercel.app/painel/">Painel Angular</a> ·
+  <a href="https://awdevelop-globe.vercel.app/admin/">Painel completo</a>
+</p>
 
-Comandos: npm run build:angular compila para dist/painel; npm run dev:angular inicia API local em 3001 e Angular em http://localhost:4200/painel/, com proxy e BETTER_AUTH_URL definido apenas para esse processo local. npm run dev continua atendendo a versão existente em 3000. Produção usa sempre URLs relativas e não inclui segredos no frontend.
+---
 
-Organização: core (API, modelos, autenticação e guarda), shared (marca e componentes comuns), features/auth (formulário tipado de login) e features/dashboard (layout e visão geral). Próximas etapas: migração das telas de conteúdo, imagens/histórico/acessos, CRM completo e landing page.
+A plataforma da **AWDevelop** reúne a apresentação da empresa, a edição do conteúdo da landing page e o acompanhamento comercial dos pedidos de orçamento. O site usa uma identidade visual escura e roxa, portfólio em banners rotativos e um globo animado.
 
-## Recursos
+O painel permite editar conteúdo sem alterar o código, organizar seções, publicar versões e acompanhar oportunidades no CRM.
 
-- CRM comercial integrado aos mesmos registros de orçamento: Kanban com sete etapas, cadastro manual com e-mail ou telefone, empresa, site, origem, responsável, valor previsto e fechamento esperado. Alterar a etapa na ficha move a oportunidade no Kanban. Busca, filtro por responsável, indicadores agregados e paginação.
-- Histórico comercial com observações, conversas, reuniões e propostas registradas; fichas e tarefas usam revisão para impedir sobrescrita concorrente.
-- Tarefas com prazo no horário de Brasília, responsável, conclusão e reabertura. O sino inclui tarefas com prazo atingido ou vencido atribuídas à conta atual, enquanto estiverem pendentes. Não envia mensagens automaticamente.
+> **Estado atual:** a migração para Angular está em andamento. Login, sessão, visão geral e gerenciamento de seções já estão em Angular. O editor completo e as operações do CRM continuam disponíveis na interface anterior, compartilhando a mesma autenticação.
 
-- Editor de início, portfólio, contato e configurações. Salvar rascunho não altera o site público; a prévia exige autenticação. Publicar grava uma versão no histórico.
-- Histórico paginado de publicações, com data, autor, revisão e consulta do conteúdo. Restaurar altera apenas o rascunho; o administrador precisa revisar e publicar.
-- Biblioteca de imagens compartilhada, com upload PNG/JPG/WebP de até 4 MB e seleção das imagens já cadastradas para logo e projetos. Imagens são públicas; controles do painel exigem sessão.
-- Sino de notificações no cabeçalho para proprietário e administradores, com contador por conta e prévia dos cinco últimos pedidos não lidos. Atualiza a cada 20 segundos enquanto o painel está aberto e visível. Abrir o sino não marca leitura; Ver orçamentos ou Marcar como lidas registra somente os pedidos existentes até a revisão exibida. A leitura persiste no banco, é independente entre pessoas e não muda o status comercial. Não há push com o navegador fechado nem envio de e-mail.
-- Caixa de orçamentos integrada ao formulário da landing page. Busca, filtros, status Novo/Em conversa/Proposta/Ganho/Perdido, contato por e-mail ou WhatsApp e anotações internas. Os pedidos são persistidos no banco; não há envio automático de e-mail. UUID e hash evitam duplicação em tentativas repetidas; limite por e-mail e hora e campo antispam reduzem abuso.
-- Proprietário gerencia membros, funções, convites e bloqueios. Administradores editam, publicam e acompanham orçamentos; editores alteram rascunhos e imagens. Convites vinculados ao e-mail expiram em 7 dias e só podem ser usados uma vez. O painel gera um link privado para copiar; não o envia por e-mail. Bloquear um membro encerra suas sessões e invalida seus convites pendentes.
-- Aviso de outras abas ou pessoas editando, atualizado a cada 25 segundos. Revisões protegem contra sobrescrita concorrente.
-- Salvamento automático de rascunho após 3 segundos sem alterações. Não publica. Conflitos pausam o salvamento automático e preservam os campos locais para revisão.
-- Botão Sair visível também no celular, com encerramento da sessão no servidor.
+## Tecnologias
 
-## Recuperação de senha: pendente
+| Camada | Tecnologia | Uso |
+| --- | --- | --- |
+| Painel novo | Angular 22.2.2, TypeScript 6.0.3 e RxJS | Interface, rotas, formulários e integração com a API |
+| Landing page e painel anterior | HTML, CSS e JavaScript | Site público e funcionalidades ainda em migração |
+| Backend | Node.js e Express 5.3.0 | API e regras de negócio |
+| Autenticação | Better Auth 1.7.7 | Login, cookies de sessão e encerramento de acesso |
+| Validação | Zod 4.6.5 | Validação de dados recebidos |
+| Banco de dados | Neon Postgres e pg | Conteúdo, usuários, versões, orçamentos e CRM |
+| Imagens | Vercel Blob | Armazenamento das imagens enviadas pelo painel |
+| Hospedagem | Vercel | Frontend e função Node.js da API |
+| Testes | Node.js Test Runner e LinkeDOM | Regras de negócio e comportamento da interface |
 
-O Resend foi escolhido, mas ainda não está provisionado. O instalador já passou pela aceitação dos termos da Vercel e do Resend. A configuração aguarda um domínio próprio do proprietário para validar o remetente. Não há recuperação por e-mail disponível nesta versão. Não compartilhe senhas ou chaves no chat. O fluxo será implementado após a integração, configuração de remetente autorizado e validação da entrega.
+As versões instaladas estão fixadas em `package-lock.json`.
 
-## Configuração e desenvolvimento
+## Funcionalidades
 
-Execute npm ci e npm run dev. O endereço local é http://localhost:3000. O projeto de produção awdevelop-globe, na equipe awd-evelop, usa Neon awdevelop-content e Blob awdevelop-media. Não inclua .env, tokens, senhas ou chaves no Git ou em arquivos compartilhados.
+### Site institucional
 
-Variáveis: DATABASE_URL (Neon), BETTER_AUTH_SECRET, BETTER_AUTH_URL (origem exata da aplicação), ADMIN_EMAIL (proprietário inicial), PARTNER_ADMIN_EMAIL (administrador inicial), ADMIN_SETUP_TOKEN e PARTNER_ADMIN_SETUP_TOKEN (convites iniciais privados), BLOB_STORE_ID (integração Blob). A aplicação na Vercel usa credenciais OIDC para o Blob. Nenhum segredo integra este pacote.
+- Identidade visual dark com a paleta roxa da AWDevelop.
+- Portfólio em banners rotativos e globo animado.
+- Conteúdo público baseado na versão publicada.
+- Formulário de orçamento integrado ao banco de dados.
+- Layout responsivo para desktop e celular.
 
-A migração é idempotente. Insere o conteúdo e os membros iniciais somente quando não existem; não substitui conteúdo nem reativa acessos bloqueados. Os hashes dos convites usados permanecem consumidos após novas implantações. O cadastro público é desativado. Primeiro acesso: /admin/setup.html#TOKEN; a pessoa convidada define e confirma a própria senha com 12 a 128 caracteres. O token é removido da barra ao carregar a página e não permite redefinir conta existente.
+### Conteúdo e publicação
 
-## Publicação e verificação
+- Edição de textos, projetos, contato e configurações.
+- Rascunhos separados do conteúdo público.
+- Prévia autenticada antes da publicação.
+- Histórico de publicações com autor, data e revisão.
+- Restauração de versões para o rascunho; publicar continua sendo uma ação separada.
+- Biblioteca de imagens PNG, JPG e WebP, com limite de 4 MB por arquivo.
+- Salvamento automático no editor anterior após três segundos sem alterações.
+- Proteção contra sobrescrita quando duas pessoas editam a mesma revisão.
 
-Publique o projeto completo; enviar apenas dist não inclui a API. vercel.json direciona /api/* para a função Node.js e serve os arquivos de dist. A construção executa npm run build:angular && npm run migrate && npm test && node scripts/verify-management-db.js.
+### Seções da página
 
-Os 70 testes cobrem conteúdo, autorização, convites, restauração, orçamentos, concorrência, autosave e permissões da interface. As verificações adicionais no Postgres criam apenas linhas descartáveis dentro de uma transação, conferem consumo de convite, idempotência e revisão de orçamento, biblioteca, histórico, leitura das notificações, campos do CRM, atividades e tarefas com revisão, e executam ROLLBACK ao final. Não alteram conteúdo público, senhas ou contas reais e não enviam e-mails. scripts/verify-db.js é um verificador legado da instalação inicial, protegido por AW_RUN_INITIAL_DB_CHECKS=1, e não integra a construção atual.
+A tela Angular `/painel/sections` permite:
 
-A revisão visual autenticada e a entrega de e-mail ainda precisam de validação com a sessão do proprietário e o serviço de e-mail provisionado.
+- Mover seções para cima ou para baixo.
+- Retirar e reincluir seções originais, preservando seu conteúdo.
+- Criar blocos personalizados com texto, imagem e botão HTTPS.
+- Desfazer alterações antes de salvar.
+- Salvar o rascunho, abrir a prévia e publicar conforme a permissão da conta.
 
-## Gerenciamento de seções
+A página aceita de uma a vinte seções. Nesta tela, o salvamento é manual. A interface avisa ao sair com alterações não salvas e preserva os dados locais quando detecta conflito.
 
-Em Seções da página, use ↑ e ↓ para ordenar, Excluir para retirar do rascunho e Adicionar seção para incluir um bloco de texto, imagem e botão HTTPS ou reincluir uma seção original. Até 20 seções, com pelo menos uma na página. As seções originais preservam seus textos e imagens quando retiradas; blocos personalizados excluídos podem ser recuperados com Desfazer antes de salvar ou restaurando uma publicação anterior.
+### Orçamentos e CRM
 
-Salvar rascunho é manual nesta tela. Ver rascunho exige que as alterações estejam salvas. Publicar exige a confirmação do administrador ou proprietário e a revisão salva; editores não publicam. Conflitos entre telas ou pessoas preservam as alterações locais e exigem recarregamento, sem sobrescrever a revisão mais recente. A tela avisa ao sair com mudanças não salvas. O editor anterior mantém o campo sections ao editar textos, imagens ou cores.
+- Caixa de orçamentos com busca, filtros, status e anotações internas.
+- Contato por links de e-mail e WhatsApp.
+- Kanban comercial com sete etapas.
+- Cadastro manual de oportunidades com e-mail ou telefone.
+- Empresa, origem, responsável, valor previsto e data esperada de fechamento.
+- Histórico de atividades, conversas, reuniões e propostas.
+- Tarefas com prazo, responsável, conclusão e reabertura.
+- Indicadores agregados e paginação.
+- Validação, prevenção de pedidos duplicados e proteção básica contra abuso no formulário público.
 
-O backend valida IDs, duplicação, quantidade, HTTPS, texto do botão e descrição de imagem. sections é opcional para compatibilidade com documentos e publicações anteriores; sua ausência representa a ordem original. Nenhuma migração de banco é necessária: os documentos JSONB e o histórico já armazenam a estrutura completa. A página pública exibe somente a ordem publicada, oculta links para seções retiradas e respeita a opção de ocultar o globo.
+### Notificações e acessos
+
+- Sino com contador de pedidos não lidos por pessoa.
+- Atualização a cada vinte segundos enquanto o painel está aberto e visível.
+- Avisos de tarefas pendentes atribuídas à conta atual quando chegam ao prazo.
+- Gestão de membros, convites, funções e bloqueios pelo proprietário.
+- Convites vinculados ao e-mail, com validade de sete dias e uso único.
+- Botão de saída com encerramento da sessão no servidor.
+
+Abrir o sino não marca pedidos como lidos. A leitura é individual e não altera a etapa comercial.
+
+## Permissões
+
+| Perfil | Acesso |
+| --- | --- |
+| Proprietário | Conteúdo, publicação, CRM e gestão de membros e convites |
+| Administrador | Conteúdo, publicação, imagens, orçamentos e CRM |
+| Editor | Rascunhos e imagens; sem publicação, CRM ou gestão de contas |
+
+O cadastro público está desativado. Contas bloqueadas perdem acesso mesmo que ainda tenham um cookie de sessão.
+
+## Estrutura do projeto
+
+| Caminho | Responsabilidade |
+| --- | --- |
+| `frontend/src/app/core/` | API, autenticação, modelos e estado compartilhado |
+| `frontend/src/app/features/auth/` | Login Angular |
+| `frontend/src/app/features/dashboard/` | Navegação e visão geral |
+| `frontend/src/app/features/sections/` | Gerenciamento de seções |
+| `frontend/src/app/shared/` | Elementos compartilhados, incluindo a marca |
+| `dist/` | Landing page, imagens e painel anterior |
+| `dist/painel/` | Saída gerada pelo build Angular; não versionada |
+| `server/` | Aplicação Express, autenticação, conteúdo, CRM e banco |
+| `api/index.js` | Entrada da função da API na Vercel |
+| `scripts/` | Desenvolvimento, migrações e verificações |
+| `tests/` | Testes automatizados |
+| `angular.json` | Configuração do frontend Angular |
+| `vercel.json` | Build, rotas e cabeçalhos da hospedagem |
+
+Apesar do nome `dist/`, os arquivos da landing page e do painel anterior nesta pasta fazem parte da versão atual do projeto. Apenas `dist/painel/` é gerado pelo Angular.
+
+## Executar localmente
+
+### Requisitos
+
+- Node.js compatível com `^22.22.3 || ^24.15.0 || ^26.0.0`.
+- npm.
+- Banco Postgres configurado.
+- Variáveis de ambiente da aplicação.
+- Armazenamento Blob configurado para usar o upload de imagens.
+
+### Instalação
+
+```bash
+git clone https://github.com/dev-alesonrobert/awdevelop.git
+cd awdevelop
+npm ci
+```
+
+O repositório é privado: a conta usada para clonar precisa ter acesso.
+
+Crie um arquivo `.env` na raiz e configure as variáveis abaixo com credenciais do seu ambiente de desenvolvimento. Não use credenciais de produção para testes locais.
+
+| Variável | Finalidade |
+| --- | --- |
+| `DATABASE_URL` | Conexão com o Postgres |
+| `BETTER_AUTH_SECRET` | Segredo de autenticação com pelo menos 32 caracteres |
+| `BETTER_AUTH_URL` | Origem da aplicação; no modo local anterior, `http://localhost:3000` |
+| `ADMIN_EMAIL` | E-mail do proprietário inicial |
+| `PARTNER_ADMIN_EMAIL` | E-mail do administrador inicial |
+| `ADMIN_SETUP_TOKEN` | Convite privado inicial do proprietário |
+| `PARTNER_ADMIN_SETUP_TOKEN` | Convite privado inicial do administrador |
+| `BLOB_STORE_ID` | Identificação do armazenamento Blob |
+
+Na Vercel, o Blob utiliza autenticação OIDC. O upload local precisa de credenciais próprias do ambiente; somente definir o identificador do armazenamento não fornece autenticação.
+
+### Banco e interface anterior
+
+```bash
+npm run migrate
+npm run dev
+```
+
+- Site: `http://localhost:3000/`
+- Painel completo: `http://localhost:3000/admin/`
+
+A migração é idempotente: não substitui conteúdo existente, não reativa membros bloqueados e não reabre convites consumidos.
+
+### Desenvolvimento Angular
+
+```bash
+npm run dev:angular
+```
+
+Abra `http://localhost:4200/painel/`. Este comando inicia a API na porta 3001 e o Angular na porta 4200, com proxy e origem de autenticação ajustada para esse processo.
+
+Para gerar o painel Angular e servi-lo junto à aplicação local:
+
+```bash
+npm run build:angular
+npm run dev
+```
+
+O painel compilado estará disponível em `http://localhost:3000/painel/`.
+
+## Primeiro acesso
+
+O convite inicial usa o formato `/admin/setup.html#TOKEN`. O token é privado, vinculado ao e-mail e consumido após a criação da conta. A pessoa convidada define e confirma uma senha de 12 a 128 caracteres.
+
+O token é removido da barra de endereço ao carregar a página. Um convite consumido não permite redefinir a senha de uma conta existente. Convites adicionais são gerados pelo proprietário no painel e compartilhados por um canal privado.
+
+## Testes e comandos
+
+| Comando | Ação |
+| --- | --- |
+| `npm run dev` | Inicia a aplicação local na porta 3000 |
+| `npm run dev:angular` | Inicia Angular e API local com proxy |
+| `npm run build:angular` | Compila o painel Angular |
+| `npm run migrate` | Executa as migrações do banco |
+| `npm test` | Executa os testes automatizados |
+| `npm run create-owner` | Provisiona a conta inicial pelo terminal interativo, após configurar e migrar o banco |
+
+A última execução verificada em **10/10/2026** terminou com **70 testes aprovados**. A suíte cobre conteúdo, sessão, permissões, convites de uso único, restauração, concorrência, notificações, CRM e gerenciamento de seções.
+
+`scripts/verify-management-db.js` executa verificações adicionais no Postgres com registros descartáveis dentro de uma transação e `ROLLBACK` ao final. O verificador legado `scripts/verify-db.js` exige `AW_RUN_INITIAL_DB_CHECKS=1` e não integra o build atual.
+
+## Hospedagem
+
+O frontend e a API estão hospedados na **Vercel**. O banco está no **Neon Postgres** e as imagens enviadas ficam no **Vercel Blob**.
+
+| Endereço | Interface |
+| --- | --- |
+| `/` | Landing page pública |
+| `/painel/` | Painel Angular |
+| `/admin/` | Painel completo anterior |
+| `/api/*` | API Node.js |
+
+O build configurado executa:
+
+```bash
+npm run build:angular && npm run migrate && npm test && node scripts/verify-management-db.js
+```
+
+Publique o projeto completo. Enviar apenas a pasta `dist/` não inclui a API. Configure as variáveis privadas no ambiente da Vercel antes da implantação.
+
+## Status e próximas etapas
+
+| Área | Status |
+| --- | --- |
+| Landing page, portfólio e globo | Implementados |
+| Edição, rascunhos, histórico e restauração | Implementados |
+| Orçamentos, CRM e notificações no painel | Implementados |
+| Login, sessão, visão geral e seções em Angular | Implementados |
+| Migração das demais telas para Angular | Pendente |
+| Recuperação de senha por e-mail | Pendente |
+| Resend e validação do remetente | Pendente; requer domínio próprio |
+| Notificações push com navegador fechado | Não implementadas |
+
+O envio automático de e-mails ainda não está disponível. Convites são compartilhados por link privado; os pedidos de orçamento são persistidos no banco. A validação visual autenticada completa continua pendente.
+
+## Segurança e manutenção
+
+- Não versione `.env`, senhas, tokens ou chaves.
+- Mantenha credenciais somente no ambiente apropriado.
+- Revisões protegem rascunhos, oportunidades e tarefas contra sobrescrita concorrente.
+- Bloquear um membro encerra suas sessões e invalida seus convites pendentes.
+- Publicação e restauração são ações distintas para permitir revisão do conteúdo.
+- As imagens cadastradas são públicas; evite arquivos com informações privadas.
+- O repositório é privado. O campo de licença do pacote está definido como ISC, mas não há arquivo `LICENSE`; revise a licença antes de distribuir o código.
+
+---
+
+**AWDevelop** · Plataforma institucional e comercial da empresa.
