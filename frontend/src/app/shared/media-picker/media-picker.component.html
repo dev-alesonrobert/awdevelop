@@ -1,0 +1,4 @@
+<div class="actions"><button type="button" class="secondary" (click)="toggle()" [disabled]="busy()">Biblioteca de imagens</button><label class="upload">Enviar imagem<input type="file" accept="image/png,image/jpeg,image/webp" (change)="upload($event)" [disabled]="busy()"></label></div>
+<p class="message" role="status">{{message()}}</p>
+@if(open()){<div class="images" aria-label="Escolher imagem">@for(item of items();track item.id){<button type="button" class="secondary" (click)="choose(item.url)" [disabled]="busy()"><img [src]="item.url" [alt]="item.label || 'Imagem da biblioteca'" loading="lazy"><span>Usar imagem</span></button>}@empty{<p>Nenhuma imagem enviada.</p>}</div>}
+

@@ -1,0 +1,10 @@
+<aw-page-heading eyebrow="CRM" title="Relacionamentos que viram projetos." description="Organize oportunidades, responsáveis, valores e próximos contatos." />
+<form class="toolbar" (ngSubmit)="page.load()">
+<input aria-label="Buscar lead" name="search" [(ngModel)]="page.search" placeholder="Nome, empresa ou e-mail" maxlength="100">
+<select aria-label="Filtrar responsável" name="assignee" [(ngModel)]="page.assignee">
+<option value="">Toda a equipe</option>@for(m of page.team();track m.email){<option [value]="m.email">{{m.name}}</option>}</select>
+<button [disabled]="page.busy()">Buscar</button>
+<button type="button" class="secondary" (click)="page.newLead()" [disabled]="page.busy()">Novo lead</button>
+</form>
+<p class="message" role="status">{{page.message()}}</p>@if(page.opened()){<aw-lead-editor [detail]="page.detail()" [team]="page.team()" [busy]="page.busy()" [activitySaved]="page.activitySaved()" [taskSaved]="page.taskSaved()" (changed)="page.changed($event)" (saved)="page.save($event)" (closed)="page.close()" (activity)="page.addActivity($event)" (task)="page.addTask($event)" (toggleTask)="page.toggleTask($event)" />}<aw-pipeline [board]="page.board()" (opened)="page.open($event)" />@if(page.board().next){<button class="secondary" (click)="page.load(true)" [disabled]="page.busy()">Carregar mais oportunidades</button>}
+

@@ -1,0 +1,22 @@
+<article class="card">
+<h2>{{quote().name}}</h2>
+<p>{{quote().company}} · {{quote().created_at | date:'dd/MM/yyyy HH:mm'}}</p>
+<p>{{quote().service}} · {{quote().stage}} · {{quote().timeline}}</p>
+<p class="idea">{{quote().idea}}</p>
+<div class="actions">
+<a [href]="'mailto:'+quote().email">{{quote().email}}</a>@if(wa(quote().phone)){<a [href]="wa(quote().phone)" target="_blank" rel="noopener">WhatsApp ↗</a>}<a routerLink="/painel/crm" [queryParams]="{lead:quote().id}">Abrir no CRM</a>
+</div>
+<form (ngSubmit)="save.emit({status,notes})">
+<fieldset [disabled]="busy()">
+<label>Situação<select name="status" [(ngModel)]="status" (ngModelChange)="changed.emit()">@for(s of statuses;track s.id){<option [value]="s.id">{{s.label}}</option>}</select>
+</label>
+<label>Anotações internas<textarea name="notes" [(ngModel)]="notes" (ngModelChange)="changed.emit()" maxlength="5000" rows="5">
+</textarea>
+</label>
+<div class="actions">
+<button>Salvar acompanhamento</button>
+</div>
+</fieldset>
+</form>
+</article>
+

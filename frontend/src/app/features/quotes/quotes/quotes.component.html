@@ -1,0 +1,18 @@
+<aw-page-heading eyebrow="COMERCIAL" title="Solicitações de orçamento." description="Acompanhe os pedidos recebidos pelo site e continue a negociação no CRM." />
+<form class="toolbar" (ngSubmit)="page.load()">
+<input aria-label="Buscar orçamento" name="search" [(ngModel)]="page.search" placeholder="Nome, empresa ou e-mail" maxlength="100">
+<select aria-label="Situação" name="status" [(ngModel)]="page.status">
+<option value="all">Todas as situações</option>@for(s of statuses;track s.id){<option [value]="s.id">{{s.label}}</option>}</select>
+<button [disabled]="page.busy()">Buscar</button>
+</form>
+<p class="message" role="status">{{page.message()}}</p>
+<div class="grid">
+<div class="list">@for(q of page.items();track q.id){<button class="secondary" (click)="page.open(q)" [disabled]="page.busy()">
+<strong>{{q.name}}</strong>
+<p>{{q.service}} · {{q.company}}</p>
+</button>}
+@empty{<p class="empty">Nenhuma solicitação encontrada.</p>}
+@if(page.next()){<button (click)="page.load(true)" [disabled]="page.busy()">Carregar mais</button>}</div>
+<div>@if(page.selected();as q){<aw-quote-detail [quote]="q" [busy]="page.busy()" (changed)="page.changed()" (save)="page.save($event)" />}</div>
+</div>
+

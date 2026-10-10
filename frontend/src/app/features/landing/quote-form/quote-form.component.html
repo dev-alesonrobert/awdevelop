@@ -1,0 +1,66 @@
+<section class="contact section" id="contato">
+<div>
+<span class="eyebrow">CONTATO</span>
+<h2>{{content().contact.title}}</h2>
+<p>{{content().contact.description}}</p>
+<ul class="contact-benefits">
+<li>O problema que você quer resolver</li>
+<li>O ponto de partida do projeto</li>
+<li>O melhor jeito de conversar</li>
+</ul>
+<div class="contact-channels">
+<a [href]="'mailto:'+content().contact.email">{{content().contact.email}}</a>@if(content().contact.whatsapp){<a [href]="'https://wa.me/'+content().contact.whatsapp" target="_blank" rel="noopener">WhatsApp</a>}
+@if(content().contact.instagram){<a [href]="content().contact.instagram" target="_blank" rel="noopener">Instagram</a>}
+@if(content().contact.linkedin){<a [href]="content().contact.linkedin" target="_blank" rel="noopener">LinkedIn</a>}</div>
+</div>
+<form id="brief-form" [formGroup]="form" (ngSubmit)="review()">
+<fieldset [disabled]="busy()||reviewing()">
+<div class="form-progress">
+<span>Etapa {{step()+1}} de 3</span>
+<span>{{['Sua necessidade','Ponto de partida','Contato'][step()]}}</span>
+</div>
+<div class="progress-track" aria-hidden="true">
+<span [style.width.%]="(step()+1)*100/3">
+</span>
+</div>@switch(step()){@case(0){<label>Tipo de projeto<select formControlName="service">
+<option value="">Selecione</option>@for(service of services;track service){<option>{{service}}</option>}</select>
+</label>
+<label>Como funciona hoje? O que quer melhorar?<textarea formControlName="idea" rows="4" maxlength="5000" minlength="10">
+</textarea>
+</label>}
+@case(1){<label>Situação atual<select formControlName="stage">
+<option value="">Selecione</option>@for(s of situations;track s){<option>{{s}}</option>}</select>
+</label>
+<label>Quando gostaria de começar?<select formControlName="timeline">
+<option>Ainda estou planejando</option>
+<option>O quanto antes</option>
+<option>Nas próximas semanas</option>
+<option>Nos próximos meses</option>
+</select>
+</label>
+<label>Empresa (opcional)<input formControlName="company" autocomplete="organization" maxlength="200">
+</label>}
+@case(2){<label>Seu nome<input formControlName="name" autocomplete="name" maxlength="120">
+</label>
+<label>E-mail<input type="email" formControlName="email" autocomplete="email" maxlength="254">
+</label>
+<label>Telefone (opcional)<input type="tel" formControlName="phone" autocomplete="tel" maxlength="40">
+</label>
+<label class="quote-consent">
+<input type="checkbox" formControlName="consent">Autorizo a awdevelop a entrar em contato sobre esta solicitação.</label>}}<label class="quote-trap" aria-hidden="true">Website<input formControlName="website" tabindex="-1" autocomplete="off">
+</label>
+<div class="step-buttons">@if(step()>0){<button class="button outline" type="button" (click)="step.set(step()-1)">Voltar</button>}
+@if(step()<2){<button class="button purple" type="button" (click)="next()">Continuar</button>}
+@else{<button class="button purple" type="submit">Revisar solicitação</button>}</div>
+</fieldset>@if(reviewing()){<div class="review">
+<h3>Confira seu pedido</h3>
+<p>{{form.controls.name.value}} · {{form.controls.email.value}}</p>
+<p>{{form.controls.company.value}} · {{form.controls.service.value}}</p>
+<p>{{form.controls.idea.value}}</p>
+<p>{{form.controls.stage.value}} · {{form.controls.timeline.value}}</p>
+<div class="step-buttons">
+<button class="button" type="button" (click)="send()" [disabled]="busy()">{{busy()?'Enviando…':'Confirmar envio'}}</button>@if(canEdit){<button class="button outline" type="button" (click)="back()" [disabled]="busy()">Editar dados</button>}</div>
+</div>}<p class="form-help">Revise e confirme o envio na última etapa.</p>
+<p role="status">{{message()}}</p>
+</form>
+</section>

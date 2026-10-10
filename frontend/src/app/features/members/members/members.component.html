@@ -1,0 +1,37 @@
+<aw-page-heading eyebrow="ACESSOS" title="Administradores." description="Convites individuais, válidos por sete dias e consumidos uma única vez ao criar a senha." />
+<p role="status" class="message">{{page.message()}}</p>
+<form class="card" (ngSubmit)="page.invite()">
+<fieldset [disabled]="page.busy()">
+<h2>Convidar pessoa</h2>
+<div class="grid">
+<label>Nome<input name="name" [(ngModel)]="page.form.name" (ngModelChange)="page.changed()" required minlength="2" maxlength="100">
+</label>
+<label>E-mail<input name="email" type="email" [(ngModel)]="page.form.email" (ngModelChange)="page.changed()" required maxlength="254">
+</label>
+</div>
+<label>Permissão<select name="role" [(ngModel)]="page.form.role" (ngModelChange)="page.changed()">
+<option value="admin">Administrador: site e comercial</option>
+<option value="editor">Editor: rascunhos e imagens</option>
+</select>
+</label>
+<div class="actions">
+<button type="submit">Gerar convite</button>
+</div>
+</fieldset>
+</form>@if(page.inviteUrl()){<div class="card">
+<label>Link privado do convite<input [value]="page.inviteUrl()" readonly>
+</label>
+<p>Compartilhe diretamente com a pessoa convidada.</p>
+<button (click)="page.copy()">Copiar convite</button>
+</div>}
+@for(member of page.items();track member.email){<article class="card">
+<h3>{{member.name}}</h3>
+<p>{{member.email}} · {{member.registered?'Conta criada':'Aguardando primeiro acesso'}} · {{member.active?'Ativo':'Bloqueado'}}</p>@if(member.role==='owner'){<span class="badge">Proprietário</span>}
+@else{<div class="actions">
+<select [ngModel]="member.role" (ngModelChange)="page.update(member,$event,member.active)" [disabled]="page.busy()">
+<option value="admin">Administrador</option>
+<option value="editor">Editor</option>
+</select>
+<button class="secondary" (click)="page.update(member,member.role,!member.active)" [disabled]="page.busy()">{{member.active?'Bloquear':'Ativar'}}</button>
+</div>}</article>}
+

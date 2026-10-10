@@ -39,7 +39,7 @@ export class SectionsComponent {
         void this.load();
     }
     contentLink(id: string) {
-        return '/admin/?section=' + ({
+        return '/painel/content?tab=' + ({
             portfolio: 'portfolio', contato: 'contact'
         }[id as 'portfolio' | 'contato'] || 'home');
     }
@@ -251,7 +251,7 @@ export class SectionsComponent {
         if (e instanceof HttpErrorResponse && e.status === 401) {
             this.auth.profile.set(null);
             this.dirty.set(false);
-            void this.router.navigateByUrl('/login');
+            void this.router.navigateByUrl('/painel/login');
         }
         else {
             const fields = e instanceof HttpErrorResponse && Array.isArray(e.error?.fields) ? e.error.fields.map((x: {

@@ -28,7 +28,7 @@ export class LoginComponent {
             const profile = await this.auth.signIn(email.trim(), password);
             this.form.controls.password.reset('');
             if (profile)
-                await this.router.navigateByUrl('/overview');
+                await this.router.navigateByUrl('/painel/overview');
             else
                 this.message.set('Sua conta não possui acesso ativo.');
         }

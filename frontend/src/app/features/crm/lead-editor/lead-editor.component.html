@@ -1,0 +1,72 @@
+<section class="card" aria-label="Ficha da oportunidade">
+<div class="actions">
+<h2>{{detail()?'Ficha da oportunidade':'Novo lead'}}</h2>
+<button class="secondary" (click)="closed.emit()" [disabled]="busy()">Fechar</button>
+</div>
+<form (ngSubmit)="submit()">
+<fieldset [disabled]="busy()">
+<div class="grid">@for(key of textFields;track key){<label>{{labels[key]}}<input [name]="key" [(ngModel)]="form[key]" (ngModelChange)="changed.emit('lead')" [required]="key==='name'||key==='service'||key==='origin'" [minlength]="key==='name'||key==='service'||key==='origin'?2:0" [maxlength]="key==='website'?2048:200" [type]="key==='email'?'email':'text'">
+</label>}<label>Etapa<select name="crmStage" [(ngModel)]="form.crmStage" (ngModelChange)="changed.emit('lead')">@for(s of stages;track s.id){<option [value]="s.id">{{s.label}}</option>}</select>
+</label>
+<label>Responsável<select name="assignee" [(ngModel)]="form.assignee" (ngModelChange)="changed.emit('lead')">
+<option value="">Sem responsável</option>@for(m of team();track m.email){<option [value]="m.email">{{m.name}}</option>}</select>
+</label>
+<label>Valor estimado (R$)<input name="value" type="number" min="0" max="100000000" step="0.01" [(ngModel)]="form.value" (ngModelChange)="changed.emit('lead')" required>
+</label>
+<label>Previsão de fechamento<input name="expectedClose" type="date" [(ngModel)]="form.expectedClose" (ngModelChange)="changed.emit('lead')">
+</label>
+</div>
+<label>Necessidade do cliente<textarea name="idea" [(ngModel)]="form.idea" (ngModelChange)="changed.emit('lead')" maxlength="5000" rows="4">
+</textarea>
+</label>
+<div class="actions">
+<button>Salvar oportunidade</button>@if(form.email){<a [href]="'mailto:'+form.email">Enviar e-mail</a>}
+@if(wa(form.phone)){<a [href]="wa(form.phone)" target="_blank" rel="noopener">WhatsApp ↗</a>}</div>
+</fieldset>
+</form>
+@if(detail();as d){<h3>Próximos contatos</h3>@for(t of d.tasks;track t.id){<div class="task">
+<span>{{t.title}} · {{t.due_at | date:'dd/MM/yyyy HH:mm'}} · {{t.assignee}}</span>
+<button class="secondary" [disabled]="busy()" (click)="toggleTask.emit(t)">{{t.done?'Reabrir':'Concluir'}}</button>
+</div>}
+@empty{<p class="muted">Nenhuma tarefa cadastrada.</p>}
+<form (ngSubmit)="addTask()">
+<fieldset [disabled]="busy()">
+<div class="grid">
+<label>Nova tarefa<input name="taskTitle" [(ngModel)]="followup.title" (ngModelChange)="changed.emit('task')" required minlength="2" maxlength="200">
+</label>
+<label>Prazo no seu horário local<input name="dueAt" type="datetime-local" [(ngModel)]="followup.dueAt" (ngModelChange)="changed.emit('task')" required>
+</label>
+<label>Responsável<select name="taskAssignee" [(ngModel)]="followup.assignee" (ngModelChange)="changed.emit('task')" required>
+<option value="">Escolha</option>@for(m of team();track m.email){<option [value]="m.email">{{m.name}}</option>}</select>
+</label>
+</div>
+<div class="actions">
+<button>Agendar tarefa</button>
+</div>
+</fieldset>
+</form>
+<h3>Histórico de contatos</h3>
+<form (ngSubmit)="activity.emit(note)">
+<fieldset [disabled]="busy()">
+<label>Tipo<select name="kind" [(ngModel)]="note.kind" (ngModelChange)="changed.emit('activity')">
+<option value="note">Anotação</option>
+<option value="call">Ligação</option>
+<option value="meeting">Reunião</option>
+<option value="proposal">Proposta</option>
+</select>
+</label>
+<label>Registro<textarea name="body" [(ngModel)]="note.body" (ngModelChange)="changed.emit('activity')" required minlength="2" maxlength="5000">
+</textarea>
+</label>
+<div class="actions">
+<button>Registrar contato</button>
+</div>
+</fieldset>
+</form>
+<div class="timeline">@for(e of d.events;track e.id){<article>
+<small>{{e.created_at | date:'dd/MM/yyyy HH:mm'}} · {{e.actor}}</small>
+<p>{{e.body}}</p>
+</article>}
+@empty{<p class="muted">Nenhum contato registrado.</p>}</div>}
+</section>
+

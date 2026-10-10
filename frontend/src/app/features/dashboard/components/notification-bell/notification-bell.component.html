@@ -1,0 +1,22 @@
+<div class="bell-wrap">
+<button class="secondary bell" [attr.aria-expanded]="opened()" aria-controls="notification-list" [attr.aria-label]="'Notificações: '+(summary()?.count || 0)+' orçamentos não lidos'" (click)="opened.update(toggle)">
+<svg aria-hidden="true" viewBox="0 0 24 24">
+<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+</svg>@if(summary()?.count){<span>{{summary()?.count}}</span>}</button>@if(opened()){<section class="popover" id="notification-list" aria-label="Notificações">
+<h2>Notificações</h2>
+<p role="status">{{message()}}</p>@for(q of summary()?.items??[];track q.id){<a routerLink="/painel/quotes" (click)="opened.set(false)">
+<strong>{{q.name}}</strong>
+<span>{{q.service}}</span>
+<small>{{q.created_at | date:'dd/MM HH:mm'}}</small>
+</a>}
+@for(t of summary()?.tasks??[];track t.id){<a routerLink="/painel/crm" [queryParams]="{lead:t.quote_id}" (click)="opened.set(false)">
+<strong>Retorno: {{t.title}}</strong>
+<span>{{t.name}}</span>
+</a>}
+@if(!summary()?.count&&!summary()?.taskCount){<p>Nenhum retorno pendente.</p>}<div class="actions">
+<button class="secondary" (click)="refresh()" [disabled]="busy()">Atualizar</button>
+<button (click)="read()" [disabled]="busy()||!summary()?.count">Marcar orçamentos como lidos</button>
+</div>
+<button class="secondary" (click)="opened.set(false)">Fechar</button>
+</section>}</div>
+

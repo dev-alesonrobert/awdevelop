@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  color: var(--ink);
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size: 16px;
+  line-height: 1.6
+}
+/* Product and service presentation inspired by the requested structure. */
+.focus-strip {
+  padding: 24px max(5%,calc((100vw - 1180px)/2));
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  background: #0e1420
+}
+.focus-strip>span {
+  font-family: ui-monospace,Consolas,monospace;
+  font-size: 10px;
+  color: #6c7d99;
+  letter-spacing: .6px;
+  margin-right: auto
+}
+.focus-strip b {
+  font-size: 14px;
+  font-weight: 600;
+  color: #95a2b8;
+  white-space: nowrap
+}
+@media(max-width:1000px) {
+  .focus-strip {
+    gap: 20px;
+    flex-wrap: wrap
+  }
+  .focus-strip>span {
+    flex-basis: 100%
+  }
+}
+@media(max-width:720px) {
+  .focus-strip {
+    padding: 22px 6%;
+    gap: 13px 23px
+  }
+  .focus-strip>span {
+    font-size: 10px
+  }
+  .focus-strip b {
+    font-size: 13px
+  }
+}
+/* A globe made of light, in the awdevelop purple. */
+h2,p,li,dd {
+  white-space: pre-line
+}

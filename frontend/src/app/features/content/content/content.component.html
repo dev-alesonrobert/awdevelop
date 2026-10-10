@@ -1,0 +1,51 @@
+<aw-page-heading eyebrow="CONTEÚDO" title="Edite o site." description="Salve o rascunho, confira a prévia e publique quando estiver pronto." />
+<div class="toolbar">@for(label of groups;track label;let i=$index){<button class="secondary" [attr.aria-pressed]="tab()===i" (click)="tab.set(i)">{{label}}</button>}</div>
+@if(page.content();as c){
+<fieldset [disabled]="page.busy()">
+<div class="card">
+@switch(tab()){
+@case(0){@for(key of ['title','accent','description','button'];track key){<label>{{page.labels[key]}}<textarea [ngModel]="c.hero[key]" (ngModelChange)="set('hero',key,$event)" [ngModelOptions]="{standalone:true}">
+</textarea>
+</label>}}
+@case(1){@for(key of ['title','description','note'];track key){<label>{{page.labels[key]}}<textarea [ngModel]="c.portfolio[key]" (ngModelChange)="page.edit('portfolio',key,$event)" [ngModelOptions]="{standalone:true}">
+</textarea>
+</label>}
+@for(project of c.portfolio.projects;track project.id;let i=$index){<article class="card">
+<h3>{{project.title}}</h3>
+<div class="grid">@for(key of ['title','category','summary','description','image','alt','url'];track key){<label>{{page.labels[key]}}<input [ngModel]="project[key]" (ngModelChange)="page.project(i,key,$event)" [ngModelOptions]="{standalone:true}">
+</label>}</div>
+<label>Tags separadas por vírgula<input [ngModel]="project.tags.join(', ')" (ngModelChange)="page.tags(i,$event)" [ngModelOptions]="{standalone:true}">
+</label>
+<label class="check">
+<input type="checkbox" [ngModel]="project.concept" (ngModelChange)="page.project(i,'concept',$event)" [ngModelOptions]="{standalone:true}">Projeto conceitual</label>
+<aw-media-picker (selected)="page.project(i,'image',$event)" (working)="page.uploading($event)" />
+<div class="actions">
+<button class="secondary" (click)="page.move(i,-1)" [disabled]="i===0">↑</button>
+<button class="secondary" (click)="page.move(i,1)" [disabled]="i===c.portfolio.projects.length-1">↓</button>
+<button class="secondary" (click)="page.remove(i)" [disabled]="c.portfolio.projects.length===1">Excluir projeto</button>
+</div>
+</article>}
+<button (click)="page.add()" [disabled]="c.portfolio.projects.length>=20">Adicionar projeto</button>}
+@case(2){@for(key of ['title','description','email','whatsapp','instagram','linkedin'];track key){<label>{{page.labels[key]}}<input [ngModel]="c.contact[key]" (ngModelChange)="set('contact',key,$event)" [ngModelOptions]="{standalone:true}">
+</label>}}
+@case(3){@for(key of ['brand','logo','title','description','accent','background'];track key){<label>{{page.labels[key]}}<input [type]="key==='accent'||key==='background'?'color':'text'" [ngModel]="c.settings[key]" (ngModelChange)="set('settings',key,$event)" [ngModelOptions]="{standalone:true}">
+</label>}<aw-media-picker (selected)="set('settings','logo',$event)" (working)="page.uploading($event)" />
+<label>Rotação do portfólio (segundos)<input type="number" min="4" max="30" [ngModel]="c.settings.rotationSeconds" (ngModelChange)="set('settings','rotationSeconds',$event)" [ngModelOptions]="{standalone:true}">
+</label>
+<label class="check">
+<input type="checkbox" [ngModel]="c.settings.globe" (ngModelChange)="set('settings','globe',$event)" [ngModelOptions]="{standalone:true}">Mostrar globo</label>}
+@case(4){@for(key of keys();track key){<label>{{key}}<textarea [ngModel]="c.blocks[key]" (ngModelChange)="page.block(key,$event)" [ngModelOptions]="{standalone:true}">
+</textarea>
+</label>}}
+}</div>
+</fieldset>
+<div class="actions">
+<label class="check">
+<input type="checkbox" [ngModel]="page.autosave()" (ngModelChange)="page.autosave.set($event)" [disabled]="page.busy()">Salvar automaticamente</label>
+<button (click)="page.save()" [disabled]="page.busy()||!page.dirty()">Salvar rascunho</button>
+<a href="/?preview=1" target="_blank" rel="noopener" (click)="page.preview($event)">Ver prévia ↗</a>@if(page.auth.profile()?.role!=='editor'){<button class="secondary" (click)="page.publish()" [disabled]="page.busy()||page.dirty()">Publicar</button>}<button class="secondary" (click)="page.reload()" [disabled]="page.busy()">Recarregar</button>
+</div>
+<p class="muted">Rascunho {{page.revision()}} · publicado {{page.published()}}</p>
+@if(page.presence().length){<p class="muted">Também editando: {{page.presence().join(', ')}}</p>}
+}<p class="message" role="status">{{page.message()}}</p>
+

@@ -1,0 +1,8 @@
+<div class="board" aria-label="Funil de vendas">@for(stage of stages;track stage.id){<section class="column">
+<header>
+<h2>{{stage.label}} <span>{{stat(stage.id)?.count || 0}}</span>
+</h2>
+<p>{{(stat(stage.id)?.value || 0) | currency:'BRL':'symbol':'1.0-0'}}</p>
+</header>@for(lead of cards(stage.id);track lead.id){<aw-lead-card [lead]="lead" (opened)="opened.emit($event)" />}
+@empty{<p class="empty">Sem oportunidades nesta página.</p>}</section>}</div>
+

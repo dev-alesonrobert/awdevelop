@@ -8,5 +8,5 @@
   </label>
   <button (click)="add.emit()" [disabled]="busy()||count()>=20">+ Adicionar seção</button>
   <p class="muted">{{count()}} de 20 seções. Excluir uma seção original preserva seus textos para reinclusão.</p>
-  <a href="/admin/?section=history" (click)="leave.emit($event)">Histórico e restauração ↗</a>
+  <a href="/painel/history" (click)="leave.emit($event)">Histórico e restauração ↗</a>
 </aside>

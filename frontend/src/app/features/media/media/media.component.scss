@@ -1,0 +1,7 @@
+@use '../../../../styles/admin';
+@include admin.page;
+.preview {
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain
+}

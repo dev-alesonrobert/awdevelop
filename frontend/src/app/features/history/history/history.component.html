@@ -1,0 +1,18 @@
+<aw-page-heading eyebrow="HISTÓRICO" title="Publicações e restauração." description="Uma restauração altera apenas o rascunho. Revise e publique para atualizar o site." />
+<p role="status" class="message">{{page.message()}}</p>
+<div class="list">@for(item of page.items();track item.id){<article class="card">
+<h3>Revisão {{item.revision}}</h3>
+<p>{{item.editor_name}} · {{item.created_at | date:'dd/MM/yyyy HH:mm'}}</p>
+<div class="actions">
+<button class="secondary" (click)="page.inspect(item.id)" [disabled]="page.busy()">Ver conteúdo</button>
+<button (click)="page.restore(item.id)" [disabled]="page.busy()">Restaurar rascunho</button>
+</div>
+</article>}
+@empty{<p class="empty">Nenhuma publicação encontrada.</p>}</div>@if(page.next()){<button class="secondary" (click)="page.load(true)" [disabled]="page.busy()">Carregar anteriores</button>}
+@if(page.snapshot()){<article class="card">
+<h2>Conteúdo da versão</h2>
+<a [href]="'/?history='+page.snapshotId()" target="_blank" rel="noopener">Abrir prévia desta versão ↗</a>
+<pre>{{page.snapshot()}}</pre>
+<button class="secondary" (click)="page.snapshot.set('')">Fechar</button>
+</article>}
+

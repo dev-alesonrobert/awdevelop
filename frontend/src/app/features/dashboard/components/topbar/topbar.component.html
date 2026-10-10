@@ -3,5 +3,5 @@
     <p class="eyebrow">ÁREA DA EQUIPE</p>
     <span>{{ name() }}</span>
   </div>
-  <button class="secondary" (click)="logout.emit()" [disabled]="busy()">{{ busy() ? 'Saindo…' : 'Sair ↗' }}</button>
+  <div class="topbar-actions">@if(commercial()){<aw-notification-bell />}<button class="secondary" (click)="logout.emit()" [disabled]="busy()">{{ busy() ? 'Saindo…' : 'Sair ↗' }}</button></div>
 </header>

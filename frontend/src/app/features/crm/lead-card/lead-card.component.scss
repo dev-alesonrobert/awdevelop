@@ -1,0 +1,22 @@
+:host {
+  display: block
+}
+.lead {
+  display: grid;
+  gap: 10px;
+  text-align: left;
+  width: 100%;
+  background: var(--panel);
+  color: inherit;
+  border: 1px solid var(--line);
+  padding: 18px;
+  margin-bottom: 12px
+}
+.lead span,.lead small {
+  color: var(--muted);
+  overflow-wrap: anywhere
+}
+.lead b {
+  color: var(--purple);
+  font-weight: 500
+}

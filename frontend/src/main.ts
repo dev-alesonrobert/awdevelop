@@ -1,3 +1,4 @@
+import { sessionInterceptor } from './app/core/session-interceptor';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 registerLocaleData(localePt, 'pt-BR');
@@ -7,9 +8,7 @@ import { provideRouter } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 bootstrapApplication(AppComponent, {
-    providers: [provideHttpClient(withInterceptors([(req, next) => next(req.clone({
-                withCredentials: true
-            }))])), provideRouter(routes)]
+    providers: [provideHttpClient(withInterceptors([sessionInterceptor])), provideRouter(routes)]
 }).catch(() => {
-    document.body.textContent = 'Não foi possível abrir o painel. Recarregue a página.';
+    document.body.textContent = 'Não foi possível abrir o site. Recarregue a página.';
 });

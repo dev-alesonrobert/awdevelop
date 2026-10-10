@@ -13,10 +13,10 @@
   <p class="message" role="status">{{ message() }}</p>
   <div class="cards">
     @for (item of notifications()?.items ?? []; track item.id) {
-      <aw-notification-card eyebrow="NOVO ORÇAMENTO" [title]="item.name" [description]="item.service" [date]="item.created_at" href="/admin/?section=quotes" linkLabel="Abrir orçamentos ↗" />
+      <aw-notification-card eyebrow="NOVO ORÇAMENTO" [title]="item.name" [description]="item.service" [date]="item.created_at" href="/painel/quotes" linkLabel="Abrir orçamentos ↗" />
     }
     @for (task of notifications()?.tasks ?? []; track task.id) {
-      <aw-notification-card eyebrow="RETORNO PENDENTE" [title]="task.title" [description]="task.name" [date]="task.due_at" href="/admin/?section=crm" linkLabel="Abrir CRM ↗" />
+      <aw-notification-card eyebrow="RETORNO PENDENTE" [title]="task.title" [description]="task.name" [date]="task.due_at" href="/painel/crm" linkLabel="Abrir CRM ↗" />
     }
     @if (!busy() && notifications() && !notifications()?.count && !notifications()?.taskCount) {
       <article class="card">
@@ -29,6 +29,6 @@
   <article class="card">
     <h2>Conteúdo e publicações</h2>
     <p class="muted">Seu acesso permite editar rascunhos e gerenciar imagens.</p>
-    <a href="/admin/">Abrir editor do site ↗</a>
+    <a href="/painel/content">Abrir editor do site ↗</a>
   </article>
 }

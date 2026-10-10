@@ -1,0 +1,94 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Injectable, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { AdminPage } from '../../core/admin-page';
+import { Board, LeadDetail, LeadForm, Task, TeamMember } from '../../core/commercial-models';
+@Injectable()
+export class CrmPage extends AdminPage {
+    private readonly route = inject(ActivatedRoute);
+    readonly board = signal<Board>({ items: [], stats: [], next: null });
+    readonly team = signal<TeamMember[]>([]);
+    readonly detail = signal<LeadDetail | null>(null);
+    readonly opened = signal(false);
+    readonly activitySaved = signal(0);
+    readonly taskSaved = signal(0);
+    search = '';
+    assignee = '';
+    private leadRequestId = crypto.randomUUID();
+    private taskRequestId = crypto.randomUUID();
+    private scopes = new Set<string>();
+    async initialize() { const team = await this.request(this.http.get<{
+        items: TeamMember[];
+    }>('/api/admin/crm/team')); if (team)
+        this.team.set(team.items); await this.load(); this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => { const id = params.get('lead'); if (id && /^\d+$/.test(id) && id !== this.detail()?.lead.id)
+        void this.open(id); }); }
+    override changed(scope = 'lead') { this.scopes.add(scope); super.changed(); }
+    private saved(scope: string) { this.scopes.delete(scope); if (!this.scopes.size)
+        this.clean(); }
+    private discard() { this.scopes.clear(); this.clean(); }
+    async load(more = false) { const params: Record<string, string> = { search: this.search, assignee: this.assignee }; if (more && this.board().next)
+        params['before'] = this.board().next!; const data = await this.request(this.http.get<Board>('/api/admin/crm/leads', { params })); if (data)
+        this.board.set(more ? { ...data, items: [...this.board().items, ...data.items] } : data); }
+    async open(id: string) { if (!this.canLeave())
+        return; const result = await this.request(this.http.get<LeadDetail>('/api/admin/crm/leads/' + id)); if (result) {
+        this.detail.set(result);
+        this.opened.set(true);
+        this.discard();
+        this.taskRequestId = crypto.randomUUID();
+    } }
+    newLead() { if (!this.canLeave())
+        return; this.detail.set(null); this.opened.set(false); this.discard(); this.leadRequestId = crypto.randomUUID(); queueMicrotask(() => { if (!this.destroyRef.destroyed)
+        this.opened.set(true); }); }
+    close() { if (!this.canLeave())
+        return; this.opened.set(false); this.detail.set(null); this.discard(); }
+    async save(form: LeadForm) { if (!form.email && !form.phone) {
+        this.message.set('Informe e-mail ou telefone.');
+        return;
+    } const current = this.detail()?.lead; const request = current ? this.http.patch<{
+        revision: number;
+    }>('/api/admin/crm/leads/' + current.id, { ...form, revision: current.revision }) : this.http.post<{
+        id: string;
+    }>('/api/admin/crm/leads', { ...form, requestId: this.leadRequestId }); const result = await this.request<{
+        revision?: number;
+        id?: string;
+    }>(request); if (!result)
+        return; this.saved('lead'); const id = current?.id ?? (result.id ?? ''); if (id)
+        await this.refreshDetail(id); await this.load(); this.message.set('Oportunidade salva.'); }
+    private async refreshDetail(id = this.detail()?.lead.id) { if (!id)
+        return; const detail = await this.request(this.http.get<LeadDetail>('/api/admin/crm/leads/' + id)); if (detail) {
+        this.detail.set(detail);
+        this.opened.set(true);
+    } }
+    async addActivity(form: {
+        kind: string;
+        body: string;
+    }) { const id = this.detail()?.lead.id; if (!id)
+        return; const result = await this.request(this.http.post<{
+        ok: boolean;
+    }>('/api/admin/crm/leads/' + id + '/events', form)); if (result) {
+        this.saved('activity');
+        this.activitySaved.update(x => x + 1);
+        await this.refreshDetail();
+        this.message.set('Contato registrado.');
+    } }
+    async addTask(form: {
+        title: string;
+        dueAt: string;
+        assignee: string;
+    }) { const id = this.detail()?.lead.id; if (!id)
+        return; const result = await this.request(this.http.post<{
+        ok: boolean;
+    }>('/api/admin/crm/leads/' + id + '/tasks', { ...form, requestId: this.taskRequestId })); if (result) {
+        this.taskRequestId = crypto.randomUUID();
+        this.saved('task');
+        this.taskSaved.update(x => x + 1);
+        await this.refreshDetail();
+        this.message.set('Tarefa agendada.');
+    } }
+    async toggleTask(task: Task) { const result = await this.request(this.http.patch<{
+        revision: number;
+    }>('/api/admin/crm/tasks/' + task.id, { done: !task.done, revision: task.revision })); if (result) {
+        await this.refreshDetail();
+        this.message.set('Tarefa atualizada.');
+    } }
+}

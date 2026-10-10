@@ -1,0 +1,20 @@
+@use '../../../../styles/admin';
+@include admin.page;
+.task {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  margin: 14px 0
+}
+.timeline article {
+  border-left: 2px solid var(--purple);
+  padding: 8px 20px;
+  margin: 20px 0
+}
+.timeline p {
+  white-space: pre-wrap
+}
+.timeline small {
+  color: var(--muted)
+}

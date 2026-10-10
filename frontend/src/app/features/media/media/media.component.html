@@ -1,0 +1,10 @@
+<aw-page-heading eyebrow="IMAGENS" title="Biblioteca de imagens." description="Envie PNG, JPG ou WebP de até 4 MB e reutilize nos projetos ou na identidade do site." />
+<div class="card">
+<aw-media-picker (working)="busy.set($event);draftState.working.set($event)" (selected)="selected.set($event)" />
+</div>@if(selected()){<div class="card">
+<img class="preview" [src]="selected()" alt="Imagem selecionada">
+<label>URL da imagem<input [value]="selected()" readonly>
+</label>
+<button (click)="copy()">Copiar URL</button>
+</div>}<p role="status" class="message">{{message()}}</p>
+

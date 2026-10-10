@@ -1,7 +1,7 @@
 <div class="app-layout">
   <aw-sidebar [role]="auth.profile()?.role" />
   <main class="workspace">
-    <aw-topbar [name]="auth.profile()?.name" [busy]="busy()" (logout)="logout()" />
+    <aw-topbar [commercial]="auth.profile()?.role!=='editor'" [name]="auth.profile()?.name" [busy]="busy()" (logout)="logout()" />
     <p class="message" role="status">{{ message() }}</p>
     <router-outlet />
   </main>

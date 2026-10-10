@@ -20,14 +20,14 @@ A plataforma da **AWDevelop** reúne a apresentação da empresa, a edição do 
 
 O painel permite editar conteúdo sem alterar o código, organizar seções, publicar versões e acompanhar oportunidades no CRM.
 
-> **Estado atual:** a migração para Angular está em andamento. Login, sessão, visão geral e gerenciamento de seções já estão em Angular. O editor completo e as operações do CRM continuam disponíveis na interface anterior, compartilhando a mesma autenticação.
+> **Estado atual do código:** frontend migrado para Angular: site público, login, primeiro acesso, visão geral, conteúdo, portfólio, seções, imagens, histórico, administradores, orçamentos, notificações e CRM. A API e os dados existentes foram preservados. A recuperação de senha por e-mail ainda depende de domínio e configuração de remetente.
 
 ## Tecnologias
 
 | Camada | Tecnologia | Uso |
 | --- | --- | --- |
-| Painel novo | Angular 22.2.2, TypeScript 6.0.3 e RxJS | Interface, rotas, formulários e integração com a API |
-| Landing page e painel anterior | HTML, CSS e JavaScript | Site público e funcionalidades ainda em migração |
+| Frontend | Angular 22.2.2, TypeScript 6.0.3 e RxJS | Interface, rotas, formulários e integração com a API |
+| Referência anterior | HTML, CSS e JavaScript | Código histórico mantido para comparação e testes de regressão; não servido pelo novo build |
 | Backend | Node.js e Express 5.3.0 | API e regras de negócio |
 | Autenticação | Better Auth 1.7.7 | Login, cookies de sessão e encerramento de acesso |
 | Validação | Zod 4.6.5 | Validação de dados recebidos |
@@ -56,7 +56,7 @@ As versões instaladas estão fixadas em `package-lock.json`.
 - Histórico de publicações com autor, data e revisão.
 - Restauração de versões para o rascunho; publicar continua sendo uma ação separada.
 - Biblioteca de imagens PNG, JPG e WebP, com limite de 4 MB por arquivo.
-- Salvamento automático no editor anterior após três segundos sem alterações.
+- Salvamento automático opcional após três segundos sem alterações; falhas e conflitos pausam o autosave.
 - Proteção contra sobrescrita quando duas pessoas editam a mesma revisão.
 
 ### Seções da página
@@ -109,12 +109,19 @@ O cadastro público está desativado. Contas bloqueadas perdem acesso mesmo que 
 | Caminho | Responsabilidade |
 | --- | --- |
 | `frontend/src/app/core/` | API, autenticação, modelos e estado compartilhado |
-| `frontend/src/app/features/auth/` | Login Angular |
+| `frontend/src/app/features/auth/` | Login e primeiro acesso por convite |
+| `frontend/src/app/features/landing/` | Site público, seções, carrossel, globo e formulário de orçamento |
+| `frontend/src/app/features/content/` | Editor de conteúdo, rascunho, autosave, presença e publicação |
+| `frontend/src/app/features/media/` | Biblioteca de imagens |
+| `frontend/src/app/features/history/` | Histórico, prévia e restauração |
+| `frontend/src/app/features/members/` | Convites e permissões |
+| `frontend/src/app/features/quotes/` | Caixa de orçamentos e acompanhamento |
+| `frontend/src/app/features/crm/` | Funil, ficha, contatos e tarefas |
 | `frontend/src/app/features/dashboard/` | Navegação e visão geral |
 | `frontend/src/app/features/sections/` | Gerenciamento de seções |
 | `frontend/src/app/shared/` | Elementos compartilhados, incluindo a marca |
-| `dist/` | Landing page, imagens e painel anterior |
-| `dist/painel/` | Saída gerada pelo build Angular; não versionada |
+| `dist/` | Assets, catálogo, conteúdo de referência e implementação anterior preservada |
+| `dist/angular/` | Site e painel compilados; saída gerada, não versionada |
 | `server/` | Aplicação Express, autenticação, conteúdo, CRM e banco |
 | `api/index.js` | Entrada da função da API na Vercel |
 | `scripts/` | Desenvolvimento, migrações e verificações |
@@ -122,7 +129,7 @@ O cadastro público está desativado. Contas bloqueadas perdem acesso mesmo que 
 | `angular.json` | Configuração do frontend Angular |
 | `vercel.json` | Build, rotas e cabeçalhos da hospedagem |
 
-Apesar do nome `dist/`, os arquivos da landing page e do painel anterior nesta pasta fazem parte da versão atual do projeto. Apenas `dist/painel/` é gerado pelo Angular.
+O build copia as imagens de `dist/assets/` e gera a aplicação em `dist/angular/`. Os arquivos anteriores de HTML/CSS/JS em `dist/` são referência para testes e manutenção da migração. A Vercel serve apenas `dist/angular/`, além da função da API.
 
 ## Organização dos componentes Angular
 
@@ -131,19 +138,22 @@ Cada componente tem uma pasta própria com arquivos `*.component.ts`, `*.compone
 | Área | Componentes |
 | --- | --- |
 | Aplicação | AppComponent |
-| Autenticação | LoginComponent |
-| Layout | ShellComponent, SidebarComponent e TopbarComponent |
+| Autenticação | LoginComponent e SetupComponent |
+| Layout | ShellComponent, SidebarComponent, TopbarComponent e NotificationBellComponent |
 | Visão geral | OverviewComponent, MetricCardComponent e NotificationCardComponent |
 | Estrutura da página | SectionsComponent, SectionToolbarComponent, SectionCardComponent e SectionAddComponent |
-| Compartilhados | BrandComponent e PageHeadingComponent |
+| Site público | LandingComponent, HeroComponent, FocusStripComponent, PortfolioComponent, ProcessComponent, ServicesComponent, GlobeComponent, InvitationComponent, AboutComponent, FaqComponent e QuoteFormComponent |
+| Conteúdo e gestão | ContentComponent, MediaComponent, HistoryComponent e MembersComponent |
+| Comercial | QuotesComponent, QuoteDetailComponent, CrmComponent, PipelineComponent, LeadCardComponent e LeadEditorComponent |
+| Compartilhados | BrandComponent, PageHeadingComponent e MediaPickerComponent |
 
-As telas mantêm autenticação, consultas, salvamento, publicação e tratamento de conflitos. Os componentes de apresentação recebem dados e emitem eventos; não fazem chamadas à API.
+São 38 componentes standalone. Os componentes de apresentação recebem dados e emitem eventos. Serviços de funcionalidade (`ContentEditor`, `HistoryPage`, `MembersPage`, `QuotesPage` e `CrmPage`) coordenam consultas, revisão otimista e salvamento. `AdminPage` centraliza ciclo de requisição e proteção de alterações; `sessionInterceptor` encerra o acesso visual ao receber 401 nas rotas privadas. Componentes especializados de formulário, imagens e notificações encapsulam seus próprios ciclos de vida.
 
 `frontend/src/styles.scss` importa somente tema, estilos básicos de elementos e utilitários compartilhados, organizados em `frontend/src/styles/`. Layouts, cards, navegação, responsividade e estilos de cada tela ficam no SCSS do componente, com encapsulamento padrão do Angular. O mixin `panels.card` compartilha a aparência dos cards sem expor seletores globais.
 
 O Angular CLI está configurado para gerar componentes com HTML externo, SCSS externo e `OnPush`. Para criar um componente, use `npx ng generate component <caminho>` dentro da estrutura da funcionalidade. Não coloque estilos específicos de telas no arquivo global.
 
-Esta organização abrange o frontend Angular existente. A landing page e as telas anteriores de conteúdo e CRM ainda permanecem na implementação legada, conforme o status da migração.
+Todas as telas ativas usam componentes Angular com HTML e SCSS externos e encapsulados. Os mixins `panels` e `admin` compartilham padrões visuais sem estilos de página no arquivo global. As funcionalidades são carregadas por rotas lazy. O globo cancela animações e observers ao sair; carrossel, notificações e presença limpam seus timers.
 
 ## Executar localmente
 
@@ -171,7 +181,7 @@ Crie um arquivo `.env` na raiz e configure as variáveis abaixo com credenciais 
 | --- | --- |
 | `DATABASE_URL` | Conexão com o Postgres |
 | `BETTER_AUTH_SECRET` | Segredo de autenticação com pelo menos 32 caracteres |
-| `BETTER_AUTH_URL` | Origem da aplicação; no modo local anterior, `http://localhost:3000` |
+| `BETTER_AUTH_URL` | Origem da aplicação; no modo local compilado, `http://localhost:3000` |
 | `ADMIN_EMAIL` | E-mail do proprietário inicial |
 | `PARTNER_ADMIN_EMAIL` | E-mail do administrador inicial |
 | `ADMIN_SETUP_TOKEN` | Convite privado inicial do proprietário |
@@ -180,15 +190,16 @@ Crie um arquivo `.env` na raiz e configure as variáveis abaixo com credenciais 
 
 Na Vercel, o Blob utiliza autenticação OIDC. O upload local precisa de credenciais próprias do ambiente; somente definir o identificador do armazenamento não fornece autenticação.
 
-### Banco e interface anterior
+### Banco e aplicação compilada
 
 ```bash
 npm run migrate
+npm run build:angular
 npm run dev
 ```
 
 - Site: `http://localhost:3000/`
-- Painel completo: `http://localhost:3000/admin/`
+- Painel: `http://localhost:3000/painel/`
 
 A migração é idempotente: não substitui conteúdo existente, não reativa membros bloqueados e não reabre convites consumidos.
 
@@ -200,14 +211,14 @@ npm run dev:angular
 
 Abra `http://localhost:4200/painel/`. Este comando inicia a API na porta 3001 e o Angular na porta 4200, com proxy e origem de autenticação ajustada para esse processo.
 
-Para gerar o painel Angular e servi-lo junto à aplicação local:
+Para gerar o site e o painel Angular e servi-los junto à API local:
 
 ```bash
 npm run build:angular
 npm run dev
 ```
 
-O painel compilado estará disponível em `http://localhost:3000/painel/`.
+O site compilado estará em `http://localhost:3000/` e o painel em `http://localhost:3000/painel/`.
 
 ## Primeiro acesso
 
@@ -221,7 +232,7 @@ O token é removido da barra de endereço ao carregar a página. Um convite cons
 | --- | --- |
 | `npm run dev` | Inicia a aplicação local na porta 3000 |
 | `npm run dev:angular` | Inicia Angular e API local com proxy |
-| `npm run build:angular` | Compila o painel Angular |
+| `npm run build:angular` | Compila site público e painel Angular |
 | `npm run migrate` | Executa as migrações do banco |
 | `npm test` | Executa os testes automatizados |
 | `npm run create-owner` | Provisiona a conta inicial pelo terminal interativo, após configurar e migrar o banco |
@@ -238,7 +249,11 @@ O frontend e a API estão hospedados na **Vercel**. O banco está no **Neon Post
 | --- | --- |
 | `/` | Landing page pública |
 | `/painel/` | Painel Angular |
-| `/admin/` | Painel completo anterior |
+| `/admin/` | Compatibilidade: redireciona para o painel Angular |
+| `/painel/login` | Login |
+| `/painel/setup` e `/admin/setup.html#CONVITE` | Primeiro acesso; convite removido da barra de endereço |
+| `/painel/content`, `/painel/sections`, `/painel/media`, `/painel/history` | Edição, estrutura, imagens e versões |
+| `/painel/crm`, `/painel/quotes`, `/painel/members` | Gestão comercial e acessos conforme a permissão |
 | `/api/*` | API Node.js |
 
 O build configurado executa:
@@ -257,12 +272,12 @@ Publique o projeto completo. Enviar apenas a pasta `dist/` não inclui a API. Co
 | Edição, rascunhos, histórico e restauração | Implementados |
 | Orçamentos, CRM e notificações no painel | Implementados |
 | Login, sessão, visão geral e seções em Angular | Implementados |
-| Migração das demais telas para Angular | Pendente |
+| Migração de todas as telas ativas para Angular | Implementada no código |
 | Recuperação de senha por e-mail | Pendente |
 | Resend e validação do remetente | Pendente; requer domínio próprio |
 | Notificações push com navegador fechado | Não implementadas |
 
-O envio automático de e-mails ainda não está disponível. Convites são compartilhados por link privado; os pedidos de orçamento são persistidos no banco. A validação visual autenticada completa continua pendente.
+O envio automático de e-mails ainda não está disponível. Convites são compartilhados por link privado; os pedidos de orçamento são persistidos no banco. Os testes cobrem contratos da API, login, edição renderizada, conflitos, restauração, convite, notificações e reenvio de orçamento. A validação visual completa em navegador autenticado continua pendente.
 
 ## Segurança e manutenção
 

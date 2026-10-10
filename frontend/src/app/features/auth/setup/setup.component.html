@@ -1,0 +1,21 @@
+<main class="setup">
+<section>
+<aw-brand />
+<p class="eyebrow">PRIMEIRO ACESSO</p>
+<h1>Defina sua senha.</h1>
+<p>Seu convite cria uma conta individual e só pode ser utilizado uma vez.</p>
+<form [formGroup]="form" (ngSubmit)="submit()">
+<fieldset [disabled]="busy()||!available()">
+<label>Nova senha<input type="password" formControlName="password" autocomplete="new-password" minlength="12" maxlength="128">
+</label>
+<label>Confirmar senha<input type="password" formControlName="confirmPassword" autocomplete="new-password">
+</label>
+<p class="muted">Use entre 12 e 128 caracteres.</p>
+<button type="submit" [disabled]="busy()||!available()||form.invalid">{{busy()?'Criando acesso…':'Criar meu acesso'}}</button>
+</fieldset>
+</form>
+<p class="message" role="status">{{message()}}</p>
+<a routerLink="/painel/login">Entrar no painel</a>
+</section>
+</main>
+

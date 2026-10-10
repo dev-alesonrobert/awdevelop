@@ -1,5 +1,29 @@
-:host { display: block; }
-.app-layout { min-height: 100dvh; display: grid; grid-template-columns: 240px minmax(0, 1fr); }
-.workspace { padding: 28px 42px; max-width: 1400px; min-width: 0; }
-@media (max-width: 900px) { .app-layout { grid-template-columns: 200px minmax(0, 1fr); } .workspace { padding: 24px; } }
-@media (max-width: 650px) { .app-layout { display: block; } .workspace { padding: 20px 18px; } }
+:host {
+  display: block;
+}
+.app-layout {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+.workspace {
+  padding: 28px 42px;
+  max-width: 1400px;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .app-layout {
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+  .workspace {
+    padding: 24px;
+  }
+}
+@media (max-width: 650px) {
+  .app-layout {
+    display: block;
+  }
+  .workspace {
+    padding: 20px 18px;
+  }
+}

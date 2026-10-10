@@ -1,0 +1,29 @@
+:host {
+  display: block
+}
+.setup {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px
+}
+.setup section {
+  width: min(100%,560px);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 40px
+}
+.eyebrow {
+  margin-top: 40px
+}
+h1 {
+  font-size: 36px
+}
+p {
+  line-height: 1.6
+}
+button {
+  width: 100%;
+  margin-top: 20px
+}

@@ -1,10 +1,46 @@
 @use '../../../../../styles/panels';
-:host { display: block; min-width: 0; }
-.section-card { @include panels.card; }
-.section-card-heading { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
-h2 { font-size: 20px; font-weight: 550; margin: 12px 0; }
-.section-controls { display: flex; gap: 6px; flex-wrap: wrap; }
-.section-controls button { padding: 9px 12px; }
-.section-delete { color: #efbccf; }
-.section-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-@media (max-width: 650px) { .section-card-heading { flex-direction: column; } .section-fields { grid-template-columns: 1fr; } .section-card { padding: 18px; } }
+:host {
+  display: block;
+  min-width: 0;
+}
+.section-card {
+  @include panels.card;
+}
+.section-card-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+}
+h2 {
+  font-size: 20px;
+  font-weight: 550;
+  margin: 12px 0;
+}
+.section-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.section-controls button {
+  padding: 9px 12px;
+}
+.section-delete {
+  color: #efbccf;
+}
+.section-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 650px) {
+  .section-card-heading {
+    flex-direction: column;
+  }
+  .section-fields {
+    grid-template-columns: 1fr;
+  }
+  .section-card {
+    padding: 18px;
+  }
+}

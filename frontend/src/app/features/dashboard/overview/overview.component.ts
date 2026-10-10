@@ -58,7 +58,7 @@ export class OverviewComponent {
             this.message.set(apiMessage(e));
             if (e instanceof HttpErrorResponse && e.status === 401) {
                 this.auth.profile.set(null);
-                await this.router.navigateByUrl('/login');
+                await this.router.navigateByUrl('/painel/login');
             }
         }
         finally {

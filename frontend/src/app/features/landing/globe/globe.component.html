@@ -1,0 +1,21 @@
+<section class="section globe-section" id="conexoes" aria-labelledby="globe-title">
+<div class="globe-copy">
+<span class="eyebrow">DO SEU NEGÓCIO PARA O MUNDO</span>
+<h2 data-edit-key="globo-01" id="globe-title">{{content().blocks['globo-01']}}</h2>
+<p data-edit-key="globo-02">{{content().blocks['globo-02']}}</p>
+<a [hidden]="!contactAvailable()" class="text-link" href="#contato">Vamos conectar sua ideia</a>
+<div class="globe-services">
+<span>Sites</span>
+<span>Sistemas</span>
+<span>Integrações</span>
+</div>
+</div>
+<div class="globe-visual">
+<canvas #canvas="" id="aw-globe" role="img" aria-label="Globo ilustrativo em pontos roxos, com linhas conectando diferentes regiões">
+</canvas>
+<div class="globe-caption">
+<span>IDEIAS QUE SE CONECTAM</span>
+<button [attr.aria-pressed]="paused()" (click)="toggle()" id="globe-toggle" type="button" aria-pressed="false" aria-label="Pausar rotação do globo">{{paused()?'Reproduzir rotação':'Pausar rotação'}}</button>
+</div>
+</div>
+</section>

@@ -1,0 +1,33 @@
+@if(content();as c){<div class="landing" [style.--bg]="c.settings.background" [style.--accent]="c.settings.accent">@if(preview()){<div class="notice" role="status">PRÉVIA — este conteúdo não está sendo publicado.</div>}
+@if(message()){<p class="notice" role="status">{{message()}}</p>}
+<header>
+<a class="brand" href="/" aria-label="Página inicial">
+<img [src]="c.settings.logo" [alt]="c.settings.brand" width="370" height="84">
+</a>
+<button class="menu" [attr.aria-expanded]="menu()" aria-controls="navigation" (click)="menu.set(!menu())">{{menu()?'Fechar':'Menu'}}</button>
+<nav id="navigation" [class.open]="menu()" aria-label="Navegação principal">@for(link of navigation();track link.id){<a [href]="'#'+link.id" [class.nav-cta]="link.id==='contato'" (click)="menu.set(false)">{{link.label}}</a>}</nav>
+</header>
+<main>@if(!active('inicio')){<h1 class="sr-only">{{c.settings.brand}}</h1>}
+@for(section of sections();track section.id){@if(section.type==='custom'){<section class="custom" [id]="section.id">
+<div>
+<h2>{{section.title}}</h2>
+<p>{{section.description}}</p>@if(section.button&&section.url){<a class="button purple" [href]="section.url">{{section.button}}</a>}</div>@if(section.image){<img [src]="section.image" [alt]="section.alt" loading="lazy" width="1200" height="800">}</section>}
+@else{@switch(section.id){@case('inicio'){<aw-hero [content]="c" [contactAvailable]="active('contato')" />}
+@case('faixa'){<aw-focus-strip [content]="c" />}
+@case('portfolio'){<aw-portfolio [content]="c" [contactAvailable]="active('contato')" />}
+@case('processo'){<aw-process [content]="c" [contactAvailable]="active('contato')" />}
+@case('servicos'){<aw-services [content]="c" />}
+@case('conexoes'){@if(c.settings.globe){<aw-globe [content]="c" [contactAvailable]="active('contato')" />}}
+@case('convite'){<aw-invitation [content]="c" [contactAvailable]="active('contato')" />}
+@case('sobre'){<aw-about [content]="c" [contactAvailable]="active('contato')" />}
+@case('duvidas'){<aw-faq [content]="c" />}
+@case('contato'){<aw-quote-form [content]="c" />}}}}</main>
+<footer>
+<a class="brand" href="/">
+<img [src]="c.settings.logo" [alt]="c.settings.brand">
+</a>
+<p>Sites e sistemas sob medida.</p>@if(active('contato')){<a href="#contato">Vamos conversar</a>}<small>© {{year}} {{c.settings.brand}}</small>
+</footer>
+</div>}
+@else{<p class="notice" role="status">{{message()||'Carregando…'}}</p>}
+

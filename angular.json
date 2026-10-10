@@ -18,12 +18,19 @@
             "index": "frontend/src/index.html",
             "tsConfig": "frontend/tsconfig.app.json",
             "outputPath": {
-              "base": "dist/painel",
+              "base": "dist/angular",
               "browser": ""
             },
-            "baseHref": "/painel/",
+            "baseHref": "/",
             "styles": [
               "frontend/src/styles.scss"
+            ],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "dist/assets",
+                "output": "assets"
+              }
             ]
           },
           "configurations": {

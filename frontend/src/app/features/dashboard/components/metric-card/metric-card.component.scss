@@ -1,6 +1,28 @@
 @use '../../../../../styles/panels';
-:host { display: block; min-width: 0; }
-article { @include panels.card; height: 100%; }
-span { display: block; font-size: 12px; color: var(--muted); }
-strong { display: block; font-size: 26px; margin-top: 14px; overflow-wrap: anywhere; }
-@media (max-width: 650px) { article { padding: 16px; } strong { font-size: 22px; } }
+:host {
+  display: block;
+  min-width: 0;
+}
+article {
+  @include panels.card;
+  height: 100%;
+}
+span {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+strong {
+  display: block;
+  font-size: 26px;
+  margin-top: 14px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 650px) {
+  article {
+    padding: 16px;
+  }
+  strong {
+    font-size: 22px;
+  }
+}

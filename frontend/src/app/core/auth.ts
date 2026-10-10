@@ -39,10 +39,10 @@ export class Auth {
 export const sessionGuard: CanActivateFn = async () => {
     const auth = inject(Auth), router = inject(Router);
     try {
-        return await auth.refresh() ? true : router.createUrlTree(['/login']);
+        return await auth.refresh() ? true : router.createUrlTree(['/painel/login']);
     }
     catch {
-        return router.createUrlTree(['/login'], {
+        return router.createUrlTree(['/painel/login'], {
             queryParams: {
                 reason: 'session'
             }

@@ -1,7 +1,7 @@
 {
   "framework": null,
   "buildCommand": "npm run build:angular && npm run migrate && npm test && node scripts/verify-management-db.js",
-  "outputDirectory": "dist",
+  "outputDirectory": "dist/angular",
   "regions": [
     "iad1"
   ],
@@ -11,8 +11,8 @@
       "destination": "/api"
     },
     {
-      "source": "/painel/:path*",
-      "destination": "/painel/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [

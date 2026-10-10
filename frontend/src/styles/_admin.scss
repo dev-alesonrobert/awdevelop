@@ -1,0 +1,79 @@
+@mixin page {
+  :host {
+    display: block;
+  }
+  .toolbar, .actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .toolbar input {
+    flex: 1;
+    min-width: 180px;
+  }
+  .toolbar select {
+    width: auto;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px;
+    margin: 16px 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 20px;
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 550;
+  }
+  h3 {
+    font-size: 18px;
+  }
+  p, .muted {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .check input {
+    width: 20px;
+  }
+  .list {
+    display: grid;
+    gap: 12px;
+  }
+  .list button {
+    text-align: left;
+  }
+  .empty {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .badge {
+    font-size: 12px;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+  }
+  pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 400px;
+    overflow: auto;
+  }
+  @media(max-width:800px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

@@ -27,7 +27,7 @@ export class ShellComponent {
         try {
             await this.auth.signOut();
             this.draftState.pending.set(false);
-            await this.router.navigateByUrl('/login');
+            await this.router.navigateByUrl('/painel/login');
         }
         catch (e) {
             this.message.set(apiMessage(e));

@@ -1,0 +1,110 @@
+<section class="hero" id="inicio">
+<div class="hero-copy">
+<span class="eyebrow">
+<b>SOB MEDIDA</b> Desenvolvimento para empresas</span>
+<h1>{{ content().hero.title }}<span>{{ content().hero.accent }}</span>
+</h1>
+<p class="hero-lead">{{ content().hero.description }}</p>
+<div [hidden]="!contactAvailable()" class="hero-actions">
+<a class="button purple" href="#contato">{{ content().hero.button }}</a>
+<span class="hero-note">Conte sua necessidade.<br>A gente avalia o caminho.</span>
+</div>
+<div class="hero-facts">
+<div>
+<b>Planejamento primeiro</b>
+<span>Telas, funções e prioridades alinhadas.</span>
+</div>
+<div>
+<b>Entrega acompanhada</b>
+<span>Você participa das revisões.</span>
+</div>
+</div>
+</div>
+<div class="product-preview">
+<div class="app-bar">
+<strong>Minha empresa <span>/ Visão geral</span>
+</strong>
+<span class="demo-badge">DADOS DE EXEMPLO</span>
+</div>
+<div class="app-layout">
+<div class="app-sidebar" aria-hidden="true">
+<span class="app-side-label">OPERAÇÃO</span>
+<span class="current">Visão geral</span>
+<span>Pedidos</span>
+<span>Clientes</span>
+<span>Produtos</span>
+<span class="app-side-label">EMPRESA</span>
+<span>Relatórios</span>
+<span>Configurações</span>
+</div>
+<div class="app-content">
+<div class="app-heading">
+<b>Visão geral</b>
+<span>Outubro</span>
+</div>
+<div class="app-kpis">
+<div>
+<span>Pedidos</span>
+<b>128</b>
+<small>No mês</small>
+</div>
+<div>
+<span>Clientes</span>
+<b>86</b>
+<small>Cadastrados</small>
+</div>
+<div>
+<span>Em andamento</span>
+<b>12</b>
+<small>Pedidos ativos</small>
+</div>
+</div>
+<div class="app-table">
+<div class="app-table-heading">Pedidos recentes <span>Hoje</span>
+</div>
+<table>
+<caption class="sr-only">Pedidos fictícios para demonstrar um painel de gestão</caption>
+<thead>
+<tr>
+<th>Pedido</th>
+<th>Cliente</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1048</td>
+<td>Marina S.</td>
+<td>
+<span class="status-chip">Confirmado</span>
+</td>
+</tr>
+<tr>
+<td>#1047</td>
+<td>Lucas M.</td>
+<td>
+<span class="status-chip pending">Em produção</span>
+</td>
+</tr>
+<tr>
+<td>#1046</td>
+<td>Beatriz A.</td>
+<td>
+<span class="status-chip">Concluído</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="app-summary">
+<b>Informações em um só lugar</b>
+<span>Pedidos, clientes e acompanhamento da operação.</span>
+</div>
+</div>
+</div>
+<div class="app-caption">
+<span>Exemplo de sistema sob medida</span>
+<span>awdevelop</span>
+</div>
+</div>
+</section>

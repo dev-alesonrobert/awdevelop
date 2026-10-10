@@ -1,0 +1,1 @@
+<button class="lead" (click)="opened.emit(lead().id)"><strong>{{lead().name}}</strong><span>{{lead().company || lead().service}}</span><b>{{lead().estimated_value | currency:'BRL':'symbol':'1.0-0'}}</b><small>{{lead().assignee || 'Sem responsável'}}</small></button>
