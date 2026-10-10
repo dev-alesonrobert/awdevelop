@@ -1,0 +1,12 @@
+[
+  {"id":"inicio","label":"Apresentação principal"},
+  {"id":"faixa","label":"Faixa de soluções"},
+  {"id":"portfolio","label":"Portfólio"},
+  {"id":"processo","label":"Método"},
+  {"id":"servicos","label":"Soluções"},
+  {"id":"conexoes","label":"Globo e conexões"},
+  {"id":"convite","label":"Convite para contato"},
+  {"id":"sobre","label":"Sobre a empresa"},
+  {"id":"duvidas","label":"Dúvidas frequentes"},
+  {"id":"contato","label":"Contato e orçamento"}
+]

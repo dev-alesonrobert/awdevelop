@@ -1,0 +1,38 @@
+import 'dotenv/config';
+import assert from 'node:assert/strict';
+import {randomUUID,randomBytes} from 'node:crypto';
+import {getPool} from '../server/db.js';
+import {digest} from '../server/management.js';
+const pool=getPool(),c=await pool.connect();
+try{
+ await c.query('BEGIN');
+ const owner=(await c.query('SELECT role,active FROM aw_members WHERE email=$1',[process.env.ADMIN_EMAIL.toLowerCase()])).rows[0];assert.equal(owner.role,'owner');assert.equal(owner.active,true);
+ const email=`qa-${randomUUID()}@example.invalid`,hash=digest(randomBytes(32).toString('hex'));
+ await c.query('INSERT INTO aw_members (email,name,role) VALUES ($1,$2,$3)',[email,'Disposable check','editor']);
+ await c.query('INSERT INTO aw_setup_invites (token_hash,email,name,role,expires_at) VALUES ($1,$2,$3,$4,now()+interval \'7 days\')',[hash,email,'Disposable check','editor']);
+ await c.query('UPDATE aw_setup_invites SET consumed_at=now() WHERE token_hash=$1',[hash]);
+ assert.ok((await c.query('SELECT consumed_at FROM aw_setup_invites WHERE token_hash=$1',[hash])).rows[0].consumed_at);
+ const id=randomUUID(),values=[id,digest(id),'Disposable check',email,'','','Site','Disposable DB check','',''];
+ const sql='INSERT INTO aw_quotes (request_id,payload_hash,name,email,phone,company,service,idea,stage,timeline) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(request_id) DO NOTHING RETURNING id';
+ assert.equal((await c.query(sql,values)).rowCount,1);assert.equal((await c.query(sql,values)).rowCount,0);
+ assert.equal((await c.query("UPDATE aw_quotes SET status='talking',revision=revision+1 WHERE request_id=$1 AND revision=0 RETURNING revision",[id])).rows[0].revision,1);
+ assert.equal((await c.query("UPDATE aw_quotes SET status='won' WHERE request_id=$1 AND revision=0 RETURNING id",[id])).rowCount,0);
+ const quoteId=(await c.query('SELECT id FROM aw_quotes WHERE request_id=$1',[id])).rows[0].id;
+ const readSql='INSERT INTO aw_quote_reads (member_email,quote_id) VALUES ($1,$2) ON CONFLICT DO NOTHING';
+ assert.equal((await c.query(readSql,[email,quoteId])).rowCount,1);assert.equal((await c.query(readSql,[email,quoteId])).rowCount,0);
+ assert.equal((await c.query('SELECT quote_id FROM aw_quote_reads WHERE member_email=$1 AND quote_id=$2',[email,quoteId])).rowCount,1);
+ assert.equal((await c.query('SELECT quote_id FROM aw_quote_reads WHERE member_email=$1 AND quote_id=$2',[process.env.ADMIN_EMAIL.toLowerCase(),quoteId])).rowCount,0);
+ assert.equal((await c.query('SELECT crm_stage,origin,estimated_value FROM aw_quotes WHERE id=$1',[quoteId])).rows[0].crm_stage,'new');
+ await c.query("UPDATE aw_quotes SET crm_stage='meeting',assignee=$1,estimated_value=3500,expected_close='2026-11-10' WHERE id=$2",[email,quoteId]);
+ const taskId=(await c.query("INSERT INTO aw_crm_tasks (quote_id,request_id,title,assignee,due_at) VALUES ($1,$2,'Disposable reminder',$3,now()-interval '1 hour') RETURNING id",[quoteId,randomUUID(),email])).rows[0].id;
+ assert.equal((await c.query('SELECT id FROM aw_crm_tasks WHERE assignee=$1 AND NOT done AND due_at<=now()',[email])).rowCount,1);
+ assert.equal((await c.query('UPDATE aw_crm_tasks SET done=true,revision=revision+1 WHERE id=$1 AND revision=0 RETURNING revision',[taskId])).rows[0].revision,1);
+ assert.equal((await c.query('UPDATE aw_crm_tasks SET done=false WHERE id=$1 AND revision=0',[taskId])).rowCount,0);
+ assert.equal((await c.query('SELECT id FROM aw_crm_tasks WHERE assignee=$1 AND NOT done AND due_at<=now()',[email])).rowCount,0);
+ await c.query("INSERT INTO aw_crm_events (quote_id,actor,kind,body) VALUES ($1,$2,'note','Disposable activity')",[quoteId,email]);
+ assert.equal((await c.query('SELECT id FROM aw_crm_events WHERE quote_id=$1',[quoteId])).rowCount,1);
+ assert.equal(Number((await c.query("SELECT sum(estimated_value) AS total FROM aw_quotes WHERE assignee=$1 AND crm_stage='meeting'",[email])).rows[0].total),3500);
+ assert.ok((await c.query('SELECT id FROM aw_publications ORDER BY id DESC LIMIT 1')).rowCount);
+ assert.ok((await c.query('SELECT id FROM aw_media LIMIT 1')).rowCount);
+ console.log('MANAGEMENT DATABASE CHECKS PASSED: membership, invite consumption, quote idempotency/revisions, history and image library. Test rows rolled back.');
+}finally{await c.query('ROLLBACK');c.release();await pool.end();}
