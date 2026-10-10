@@ -1,0 +1,17 @@
+<aw-page-heading eyebrow="CONTEÚDO / ESTRUTURA" title="A página, na sua ordem." description="Mova as seções, adicione conteúdo e revise antes de publicar." />
+<aw-section-toolbar [busy]="busy()" [dirty]="dirty()" [loaded]="loaded()" [canPublish]="auth.profile()?.role !== 'editor'" [hasUnpublished]="revision() !== publishedRevision()" [canUndo]="!!undoCount()" (save)="save()" (publish)="publish()" (undo)="undo()" (reload)="reload()" (preview)="preview($event)" />
+<p class="muted" role="status">
+  {{ loaded() ? (dirty() ? 'Alterações não salvas' : 'Rascunho salvo') : 'Carregando rascunho…' }}
+  @if (loaded()) { · Revisão {{ revision() }} · Publicado: {{ publishedRevision() }} }
+</p>
+<p class="message" role="status" aria-live="polite">{{ message() }}</p>
+@if (loaded()) {
+  <div class="section-editor-grid">
+    <div class="section-list" aria-label="Seções na ordem da página">
+      @for (section of sections(); track section.id; let index = $index) {
+        <aw-section-card [section]="section" [index]="index" [total]="sections().length" [busy]="busy()" [contentHref]="contentLink(section.id)" (move)="move(index, $event)" (remove)="remove(index)" (edit)="edit(section.id, $event.key, $event.value)" (upload)="upload(section.id, $event)" (leave)="leaveLegacy($event)" />
+      }
+    </div>
+    <aw-section-add [available]="available()" [(addType)]="addType" [count]="sections().length" [busy]="busy()" (add)="add()" (leave)="leaveLegacy($event)" />
+  </div>
+}

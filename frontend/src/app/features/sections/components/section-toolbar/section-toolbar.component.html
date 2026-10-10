@@ -1,0 +1,7 @@
+<div class="section-actions">
+  <button (click)="save.emit()" [disabled]="busy()||!dirty()||!loaded()">{{busy()?'Aguarde…':'Salvar rascunho'}}</button>
+  <a class="secondary section-action-link" href="/?preview=1" target="_blank" rel="noopener" (click)="preview.emit($event)">Ver rascunho ↗</a>
+  @if(canPublish()){<button class="secondary" (click)="publish.emit()" [disabled]="busy()||dirty()||!loaded()||!hasUnpublished()">Publicar</button>}
+  <button class="secondary" (click)="undo.emit()" [disabled]="busy()||!canUndo()">Desfazer</button>
+  <button class="secondary" (click)="reload.emit()" [disabled]="busy()">Recarregar</button>
+</div>

@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import ts from 'typescript';
+import {constructorParametersDownlevelTransform} from '@angular/compiler-cli/private/tooling';
+import {fileURLToPath} from 'node:url';
 import '@angular/compiler';
 import {Injector,runInInjectionContext} from '@angular/core';
 import {provideHttpClient} from '@angular/common/http';
@@ -11,19 +13,51 @@ import {TestBed} from '@angular/core/testing';
 import {BrowserTestingModule,platformBrowserTesting} from '@angular/platform-browser/testing';
 import {parseHTML} from 'linkedom';
 const {document}=parseHTML('<html><body></body></html>');document.cookie='';globalThis.document=document;
-globalThis.window={confirm:()=>true};
+globalThis.window=document.defaultView;
+globalThis.Node=document.defaultView.Node;
+globalThis.HTMLElement=document.defaultView.HTMLElement;
+window.confirm=()=>true;
+// LinkeDOM exposes select.value as a getter; Angular's value accessor needs the browser setter.
+Object.defineProperty(document.defaultView.HTMLSelectElement.prototype,'value',{
+ configurable:true,
+ get(){return [...this.options].find(option=>option.selected)?.value??'';},
+ set(value){for(const option of this.options)option.selected=option.value===value;},
+});
+// LinkeDOM's generic fieldset also omits the native disabled property.
+const createElement=document.createElement.bind(document);
+document.createElement=(name,...args)=>{
+ const element=createElement(name,...args);
+ if(name==='fieldset')Object.defineProperty(element,'disabled',{get(){return this.hasAttribute('disabled');},set(value){this.toggleAttribute('disabled',!!value);}});
+ return element;
+};
 TestBed.initTestEnvironment(BrowserTestingModule,platformBrowserTesting());
 const directory=new URL('../.angular/sections-tests/',import.meta.url);await mkdir(directory,{recursive:true});
-for(const name of ['core/auth','core/api','core/draft-state','features/sections/models','features/sections/sections']){
-  const source=await readFile(new URL('../frontend/src/app/'+name+'.ts',import.meta.url),'utf8');
-  let compiled=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ES2022,target:ts.ScriptTarget.ES2022,experimentalDecorators:true}}).outputText;
-  compiled=compiled.replace(/from ['"]((?:\.\.\/|\.\/)[^'"]+)['"]/g,(_,path)=>{
-    if(path.endsWith('.json'))return 'from '+JSON.stringify(new URL('../dist/section-catalog.json',import.meta.url).href)+' with {type:"json"}';
-    return 'from "./'+path.split('/').at(-1)+'.mjs"';
-  });
-  await writeFile(new URL(name.split('/').at(-1)+'.mjs',directory),compiled);
+const templates=new Map();
+for(const name of ['features/sections/sections.component','features/sections/components/section-card/section-card.component','features/sections/components/section-add/section-add.component','features/sections/components/section-toolbar/section-toolbar.component','shared/page-heading/page-heading.component']){
+ templates.set(name.split('/').at(-1)+'.html',await readFile(new URL('../frontend/src/app/'+name+'.html',import.meta.url),'utf8'));
 }
-const {Sections}=await import('../.angular/sections-tests/sections.mjs');
+// Apply the same signal-input/output JIT transform used by the Angular CLI.
+const sources=new Map();
+const names=['core/auth','core/api','core/draft-state','features/sections/models','features/sections/sections.component','features/sections/components/section-card/section-card.component','features/sections/components/section-add/section-add.component','features/sections/components/section-toolbar/section-toolbar.component','shared/page-heading/page-heading.component'];
+for(const name of names){
+ let source=await readFile(new URL('../frontend/src/app/'+name+'.ts',import.meta.url),'utf8');
+ source=source.replace(/templateUrl\s*:\s*['"]([^'"]+)['"]/g,(_,path)=>'template: '+JSON.stringify(templates.get(path.replace(/^\.\//,'')))).replace(/styleUrl\s*:\s*['"][^'"]+['"]/g,'styles: []');
+ sources.set(fileURLToPath(new URL('../frontend/src/app/'+name+'.ts',import.meta.url)),source);
+}
+const options={module:ts.ModuleKind.ES2022,moduleResolution:ts.ModuleResolutionKind.Bundler,target:ts.ScriptTarget.ES2022,experimentalDecorators:true,skipLibCheck:true,resolveJsonModule:true,esModuleInterop:true};
+const host=ts.createCompilerHost(options),originalRead=host.readFile;
+host.readFile=path=>sources.get(path)??originalRead(path);
+const program=ts.createProgram([...sources.keys()],options,host);
+for(const name of names){
+ let compiled='';
+ program.emit(program.getSourceFile(fileURLToPath(new URL('../frontend/src/app/'+name+'.ts',import.meta.url))),(_path,text)=>{compiled=text;},undefined,false,{before:[constructorParametersDownlevelTransform(program)]});
+ compiled=compiled.replace(/from ['"]((?:\.\.\/|\.\/)[^'"]+)['"]/g,(_,path)=>{
+  if(path.endsWith('.json'))return 'from '+JSON.stringify(new URL('../dist/section-catalog.json',import.meta.url).href)+' with {type:"json"}';
+  return 'from "./'+path.split('/').at(-1)+'.mjs"';
+ });
+ await writeFile(new URL(name.split('/').at(-1)+'.mjs',directory),compiled);
+}
+const {SectionsComponent:Sections}=await import('../.angular/sections-tests/sections.component.mjs');
 const {Auth}=await import('../.angular/sections-tests/auth.mjs');
 const {DraftState}=await import('../.angular/sections-tests/draft-state.mjs');
 const initial=JSON.parse(await readFile(new URL('../dist/content-default.json',import.meta.url),'utf8'));
@@ -57,4 +91,26 @@ test('Editor não publica; prévia e saída bloqueiam alterações não salvas',
 test('Publicação usa revisão salva e exige confirmação',async t=>{
   const {component:c,http}=await fixture(t);window.confirm=()=>false;await c.publish();http.expectNone('/api/admin/publish');
   window.confirm=()=>true;const publishing=c.publish();const req=http.expectOne('/api/admin/publish');assert.equal(req.request.body.revision,5);req.flush({published_revision:5});await publishing;assert.equal(c.publishedRevision(),5);
+});
+
+test('Componentes renderizados propagam adicionar, editar, mover e salvar sem publicar',async t=>{
+  const navigations=[];
+  TestBed.configureTestingModule({providers:[Auth,DraftState,provideHttpClient(),provideHttpClientTesting(),{provide:Router,useValue:{navigateByUrl:url=>{navigations.push(url);return Promise.resolve(true);}}}]});
+  const auth=TestBed.inject(Auth);auth.profile.set({name:'Owner',email:'owner@example.com',role:'owner'});
+  const http=TestBed.inject(HttpTestingController);
+  const rendered=TestBed.createComponent(Sections);
+  t.after(()=>{http.verify();rendered.destroy();TestBed.resetTestingModule();window.confirm=()=>true;});
+  http.expectOne('/api/admin/content').flush({draft:structuredClone(initial),revision:5,published_revision:4});await tick();rendered.detectChanges();
+  const view=rendered.nativeElement;
+  const button=text=>[...view.querySelectorAll('button')].find(x=>x.textContent.includes(text));
+  assert.equal(view.querySelector('aw-section-card:first-child button[aria-label$="para cima"]').disabled,true);
+  button('Adicionar seção').click();rendered.detectChanges();
+  const title=view.querySelector('aw-section-card:last-child input');
+  title.value='Serviço personalizado';title.dispatchEvent(new document.defaultView.Event('input',{bubbles:true}));await tick();rendered.detectChanges();
+  view.querySelector('aw-section-card:last-child button[aria-label$="para cima"]').click();rendered.detectChanges();
+  button('Salvar rascunho').click();
+  const req=http.expectOne('/api/admin/content');
+  assert.equal(req.request.method,'PUT');assert.equal(req.request.body.content.sections.at(-2).title,'Serviço personalizado');
+  req.flush({revision:6,published_revision:4});await tick();rendered.detectChanges();
+  assert.equal(rendered.componentInstance.dirty(),false);http.expectNone('/api/admin/publish');
 });

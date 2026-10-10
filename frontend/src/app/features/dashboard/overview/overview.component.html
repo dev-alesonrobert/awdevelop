@@ -1,0 +1,34 @@
+<aw-page-heading eyebrow="VISÃO GERAL" title="O trabalho em andamento." description="Acompanhe oportunidades e próximos contatos da equipe." />
+@if (commercial) {
+  <div class="metrics">
+    <aw-metric-card label="Oportunidades" [value]="total()" />
+    <aw-metric-card label="Valor em aberto" [value]="(openValue() | currency:'BRL':'symbol':'1.0-0':'pt-BR') ?? ''" />
+    <aw-metric-card label="Orçamentos não lidos" [value]="notifications()?.count ?? 0" />
+    <aw-metric-card label="Tarefas com prazo atingido" [value]="notifications()?.taskCount ?? 0" />
+  </div>
+  <div class="section-heading">
+    <h2>Solicitações e retornos</h2>
+    <button class="secondary" (click)="refresh()" [disabled]="busy()">{{ busy() ? 'Atualizando…' : 'Atualizar' }}</button>
+  </div>
+  <p class="message" role="status">{{ message() }}</p>
+  <div class="cards">
+    @for (item of notifications()?.items ?? []; track item.id) {
+      <aw-notification-card eyebrow="NOVO ORÇAMENTO" [title]="item.name" [description]="item.service" [date]="item.created_at" href="/admin/?section=quotes" linkLabel="Abrir orçamentos ↗" />
+    }
+    @for (task of notifications()?.tasks ?? []; track task.id) {
+      <aw-notification-card eyebrow="RETORNO PENDENTE" [title]="task.title" [description]="task.name" [date]="task.due_at" href="/admin/?section=crm" linkLabel="Abrir CRM ↗" />
+    }
+    @if (!busy() && notifications() && !notifications()?.count && !notifications()?.taskCount) {
+      <article class="card">
+        <h3>Tudo em dia.</h3>
+        <p class="muted">Não há novos orçamentos ou retornos vencidos para sua conta.</p>
+      </article>
+    }
+  </div>
+} @else {
+  <article class="card">
+    <h2>Conteúdo e publicações</h2>
+    <p class="muted">Seu acesso permite editar rascunhos e gerenciar imagens.</p>
+    <a href="/admin/">Abrir editor do site ↗</a>
+  </article>
+}

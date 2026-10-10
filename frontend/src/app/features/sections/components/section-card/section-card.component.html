@@ -1,0 +1,38 @@
+@let section = this.section();
+<article class="card section-card">
+  <div class="section-card-heading">
+    <div>
+      <span class="eyebrow">{{index()+1}} / {{section.type==='builtin'?'SEÇÃO ORIGINAL':'SEÇÃO PERSONALIZADA'}}</span>
+      <h2>{{label(section)}}</h2>
+    </div>
+    <div class="section-controls">
+      <button class="secondary" (click)="move.emit(-1)" [disabled]="busy()||index()===0" [attr.aria-label]="'Mover '+label(section)+' para cima'">↑</button>
+      <button class="secondary" (click)="move.emit(1)" [disabled]="busy()||index()===total()-1" [attr.aria-label]="'Mover '+label(section)+' para baixo'">↓</button>
+      <button class="secondary section-delete" (click)="remove.emit()" [disabled]="busy()||total()===1" [attr.aria-label]="'Excluir '+label(section)">Excluir</button>
+    </div>
+  </div>
+  @if(section.type==='custom'){
+    <fieldset [disabled]="busy()">
+      <legend class="sr-only">Conteúdo de {{section.title}}</legend>
+      <label>Título<input [ngModel]="section.title" (ngModelChange)="editField('title',$event)" maxlength="200" required>
+      </label>
+      <label>Texto<textarea [ngModel]="section.description" (ngModelChange)="editField('description',$event)" rows="4" maxlength="4000">
+        </textarea>
+      </label>
+      <div class="section-fields">
+        <label>Imagem (URL HTTPS ou assets/)<input [ngModel]="section.image" (ngModelChange)="editField('image',$event)" maxlength="2048" placeholder="https://…">
+        </label>
+        <label>Descrição da imagem<input [ngModel]="section.alt" (ngModelChange)="editField('alt',$event)" maxlength="200" [required]="!!section.image">
+        </label>
+      </div>
+      <label>Enviar imagem · PNG, JPG ou WebP até 4 MB<input type="file" accept="image/png,image/jpeg,image/webp" (change)="upload.emit($event)">
+      </label>
+      <div class="section-fields">
+        <label>Texto do botão (opcional)<input [ngModel]="section.button" (ngModelChange)="editField('button',$event)" maxlength="200">
+        </label>
+        <label>Link do botão (HTTPS)<input [ngModel]="section.url" (ngModelChange)="editField('url',$event)" type="url" maxlength="2048" placeholder="https://…">
+        </label>
+      </div>
+    </fieldset>
+  } @else {<p class="muted">Os textos e imagens desta seção continuam em <a [href]="contentHref()" (click)="leave.emit($event)">Conteúdo do site ↗</a>.</p>}
+</article>

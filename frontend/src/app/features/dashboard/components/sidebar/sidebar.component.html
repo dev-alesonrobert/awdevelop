@@ -1,0 +1,17 @@
+<aside class="sidebar">
+  <aw-brand />
+  <p class="eyebrow">AWDEVELOP / PAINEL</p>
+  <nav aria-label="Navegação do painel">
+    <a routerLink="/overview" routerLinkActive="active">Visão geral</a>
+    <a routerLink="/sections" routerLinkActive="active">Seções da página</a>
+    <a href="/admin/?section=home">Conteúdo do site ↗</a>
+    <a href="/admin/?section=media">Biblioteca de imagens ↗</a>
+    <a href="/admin/?section=history">Histórico ↗</a>
+    @if (role() !== 'editor') {
+      <a href="/admin/?section=crm">CRM ↗</a>
+      <a href="/admin/?section=quotes">Orçamentos ↗</a>
+    }
+    @if (role() === 'owner') { <a href="/admin/?section=members">Administradores ↗</a> }
+  </nav>
+  <a href="/" class="muted">Abrir site ↗</a>
+</aside>

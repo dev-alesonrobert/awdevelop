@@ -1,0 +1,7 @@
+<header class="topbar">
+  <div>
+    <p class="eyebrow">ÁREA DA EQUIPE</p>
+    <span>{{ name() }}</span>
+  </div>
+  <button class="secondary" (click)="logout.emit()" [disabled]="busy()">{{ busy() ? 'Saindo…' : 'Sair ↗' }}</button>
+</header>

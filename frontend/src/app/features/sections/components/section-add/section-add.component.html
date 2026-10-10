@@ -1,0 +1,12 @@
+<aside class="card section-add">
+  <h2>Adicionar seção</h2>
+  <p class="muted">O novo bloco entra no fim da página. Use as setas para escolher a posição.</p>
+  <label>Tipo<select [ngModel]="addType()" (ngModelChange)="addTypeChange.emit($event)" [disabled]="busy()">
+      <option value="custom">Texto e botão</option>
+      <option value="image">Texto com imagem</option>
+      @for(item of available();track item.id){<option [value]="item.id">{{item.label}} · reincluir</option>}</select>
+  </label>
+  <button (click)="add.emit()" [disabled]="busy()||count()>=20">+ Adicionar seção</button>
+  <p class="muted">{{count()}} de 20 seções. Excluir uma seção original preserva seus textos para reinclusão.</p>
+  <a href="/admin/?section=history" (click)="leave.emit($event)">Histórico e restauração ↗</a>
+</aside>

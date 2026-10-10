@@ -1,0 +1,7 @@
+@mixin card {
+ background: var(--panel); border: 1px solid var(--line);
+ border-radius: 12px; padding: 22px;
+ h3 { font-size: 18px; font-weight: 550; overflow-wrap: anywhere; }
+ p { font-size: 14px; overflow-wrap: anywhere; }
+ a { font-size: 13px; }
+}

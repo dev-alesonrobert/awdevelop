@@ -1,0 +1,7 @@
+@use '../../../../../styles/panels';
+:host { display: block; align-self: start; position: sticky; top: 20px; }
+.section-add { @include panels.card; }
+h2 { font-size: 21px; }
+button { margin-top: 20px; width: 100%; }
+a { display: block; margin-top: 24px; }
+@media (max-width: 1050px) { :host { position: static; grid-row: 1; } }

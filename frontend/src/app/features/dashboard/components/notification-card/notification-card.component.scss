@@ -1,0 +1,3 @@
+@use '../../../../../styles/panels';
+:host { display: block; min-width: 0; }
+.card { @include panels.card; height: 100%; }

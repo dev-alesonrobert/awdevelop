@@ -1,0 +1,18 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: #f5f4fa; }
+a { color: #d6c4ff; text-decoration: none; }
+button, input, textarea, select { font: inherit; }
+button {
+ cursor: pointer; background: #9775df; color: #15101f;
+ border: 0; border-radius: 8px; padding: 12px 18px;
+ font-weight: 600; min-height: 44px;
+ &:disabled { opacity: .6; cursor: wait; }
+}
+input, textarea, select {
+ width: 100%; background: var(--bg); color: #f5f4fa;
+ border: 1px solid #393944; padding: 13px 14px; border-radius: 8px;
+}
+textarea { resize: vertical; }
+label { display: grid; gap: 8px; margin-top: 20px; font-size: 14px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }

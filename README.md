@@ -124,6 +124,27 @@ O cadastro público está desativado. Contas bloqueadas perdem acesso mesmo que 
 
 Apesar do nome `dist/`, os arquivos da landing page e do painel anterior nesta pasta fazem parte da versão atual do projeto. Apenas `dist/painel/` é gerado pelo Angular.
 
+## Organização dos componentes Angular
+
+Cada componente tem uma pasta própria com arquivos `*.component.ts`, `*.component.html` e `*.component.scss`. Os componentes são standalone, usam `OnPush` e expõem dados e eventos por signal inputs e outputs.
+
+| Área | Componentes |
+| --- | --- |
+| Aplicação | AppComponent |
+| Autenticação | LoginComponent |
+| Layout | ShellComponent, SidebarComponent e TopbarComponent |
+| Visão geral | OverviewComponent, MetricCardComponent e NotificationCardComponent |
+| Estrutura da página | SectionsComponent, SectionToolbarComponent, SectionCardComponent e SectionAddComponent |
+| Compartilhados | BrandComponent e PageHeadingComponent |
+
+As telas mantêm autenticação, consultas, salvamento, publicação e tratamento de conflitos. Os componentes de apresentação recebem dados e emitem eventos; não fazem chamadas à API.
+
+`frontend/src/styles.scss` importa somente tema, estilos básicos de elementos e utilitários compartilhados, organizados em `frontend/src/styles/`. Layouts, cards, navegação, responsividade e estilos de cada tela ficam no SCSS do componente, com encapsulamento padrão do Angular. O mixin `panels.card` compartilha a aparência dos cards sem expor seletores globais.
+
+O Angular CLI está configurado para gerar componentes com HTML externo, SCSS externo e `OnPush`. Para criar um componente, use `npx ng generate component <caminho>` dentro da estrutura da funcionalidade. Não coloque estilos específicos de telas no arquivo global.
+
+Esta organização abrange o frontend Angular existente. A landing page e as telas anteriores de conteúdo e CRM ainda permanecem na implementação legada, conforme o status da migração.
+
 ## Executar localmente
 
 ### Requisitos
@@ -205,7 +226,7 @@ O token é removido da barra de endereço ao carregar a página. Um convite cons
 | `npm test` | Executa os testes automatizados |
 | `npm run create-owner` | Provisiona a conta inicial pelo terminal interativo, após configurar e migrar o banco |
 
-A última execução verificada em **10/10/2026** terminou com **70 testes aprovados**. A suíte cobre conteúdo, sessão, permissões, convites de uso único, restauração, concorrência, notificações, CRM e gerenciamento de seções.
+A última execução verificada em **10/10/2026** terminou com **71 testes aprovados**. A suíte cobre conteúdo, sessão, permissões, convites de uso único, restauração, concorrência, notificações, CRM, gerenciamento de seções e a integração renderizada entre os componentes do editor.
 
 `scripts/verify-management-db.js` executa verificações adicionais no Postgres com registros descartáveis dentro de uma transação e `ROLLBACK` ao final. O verificador legado `scripts/verify-db.js` exige `AW_RUN_INITIAL_DB_CHECKS=1` e não integra o build atual.
 

@@ -1,0 +1,13 @@
+:host { display: block; min-width: 0; background: #14141b; border-right: 1px solid var(--line); }
+.sidebar { padding: 30px 22px; }
+.sidebar > .eyebrow { margin-top: 36px; }
+nav { display: grid; gap: 8px; margin: 22px 0 40px; }
+nav a { padding: 12px; border-radius: 8px; color: #c2bccc; font-size: 14px; }
+nav .active { background: #2b233e; color: #ede5ff; }
+@media (max-width: 650px) {
+ :host { border-right: 0; border-bottom: 1px solid var(--line); }
+ .sidebar { padding: 18px; }
+ nav { display: flex; overflow: auto; margin: 18px 0 0; gap: 6px; }
+ nav a { white-space: nowrap; }
+ .sidebar > .eyebrow, .sidebar > a { display: none; }
+}

@@ -1,0 +1,8 @@
+:host { display: block; }
+.login-wrap { min-height: 100dvh; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at top right, #34204655, transparent 65%); }
+.login-card { width: min(100%, 480px); padding: 38px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+h1 { font-size: 32px; line-height: 1.2; font-weight: 550; letter-spacing: -.035em; margin: 20px 0; }
+.login-card > .eyebrow { margin-top: 38px; }
+form button { width: 100%; margin-top: 24px; }
+.login-card > a { font-size: 13px; }
+@media (max-width: 650px) { .login-card { padding: 28px; } }

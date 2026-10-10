@@ -1,0 +1,7 @@
+<article class="card">
+  <p class="eyebrow">{{ eyebrow() }}</p>
+  <h3>{{ title() }}</h3>
+  <p>{{ description() }}</p>
+  <p class="muted">{{ date() | date:'dd/MM/yyyy HH:mm':'-0300' }}</p>
+  <a [href]="href()">{{ linkLabel() }}</a>
+</article>
