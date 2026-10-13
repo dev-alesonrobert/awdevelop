@@ -32,6 +32,12 @@ await getPool().query(`
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS assignee text REFERENCES aw_members(email);
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS estimated_value numeric(14,2) NOT NULL DEFAULT 0 CHECK(estimated_value>=0);
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS expected_close date;
+ CREATE TABLE IF NOT EXISTS aw_prospect_cache(id uuid PRIMARY KEY,cache_key text UNIQUE NOT NULL,payload jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),expires_at timestamptz NOT NULL);
+ CREATE TABLE IF NOT EXISTS aw_prospect_limits(key text PRIMARY KEY,next_at timestamptz NOT NULL);
+ CREATE TABLE IF NOT EXISTS aw_prospect_usage(day date PRIMARY KEY,count integer NOT NULL);
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS prospect_source_key text;
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS prospect_source_url text NOT NULL DEFAULT '';
+ CREATE UNIQUE INDEX IF NOT EXISTS aw_quotes_prospect_key ON aw_quotes(prospect_source_key) WHERE prospect_source_key IS NOT NULL;
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS city text NOT NULL DEFAULT '';
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS state text NOT NULL DEFAULT '';
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS neighborhood text NOT NULL DEFAULT '';

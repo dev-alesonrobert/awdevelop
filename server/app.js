@@ -1,4 +1,5 @@
 import express from 'express';
+import {installProspecting} from './prospecting.js';
 import {installCRM} from './crm.js';
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
 import { put } from '@vercel/blob';
@@ -8,7 +9,7 @@ import { getAuth, createAuth } from './auth.js';
 import { getPool } from './db.js';
 import { contentSchema, saveSchema } from './content-schema.js';
 
-export function createApp({ auth = getAuth, db = getPool, upload = put, provision = () => createAuth({ provisioning:true }), access = email => memberFor(db(),email) } = {}) {
+export function createApp({ auth = getAuth, db = getPool, upload = put, provision = () => createAuth({ provisioning:true }), access = email => memberFor(db(),email), prospectingFetch = fetch, prospectingEnv = process.env } = {}) {
 const app = express();
 app.disable('x-powered-by');
 app.use('/api', (req, res, next) => {
@@ -84,6 +85,7 @@ app.use('/api/admin', async (req, res, next) => {
 app.use('/api/admin',express.json({limit:'256kb',type:'application/json'}));
 installManagement(app,{db});
 installCRM(app,{db});
+installProspecting(app,{db,fetcher:prospectingFetch,env:prospectingEnv});
 app.get('/api/admin/content', async (req, res) => {
   const { rows } = await db().query('SELECT draft, revision, published_revision, updated_at, published_at FROM aw_content WHERE id=1');
   if (!rows[0]) return res.status(503).json({ error:'Conteúdo não inicializado. Execute a migração do banco.' });

@@ -46,10 +46,7 @@ export class CrmPage extends AdminPage {
         this.opened.set(true); }); }
     close() { if (!this.canLeave())
         return; this.opened.set(false); this.detail.set(null); this.discard(); }
-    async save(form: LeadForm) { if (!form.email && !form.phone) {
-        this.message.set('Informe e-mail ou telefone.');
-        return;
-    } const current = this.detail()?.lead; const request = current ? this.http.patch<{
+    async save(form: LeadForm) { const current = this.detail()?.lead; const request = current ? this.http.patch<{
         revision: number;
     }>('/api/admin/crm/leads/' + current.id, { ...form, revision: current.revision }) : this.http.post<{
         id: string;

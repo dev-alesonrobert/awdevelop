@@ -1,0 +1,13 @@
+use_default_settings: true
+general:
+  instance_name: AW Develop Search
+search:
+  safe_search: 1
+  default_lang: pt-BR
+  formats:
+    - json
+server:
+  bind_address: 0.0.0.0
+  port: 8080
+  limiter: false
+  public_instance: false
