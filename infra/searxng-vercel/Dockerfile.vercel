@@ -1,0 +1,8 @@
+FROM searxng/searxng@sha256:9b61996edcc679fb6665290f95fda15389a14eda6060e41a25c63ab2758f2436
+COPY settings.yml /etc/searxng/settings.yml
+COPY aw_search.py /usr/local/searxng/aw_search.py
+ENV SEARXNG_SETTINGS_PATH=/etc/searxng/settings.yml
+ENV GRANIAN_HOST=0.0.0.0
+ENV GRANIAN_PORT=80
+ENTRYPOINT ["/usr/local/searxng/.venv/bin/granian"]
+CMD ["--interface", "wsgi", "--host", "0.0.0.0", "--port", "80", "aw_search:app"]

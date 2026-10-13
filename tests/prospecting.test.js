@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createApp } from '../server/app.js';
 import { osmProspects, webProspects, searchExternal, searchSchema, fetchJSON } from '../server/prospect-providers.js';
 import { createGateway } from '../infra/searxng/gateway.mjs';
+import { createHmac } from 'node:crypto';
 
 const origin='https://awdevelop-globe.vercel.app';
 process.env.BETTER_AUTH_URL=origin;
@@ -68,6 +69,15 @@ test('Resultados web são sugestões, sem tratar diretórios como sites oficiais
 test('Conector SearXNG usa o serviço configurado e mantém token no servidor',async()=>{
   const result=await searchExternal({...query,provider:'web'},{env:{SEARXNG_URL:'https://search.example',SEARXNG_TOKEN:'test-token'},fetcher:async(url,options)=>{assert.equal(url.hostname,'search.example');assert.equal(url.searchParams.get('format'),'json');assert.equal(options.headers.Authorization,'Bearer test-token');return json({results:[{title:'Negócio',url:'https://business.example'}]});}});
   assert.equal(result.length,1);
+});
+test('Binding privado tem prioridade, autentica com token derivado e limita tamanho da consulta',async()=>{
+  const secret='testing-only-authentication-secret-12345';
+  const result=await searchExternal({...query,provider:'web',keyword:'x'.repeat(100),location:{...query.location,name:'r'.repeat(500)}},{env:{SEARXNG_INTERNAL_URL:'http://search.internal',SEARXNG_URL:'https://ignored.example',BETTER_AUTH_SECRET:secret},fetcher:async(url,options)=>{
+    assert.equal(url.hostname,'search.internal');assert.ok(url.searchParams.get('q').length<=500);
+    assert.equal(options.headers.Authorization,'Bearer '+createHmac('sha256',secret).update('awdevelop:searxng:v1').digest('hex'));
+    assert.ok(!options.headers.Authorization.includes(secret));return json({results:[]});
+  }});
+  assert.deepEqual(result,[]);
 });
 test('Importação usa resultado armazenado, salva revisão e registra autor em transação',async t=>{
   const f=await fixture(t),result=await (await search(f)).json();

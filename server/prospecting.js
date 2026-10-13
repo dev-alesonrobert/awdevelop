@@ -17,7 +17,7 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
     const daily=(await db().query("INSERT INTO aw_prospect_usage(day,count) VALUES((now() AT TIME ZONE 'America/Sao_Paulo')::date,1) ON CONFLICT(day) DO UPDATE SET count=aw_prospect_usage.count+1 WHERE aw_prospect_usage.count<60 RETURNING count")).rows[0];
     if(!daily)throw new ProviderError('O limite diário de buscas externas foi atingido. Consultas já armazenadas continuam disponíveis.',429);
   }
-  app.get('/api/admin/prospecting/config',(req,res)=>res.json({categories:categories.map(({id,label})=>({id,label})),webEnabled:Boolean(env.SEARXNG_URL),osmEnabled:env.PROSPECTING_OSM_DISABLED!=='true'}));
+  app.get('/api/admin/prospecting/config',(req,res)=>res.json({categories:categories.map(({id,label})=>({id,label})),webEnabled:Boolean(env.SEARXNG_INTERNAL_URL||env.SEARXNG_URL),osmEnabled:env.PROSPECTING_OSM_DISABLED!=='true'}));
   app.get('/api/admin/prospecting/locations',async(req,res)=>{
     const q=z.string().trim().min(3).max(150).parse(req.query.q),key=`geo:${hash(q.toLocaleLowerCase('pt-BR'))}`;
     try {
@@ -36,7 +36,7 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
     try {
       if(query.provider==='osm'&&env.PROSPECTING_OSM_DISABLED==='true')throw new ProviderError('A busca OpenStreetMap está temporariamente desativada.',503);
       const previous=await cached(key);if(previous)return res.json({searchId:previous.id,items:previous.payload.items,cached:true,searchedAt:previous.created_at});
-      if(query.provider==='web'&&!env.SEARXNG_URL)throw new ProviderError('Configure o servidor SearXNG para habilitar a pesquisa web.',503);
+      if(query.provider==='web'&&!env.SEARXNG_INTERNAL_URL&&!env.SEARXNG_URL)throw new ProviderError('Configure o servidor SearXNG para habilitar a pesquisa web.',503);
       await throttle(query.provider);
       const items=await searchExternal(query,{fetcher,env});
       const saved=await cache(key,{items,query},1);

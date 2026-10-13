@@ -1,6 +1,6 @@
 # Pesquisa web da AW Develop
 
-A busca OpenStreetMap está integrada ao painel. A pesquisa web usa SearXNG e fica desabilitada até a instalação de um serviço próprio. Não usamos instâncias públicas de terceiros nem simulamos resultados.
+A busca OpenStreetMap está integrada ao painel. A pesquisa web usa o serviço privado SearXNG na Vercel, descrito em `../searxng-vercel`. Esta pasta contém a alternativa para VPS; sem binding Vercel ou endpoint externo, a pesquisa web fica desabilitada. Não usamos instâncias públicas de terceiros nem simulamos resultados.
 
 ## Instalação em um servidor com Docker
 

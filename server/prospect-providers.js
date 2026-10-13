@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createHash } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 
 export const categories = [
   {id:'restaurant',label:'Restaurantes',key:'amenity',value:'restaurant'},
@@ -63,10 +63,13 @@ export async function fetchJSON(url,options={},fetcher=fetch) {
 }
 export async function searchExternal(query,{fetcher=fetch,env=process.env}={}) {
   if(query.provider==='web') {
-    if(!env.SEARXNG_URL)throw new ProviderError('A pesquisa web ainda precisa de um servidor SearXNG configurado. A busca de negócios no OpenStreetMap está disponível.',503);
-    const url=new URL('/search',env.SEARXNG_URL);if(url.protocol!=='https:')throw new ProviderError('O servidor de pesquisa web precisa usar HTTPS.',503);
-    url.search=new URLSearchParams({q:[categories.find(x=>x.id===query.category).label,query.keyword,query.location.name].filter(Boolean).join(' '),format:'json',language:'pt-BR',safesearch:'1'}).toString();
-    const headers=env.SEARXNG_TOKEN?{Authorization:`Bearer ${env.SEARXNG_TOKEN}`} : {};
+    const endpoint=env.SEARXNG_INTERNAL_URL||env.SEARXNG_URL;
+    if(!endpoint)throw new ProviderError('A pesquisa web ainda precisa de um servidor SearXNG configurado. A busca de negócios no OpenStreetMap está disponível.',503);
+    const url=new URL('/search',endpoint);if(url.protocol!=='https:'&&!(env.SEARXNG_INTERNAL_URL&&url.protocol==='http:'))throw new ProviderError('O servidor de pesquisa web precisa usar HTTPS.',503);
+    url.search=new URLSearchParams({q:[categories.find(x=>x.id===query.category).label,query.keyword,query.location.name].filter(Boolean).join(' ').slice(0,500),format:'json',language:'pt-BR',safesearch:'1'}).toString();
+    if(env.SEARXNG_INTERNAL_URL&&(!env.BETTER_AUTH_SECRET||env.BETTER_AUTH_SECRET.length<32))throw new ProviderError('A pesquisa web privada não recebeu a configuração de autenticação.',503);
+    const token=env.SEARXNG_INTERNAL_URL?createHmac('sha256',env.BETTER_AUTH_SECRET).update('awdevelop:searxng:v1').digest('hex'):env.SEARXNG_TOKEN;
+    const headers=token?{Authorization:`Bearer ${token}`} : {};
     return webProspects(await fetchJSON(url,{headers},fetcher),query);
   }
   const category=categories.find(x=>x.id===query.category);
