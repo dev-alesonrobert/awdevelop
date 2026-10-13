@@ -43,7 +43,7 @@
     "backend": {
       "root": ".",
       "runtime": "container",
-      "entrypoint": "Dockerfile.backend.vercel",
+      "entrypoint": "infra/api-vercel/Dockerfile.vercel",
       "bindings": [
         {
           "type": "service",
