@@ -7,6 +7,7 @@ export interface Prospect {
 }
 export interface SearchResponse { searchId: string; provider?: 'google'; items: Prospect[]; cached: boolean; searchedAt: string; }
 export interface SearchQuery { provider: 'osm' | 'web' | 'google'; category: string; location: Location; radius: number; keyword: string; }
-export interface Config { categories: {id: string; label: string}[]; webEnabled: boolean; osmEnabled: boolean; googleEnabled: boolean; }
+export interface Config { categories: {id: string; label: string}[]; webEnabled: boolean; osmEnabled: boolean; googleEnabled: boolean; googleLimits?: {search:{daily:number;monthly:number};details:{daily:number;monthly:number}}; otherDailyLimit?: number; }
 export interface ImportForm { name: string; phone: string; email: string; website: string; service: string; }
+
 

@@ -1,3 +1,4 @@
+import { reservationSql } from '../server/google-budget.js';
 import 'dotenv/config';
 import assert from 'node:assert/strict';
 import {randomUUID,randomBytes} from 'node:crypto';
@@ -45,5 +46,19 @@ try{
  await c.query('UPDATE aw_quotes SET prospect_source_key=$1,prospect_source_url=$2 WHERE id=$3',[cacheKey,'https://www.openstreetmap.org/node/7',quoteId]);
  assert.equal((await c.query('SELECT id FROM aw_quotes WHERE prospect_source_key=$1',[cacheKey])).rows[0].id,quoteId);
  assert.ok((await c.query("SELECT indexname FROM pg_indexes WHERE indexname='aw_quotes_prospect_key'")).rowCount);
+ // Verify the production reservation SQL using disposable periods in this transaction.
+ const budgetPeriod='qa-month:'+randomUUID(),budgetDay='qa-day:'+randomUUID();
+ await c.query('INSERT INTO aw_google_usage(period,kind,count) VALUES($1,\'search\',4499)',[budgetPeriod]);
+ assert.equal((await c.query(reservationSql,[budgetPeriod,'search',4500])).rows[0].count,4500);
+ assert.equal((await c.query(reservationSql,[budgetPeriod,'search',4500])).rowCount,0);
+ assert.equal((await c.query(reservationSql,[budgetDay,'search',0])).rowCount,0);
+ assert.equal((await c.query('SELECT count FROM aw_google_usage WHERE period=$1 AND kind=\'search\'',[budgetPeriod])).rows[0].count,4500);
+ await c.query('SAVEPOINT budget_daily_check');
+ assert.equal((await c.query(reservationSql,[budgetPeriod,'details',900])).rowCount,1);
+ assert.equal((await c.query(reservationSql,[budgetDay,'details',0])).rowCount,0);
+ await c.query('ROLLBACK TO SAVEPOINT budget_daily_check');
+ assert.equal((await c.query('SELECT count FROM aw_google_usage WHERE period=$1 AND kind=\'details\'',[budgetPeriod])).rowCount,0);
+ assert.ok((await c.query("SELECT period FROM aw_google_usage WHERE period LIKE 'month:%'")).rowCount>=2);
  console.log('MANAGEMENT DATABASE CHECKS PASSED: membership, invite consumption, quote idempotency/revisions, history and image library. Test rows rolled back.');
 }finally{await c.query('ROLLBACK');c.release();await pool.end();}
+
