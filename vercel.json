@@ -1,6 +1,19 @@
 {
+  "framework": null,
+  "buildCommand": "npm run build:angular && npm run migrate && npm test && node scripts/verify-management-db.js",
+  "outputDirectory": "dist/angular",
   "regions": [
     "iad1"
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
@@ -21,44 +34,5 @@
       ]
     }
   ],
-  "services": {
-    "web": {
-      "root": ".",
-      "framework": "angular",
-      "buildCommand": "npm run build:angular && npm run migrate && npm test && python3 tests/private-search.test.py && node scripts/verify-management-db.js",
-      "outputDirectory": "dist/angular",
-      "installCommand": "npm ci --include=dev",
-      "rewrites": [
-        {
-          "source": "/api/:path*",
-          "destination": "/api"
-        },
-        {
-          "source": "/(.*)",
-          "destination": "/index.html"
-        }
-      ],
-      "bindings": [
-        {
-          "type": "service",
-          "service": "search",
-          "format": "url",
-          "env": "SEARXNG_INTERNAL_URL"
-        }
-      ]
-    },
-    "search": {
-      "root": "infra/searxng-vercel",
-      "runtime": "container",
-      "entrypoint": "Dockerfile.vercel"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "web"
-      }
-    }
-  ]
+  "installCommand": "npm ci --include=dev"
 }
