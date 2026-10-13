@@ -19,6 +19,7 @@ export const routes: Routes = [
             { path: 'media', canDeactivate: [unsaved], loadComponent: () => import('./features/media/media/media.component').then(m => m.MediaComponent) },
             { path: 'history', canDeactivate: [unsaved], loadComponent: () => import('./features/history/history/history.component').then(m => m.HistoryComponent) },
             { path: 'quotes', canActivate: [commercialGuard], canDeactivate: [unsaved], loadComponent: () => import('./features/quotes/quotes/quotes.component').then(m => m.QuotesComponent) },
+            { path: 'prospecting', canActivate: [commercialGuard], canDeactivate: [unsaved], loadComponent: () => import('./features/prospecting/prospecting.component').then(m => m.ProspectingComponent) },
             { path: 'crm', canActivate: [commercialGuard], canDeactivate: [unsaved], loadComponent: () => import('./features/crm/crm/crm.component').then(m => m.CrmComponent) },
             { path: 'members', canActivate: [ownerGuard], canDeactivate: [unsaved], loadComponent: () => import('./features/members/members/members.component').then(m => m.MembersComponent) },
             { path: '', pathMatch: 'full', redirectTo: 'overview' }

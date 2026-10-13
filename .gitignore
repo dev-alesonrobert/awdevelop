@@ -6,3 +6,6 @@ node_modules/
 .angular/
 dist/painel/
 dist/angular/
+
+__pycache__/
+*.pyc

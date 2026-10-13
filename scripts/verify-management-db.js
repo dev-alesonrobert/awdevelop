@@ -34,5 +34,16 @@ try{
  assert.equal(Number((await c.query("SELECT sum(estimated_value) AS total FROM aw_quotes WHERE assignee=$1 AND crm_stage='meeting'",[email])).rows[0].total),3500);
  assert.ok((await c.query('SELECT id FROM aw_publications ORDER BY id DESC LIMIT 1')).rowCount);
  assert.ok((await c.query('SELECT id FROM aw_media LIMIT 1')).rowCount);
+ const searchId=randomUUID(),cacheKey='verify:'+searchId;
+ await c.query("INSERT INTO aw_prospect_cache(id,cache_key,payload,expires_at) VALUES($1,$2,'{\"items\":[]}'::jsonb,now()+interval '1 day')",[searchId,cacheKey]);
+ assert.equal((await c.query('SELECT id FROM aw_prospect_cache WHERE cache_key=$1 AND expires_at>now()',[cacheKey])).rows[0].id,searchId);
+ await c.query("UPDATE aw_prospect_cache SET expires_at=now()-interval '1 second' WHERE id=$1",[searchId]);
+ assert.equal((await c.query('SELECT id FROM aw_prospect_cache WHERE id=$1 AND expires_at>now()',[searchId])).rowCount,0);
+ const rateSql="INSERT INTO aw_prospect_limits(key,next_at) VALUES($1,now()+interval '2 seconds') ON CONFLICT(key) DO UPDATE SET next_at=now()+interval '2 seconds' WHERE aw_prospect_limits.next_at<=now() RETURNING key";
+ assert.equal((await c.query(rateSql,[cacheKey])).rowCount,1);
+ assert.equal((await c.query(rateSql,[cacheKey])).rowCount,0);
+ await c.query('UPDATE aw_quotes SET prospect_source_key=$1,prospect_source_url=$2 WHERE id=$3',[cacheKey,'https://www.openstreetmap.org/node/7',quoteId]);
+ assert.equal((await c.query('SELECT id FROM aw_quotes WHERE prospect_source_key=$1',[cacheKey])).rows[0].id,quoteId);
+ assert.ok((await c.query("SELECT indexname FROM pg_indexes WHERE indexname='aw_quotes_prospect_key'")).rowCount);
  console.log('MANAGEMENT DATABASE CHECKS PASSED: membership, invite consumption, quote idempotency/revisions, history and image library. Test rows rolled back.');
 }finally{await c.query('ROLLBACK');c.release();await pool.end();}
