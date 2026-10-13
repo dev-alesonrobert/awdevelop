@@ -1,0 +1,83 @@
+// Result cards: identity, contact data and actions
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  align-items: stretch;
+  gap: var(--prospect-gap);
+}
+
+.prospect {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overflow-wrap: anywhere;
+
+  h3 {
+    margin: 1rem 0 .5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  p {
+    margin: 0 0 1rem;
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.6;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: .75rem .5rem;
+    margin: .5rem 0 1rem;
+    font-size: .85rem;
+    line-height: 1.5;
+  }
+
+  dt { color: var(--muted); }
+  dd { margin: 0; min-width: 0; }
+
+  > small {
+    margin-top: .75rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+}
+
+.prospect-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem;
+
+  small { color: var(--muted); font-size: .75rem; }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: .85rem;
+
+  button { max-width: 100%; }
+}
+
+.empty {
+  grid-column: 1 / -1;
+  padding-block: 2rem;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .results-grid { grid-template-columns: minmax(0, 1fr); }
+  .actions { align-items: stretch; flex-direction: column; }
+  .actions button { width: 100%; }
+}
