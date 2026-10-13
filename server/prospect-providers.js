@@ -53,7 +53,7 @@ export function webProspects(data,query) {
 export class ProviderError extends Error { constructor(message,status=502) {super(message);this.status=status;} }
 export async function fetchJSON(url,options={},fetcher=fetch) {
   let response;
-  try {response=await fetcher(url,{...options,redirect:'error',signal:AbortSignal.timeout(22000)});} catch {throw new ProviderError('A fonte de busca está indisponível. Tente novamente mais tarde.');}
+  try {response=await fetcher(url,{...options,redirect:'error',signal:AbortSignal.timeout(22000)});} catch(error) {console.warn('AWDevelop provider request failed',{name:error?.name,code:error?.cause?.code||error?.code||'network_error'});throw new ProviderError('A fonte de busca está indisponível. Tente novamente mais tarde.');}
   if(!response.ok) throw new ProviderError(response.status===429?'A fonte atingiu seu limite de consultas. Aguarde para tentar novamente.':'A fonte de busca não respondeu corretamente.',response.status===429?429:502);
   if(Number(response.headers.get('content-length'))>2500000)throw new ProviderError('A busca retornou dados demais. Reduza o raio.');
   const reader=response.body.getReader();const chunks=[];let size=0;
@@ -65,7 +65,7 @@ export async function searchExternal(query,{fetcher=fetch,env=process.env}={}) {
   if(query.provider==='web') {
     const endpoint=env.SEARXNG_INTERNAL_URL||env.SEARXNG_URL;
     if(!endpoint)throw new ProviderError('A pesquisa web ainda precisa de um servidor SearXNG configurado. A busca de negócios no OpenStreetMap está disponível.',503);
-    const url=new URL('/search',endpoint);if(url.protocol!=='https:'&&!(env.SEARXNG_INTERNAL_URL&&url.protocol==='http:'))throw new ProviderError('O servidor de pesquisa web precisa usar HTTPS.',503);
+    const url=new URL(env.SEARXNG_INTERNAL_URL?'search':'/search',endpoint);if(url.protocol!=='https:'&&!(env.SEARXNG_INTERNAL_URL&&url.protocol==='http:'))throw new ProviderError('O servidor de pesquisa web precisa usar HTTPS.',503);
     url.search=new URLSearchParams({q:[categories.find(x=>x.id===query.category).label,query.keyword,query.location.name].filter(Boolean).join(' ').slice(0,500),format:'json',language:'pt-BR',safesearch:'1'}).toString();
     if(env.SEARXNG_INTERNAL_URL&&(!env.BETTER_AUTH_SECRET||env.BETTER_AUTH_SECRET.length<32))throw new ProviderError('A pesquisa web privada não recebeu a configuração de autenticação.',503);
     const token=env.SEARXNG_INTERNAL_URL?createHmac('sha256',env.BETTER_AUTH_SECRET).update('awdevelop:searxng:v1').digest('hex'):env.SEARXNG_TOKEN;
