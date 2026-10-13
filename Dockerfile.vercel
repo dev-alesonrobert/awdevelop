@@ -5,6 +5,7 @@ RUN npm install --global npm@11.9.0 && npm ci --omit=dev --ignore-scripts
 COPY server ./server
 COPY api ./api
 COPY dist/*.json ./dist/
+ENV NODE_USE_SYSTEM_CA=1
 ENV NODE_ENV=production
 ENV PORT=80
 EXPOSE 80
