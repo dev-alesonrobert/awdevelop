@@ -29,14 +29,21 @@
       "installCommand": "npm ci --include=dev",
       "rewrites": [
         {
-          "source": "/api/:path*",
-          "destination": "/api"
-        },
-        {
           "source": "/(.*)",
           "destination": "/index.html"
         }
       ],
+      "framework": "angular"
+    },
+    "search": {
+      "root": "infra/searxng-vercel",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.vercel"
+    },
+    "backend": {
+      "root": ".",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.backend.vercel",
       "bindings": [
         {
           "type": "service",
@@ -45,14 +52,15 @@
           "env": "SEARXNG_INTERNAL_URL"
         }
       ]
-    },
-    "search": {
-      "root": "infra/searxng-vercel",
-      "runtime": "container",
-      "entrypoint": "Dockerfile.vercel"
     }
   },
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": {
+        "service": "backend"
+      }
+    },
     {
       "source": "/(.*)",
       "destination": {
