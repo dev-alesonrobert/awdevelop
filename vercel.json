@@ -24,7 +24,6 @@
   "services": {
     "web": {
       "root": ".",
-      "framework": null,
       "buildCommand": "npm run build:angular && npm run migrate && npm test && node scripts/verify-management-db.js",
       "outputDirectory": "dist/angular",
       "installCommand": "npm ci --include=dev",
