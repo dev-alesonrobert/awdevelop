@@ -14,6 +14,10 @@ export class CrmPage extends AdminPage {
     readonly taskSaved = signal(0);
     search = '';
     assignee = '';
+    filters: Record<string, string> = { city: '', state: '', neighborhood: '', segment: '', priority: '', stage: '', service: '', origin: '', website: '', phone: '', email: '', minValue: '', maxValue: '', from: '', to: '', followup: '' };
+    view: 'pipeline' | 'list' = 'pipeline';
+    private appliedFilters: Record<string, string> = {};
+    resetFilters() { this.search = ''; this.assignee = ''; for (const key of Object.keys(this.filters)) this.filters[key] = ''; void this.load(); }
     private leadRequestId = crypto.randomUUID();
     private taskRequestId = crypto.randomUUID();
     private scopes = new Set<string>();
@@ -26,9 +30,10 @@ export class CrmPage extends AdminPage {
     private saved(scope: string) { this.scopes.delete(scope); if (!this.scopes.size)
         this.clean(); }
     private discard() { this.scopes.clear(); this.clean(); }
-    async load(more = false) { const params: Record<string, string> = { search: this.search, assignee: this.assignee }; if (more && this.board().next)
-        params['before'] = this.board().next!; const data = await this.request(this.http.get<Board>('/api/admin/crm/leads', { params })); if (data)
-        this.board.set(more ? { ...data, items: [...this.board().items, ...data.items] } : data); }
+    async load(more = false) { if (this.busy()) return; const selected = { search: this.search, assignee: this.assignee, ...this.filters }; const params: Record<string, string> = more ? { ...this.appliedFilters } : selected; if (more && this.board().next)
+        params['before'] = this.board().next!; const data = await this.request(this.http.get<Board>('/api/admin/crm/leads', { params })); if (data) {
+        if (!more) this.appliedFilters = { ...selected };
+        this.board.set(more ? { ...data, items: [...this.board().items, ...data.items] } : data); } }
     async open(id: string) { if (!this.canLeave())
         return; const result = await this.request(this.http.get<LeadDetail>('/api/admin/crm/leads/' + id)); if (result) {
         this.detail.set(result);

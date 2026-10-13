@@ -1,0 +1,8 @@
+:host { display: block; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+caption { text-align: left; padding: 1rem 0; font-weight: 600; }
+th, td { padding: 1rem; border-bottom: 1px solid #ffffff18; }
+th { font-size: .8rem; color: #a6a9ba; }
+small { display: block; margin-top: .3rem; color: #a6a9ba; }
+button { white-space: nowrap; }

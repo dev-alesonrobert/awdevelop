@@ -11,6 +11,16 @@ export interface TeamMember {
     name: string;
 }
 export interface LeadCard {
+    city: string;
+    state: string;
+    neighborhood: string;
+    segment: string;
+    priority: 'low' | 'medium' | 'high';
+    instagram: string;
+    email: string;
+    phone: string;
+    contact_website: string;
+    created_at: string;
     id: string;
     name: string;
     company: string;
@@ -30,6 +40,12 @@ export interface Lead extends LeadCard {
     created_at: string;
 }
 export interface LeadForm {
+    city: string;
+    state: string;
+    neighborhood: string;
+    segment: string;
+    priority: 'low' | 'medium' | 'high';
+    instagram: string;
     name: string;
     email: string;
     phone: string;

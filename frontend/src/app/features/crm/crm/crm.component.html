@@ -1,10 +1,23 @@
-<aw-page-heading eyebrow="CRM" title="Relacionamentos que viram projetos." description="Organize oportunidades, responsáveis, valores e próximos contatos." />
+<aw-page-heading eyebrow="LEADS" title="Oportunidades para a AW Develop." description="Organize oportunidades, responsáveis, valores e próximos contatos." />
 <form class="toolbar" (ngSubmit)="page.load()">
-<input aria-label="Buscar lead" name="search" [(ngModel)]="page.search" placeholder="Nome, empresa ou e-mail" maxlength="100">
+<input aria-label="Buscar lead" name="search" [(ngModel)]="page.search" placeholder="Nome, empresa, e-mail ou telefone" maxlength="100">
 <select aria-label="Filtrar responsável" name="assignee" [(ngModel)]="page.assignee">
 <option value="">Toda a equipe</option>@for(m of page.team();track m.email){<option [value]="m.email">{{m.name}}</option>}</select>
-<button [disabled]="page.busy()">Buscar</button>
+<details class="advanced-filters"><summary>Filtros avançados</summary><div class="filters-grid">
+<label>Cidade<input name="city" [(ngModel)]="page.filters['city']" maxlength="120" placeholder="Rio de Janeiro"></label><label>UF<input name="state" [(ngModel)]="page.filters['state']" maxlength="2" placeholder="RJ"></label><label>Bairro<input name="neighborhood" [(ngModel)]="page.filters['neighborhood']" maxlength="120"></label><label>Segmento<input name="segment" [(ngModel)]="page.filters['segment']" maxlength="120" placeholder="Barbearia, restaurante…"></label><label>Prioridade<select name="priority" [(ngModel)]="page.filters['priority']"><option value="">Todas</option><option value="high">Alta</option><option value="medium">Média</option><option value="low">Baixa</option></select></label><label>Etapa<select name="stage" [(ngModel)]="page.filters['stage']"><option value="">Todas</option>@for(s of stages; track s.id){<option [value]="s.id">{{s.label}}</option>}</select></label>
+<label>Serviço<input name="service" [(ngModel)]="page.filters['service']" placeholder="Site, landing page, sistema" maxlength="150"></label>
+<label>Origem<input name="origin" [(ngModel)]="page.filters['origin']" placeholder="Indicação, Google Maps…" maxlength="120"></label>
+<label>Site<select name="website" [(ngModel)]="page.filters['website']"><option value="">Todos</option><option value="yes">Com site</option><option value="no">Sem site</option></select></label>
+<label>Telefone<select name="phone" [(ngModel)]="page.filters['phone']"><option value="">Todos</option><option value="yes">Com telefone</option><option value="no">Sem telefone</option></select></label>
+<label>E-mail<select name="email" [(ngModel)]="page.filters['email']"><option value="">Todos</option><option value="yes">Com e-mail</option><option value="no">Sem e-mail</option></select></label>
+<label>Valor mínimo (R$)<input type="number" name="minValue" min="0" max="100000000" [(ngModel)]="page.filters['minValue']"></label>
+<label>Valor máximo (R$)<input type="number" name="maxValue" min="0" max="100000000" [(ngModel)]="page.filters['maxValue']"></label>
+<label>Cadastrado a partir de<input type="date" name="from" [(ngModel)]="page.filters['from']"></label>
+<label>Cadastrado até<input type="date" name="to" [(ngModel)]="page.filters['to']"></label>
+<label>Próximo contato<select name="followup" [(ngModel)]="page.filters['followup']"><option value="">Todos</option><option value="overdue">Atrasado</option><option value="today">Hoje</option><option value="pending">Com tarefa pendente</option><option value="none">Sem tarefa pendente</option></select></label>
+</div></details>
+<button [disabled]="page.busy()">Aplicar filtros</button><button type="button" class="secondary" (click)="page.resetFilters()" [disabled]="page.busy()">Limpar filtros</button>
 <button type="button" class="secondary" (click)="page.newLead()" [disabled]="page.busy()">Novo lead</button>
 </form>
-<p class="message" role="status">{{page.message()}}</p>@if(page.opened()){<aw-lead-editor [detail]="page.detail()" [team]="page.team()" [busy]="page.busy()" [activitySaved]="page.activitySaved()" [taskSaved]="page.taskSaved()" (changed)="page.changed($event)" (saved)="page.save($event)" (closed)="page.close()" (activity)="page.addActivity($event)" (task)="page.addTask($event)" (toggleTask)="page.toggleTask($event)" />}<aw-pipeline [board]="page.board()" (opened)="page.open($event)" />@if(page.board().next){<button class="secondary" (click)="page.load(true)" [disabled]="page.busy()">Carregar mais oportunidades</button>}
+<p class="message" role="status">{{page.message()}}</p>@if(page.opened()){<aw-lead-editor [detail]="page.detail()" [team]="page.team()" [busy]="page.busy()" [activitySaved]="page.activitySaved()" [taskSaved]="page.taskSaved()" (changed)="page.changed($event)" (saved)="page.save($event)" (closed)="page.close()" (activity)="page.addActivity($event)" (task)="page.addTask($event)" (toggleTask)="page.toggleTask($event)" />}<div class="view-toolbar" aria-label="Visualização"><button type="button" [attr.aria-pressed]="page.view === 'pipeline'" (click)="page.view = 'pipeline'">Funil</button><button type="button" [attr.aria-pressed]="page.view === 'list'" (click)="page.view = 'list'">Lista</button><span>{{page.board().items.length}} leads carregados</span></div>@if(page.view === 'pipeline'){<aw-pipeline [board]="page.board()" (opened)="page.open($event)" />}@else{<aw-lead-list [leads]="page.board().items" (opened)="page.open($event)" />}@if(page.board().next){<button class="secondary" (click)="page.load(true)" [disabled]="page.busy()">Carregar mais oportunidades</button>}
 

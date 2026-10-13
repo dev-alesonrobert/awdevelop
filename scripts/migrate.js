@@ -32,6 +32,12 @@ await getPool().query(`
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS assignee text REFERENCES aw_members(email);
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS estimated_value numeric(14,2) NOT NULL DEFAULT 0 CHECK(estimated_value>=0);
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS expected_close date;
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS city text NOT NULL DEFAULT '';
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS state text NOT NULL DEFAULT '';
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS neighborhood text NOT NULL DEFAULT '';
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS segment text NOT NULL DEFAULT '';
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS priority text NOT NULL DEFAULT 'medium' CHECK(priority IN ('low','medium','high'));
+ ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS instagram text NOT NULL DEFAULT '';
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS contact_website text NOT NULL DEFAULT '';
  CREATE TABLE IF NOT EXISTS aw_crm_events (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,quote_id bigint NOT NULL REFERENCES aw_quotes(id) ON DELETE CASCADE,actor text NOT NULL,kind text NOT NULL,body text NOT NULL,created_at timestamptz NOT NULL DEFAULT now());
  CREATE TABLE IF NOT EXISTS aw_crm_tasks (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,quote_id bigint NOT NULL REFERENCES aw_quotes(id) ON DELETE CASCADE,request_id uuid UNIQUE NOT NULL,title text NOT NULL,assignee text NOT NULL REFERENCES aw_members(email),due_at timestamptz NOT NULL,done boolean NOT NULL DEFAULT false,revision integer NOT NULL DEFAULT 0);

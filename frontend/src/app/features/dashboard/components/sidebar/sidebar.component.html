@@ -8,7 +8,7 @@
     <a routerLink="/painel/media" routerLinkActive="active">Biblioteca de imagens</a>
     <a routerLink="/painel/history" routerLinkActive="active">Histórico</a>
     @if (role() !== 'editor') {
-      <a routerLink="/painel/crm" routerLinkActive="active">CRM</a>
+      <a routerLink="/painel/crm" routerLinkActive="active">Leads</a>
       <a routerLink="/painel/quotes" routerLinkActive="active">Orçamentos</a>
     }
     @if (role() === 'owner') { <a routerLink="/painel/members" routerLinkActive="active">Administradores</a> }
