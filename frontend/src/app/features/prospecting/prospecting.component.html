@@ -7,7 +7,7 @@
 <label>Segmento<select name="category" [(ngModel)]="page.category">@for(category of page.config().categories;track category.id){<option [value]="category.id">{{category.label}}</option>}</select></label>
 <label>Fonte<select name="provider" [(ngModel)]="page.provider"><option value="osm" [disabled]="!page.config().osmEnabled">Negócios — OpenStreetMap</option><option value="web" [disabled]="!page.config().webEnabled">Pesquisa web{{page.config().webEnabled?'':' — aguardando configuração'}}</option><option value="google" [disabled]="!page.config().googleEnabled">Google Maps{{page.config().googleEnabled?'':' — aguardando chave'}}</option></select></label>
 @if(page.provider==='osm'){<label>Raio de busca<select name="radius" [(ngModel)]="page.radius"><option [ngValue]="1">1 km</option><option [ngValue]="3">3 km</option><option [ngValue]="5">5 km</option><option [ngValue]="10">10 km</option></select></label>}
-<label>Nome ou palavra adicional<input name="keyword" [(ngModel)]="page.keyword" placeholder="Opcional" maxlength="100"></label></div>
+<label class="keyword-field">Nome ou palavra adicional<input name="keyword" [(ngModel)]="page.keyword" placeholder="Opcional" maxlength="100"></label></div>
 <button class="search-button" [disabled]="page.busy()||page.locationIndex===''">{{page.busy()?'Consultando…':'Buscar novos leads'}}</button></fieldset></form>
 <p class="muted">Busca sob demanda. Resultados do Google não são armazenados; nas outras fontes, o cache dura até 24 horas. No OpenStreetMap, o raio parte do centro da região selecionada e pode alcançar bairros vizinhos.</p>
 @if(!page.config().webEnabled){<p class="provider-note">A pesquisa web aguarda a conexão com um servidor SearXNG. Você já pode buscar negócios no OpenStreetMap.</p>}

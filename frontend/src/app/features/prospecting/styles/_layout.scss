@@ -1,0 +1,66 @@
+// Page rhythm and surfaces
+:host {
+  display: block;
+  min-width: 0;
+  --prospect-gap: 1rem;
+  --prospect-padding: 1.5rem;
+  --prospect-radius: 1rem;
+}
+
+.card {
+  padding: var(--prospect-padding);
+  border: 1px solid var(--line);
+  border-radius: var(--prospect-radius);
+  background: var(--panel);
+  min-width: 0;
+}
+
+.intro {
+  display: flex;
+  align-items: center;
+  gap: var(--prospect-gap);
+  margin-block: 1.5rem;
+  color: var(--muted);
+  line-height: 1.6;
+
+  p { margin: 0; }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .35rem .65rem;
+  border: 1px solid #40354f;
+  border-radius: 999px;
+  background: #292633;
+  color: #e1d7f5;
+  font-size: .75rem;
+  line-height: 1.4;
+}
+
+.intro .badge { flex-shrink: 0; }
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--prospect-gap);
+  margin-bottom: 1rem;
+
+  h2 { margin: 0; font-size: 1.25rem; }
+  a { white-space: nowrap; }
+}
+
+.review {
+  margin-block: 1.5rem;
+  border-color: var(--purple);
+
+  > p { line-height: 1.6; }
+}
+
+@media (max-width: 600px) {
+  :host { --prospect-padding: 1rem; }
+  .intro { align-items: flex-start; flex-direction: column; }
+  .section-heading { align-items: flex-start; }
+}
