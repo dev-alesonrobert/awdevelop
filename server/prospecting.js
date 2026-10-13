@@ -1,3 +1,4 @@
+import { googleEnabled, searchGoogle, googleDetails, verifyDetailToken } from './google-places.js';
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
 import { categories, searchSchema, hash, safeLink, fetchJSON, searchExternal, ProviderError } from './prospect-providers.js';
@@ -17,7 +18,7 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
     const daily=(await db().query("INSERT INTO aw_prospect_usage(day,count) VALUES((now() AT TIME ZONE 'America/Sao_Paulo')::date,1) ON CONFLICT(day) DO UPDATE SET count=aw_prospect_usage.count+1 WHERE aw_prospect_usage.count<60 RETURNING count")).rows[0];
     if(!daily)throw new ProviderError('O limite diário de buscas externas foi atingido. Consultas já armazenadas continuam disponíveis.',429);
   }
-  app.get('/api/admin/prospecting/config',(req,res)=>res.json({categories:categories.map(({id,label})=>({id,label})),webEnabled:Boolean(env.SEARXNG_INTERNAL_URL||env.SEARXNG_URL),osmEnabled:env.PROSPECTING_OSM_DISABLED!=='true'}));
+  app.get('/api/admin/prospecting/config',(req,res)=>res.json({categories:categories.map(({id,label})=>({id,label})),webEnabled:Boolean(env.SEARXNG_INTERNAL_URL||env.SEARXNG_URL),osmEnabled:env.PROSPECTING_OSM_DISABLED!=='true',googleEnabled:googleEnabled(env)}));
   app.get('/api/admin/prospecting/locations',async(req,res)=>{
     const q=z.string().trim().min(3).max(150).parse(req.query.q),key=`geo:${hash(q.toLocaleLowerCase('pt-BR'))}`;
     try {
@@ -31,9 +32,27 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
       await cache(key,{items},30);res.json({items,cached:false});
     }catch(error){return fail(res,error);}
   });
+  app.post('/api/admin/prospecting/google-details',async(req,res)=>{
+    res.set('Cache-Control','private, no-store');
+    const token=z.string().min(1).max(2500).parse(req.body.token);
+    try {
+      if(!googleEnabled(env))throw new ProviderError('Cadastre a chave Google Places no servidor para habilitar esta fonte.',503);
+      // Validate the signed, user-bound reference before reserving a paid call.
+      verifyDetailToken(token,req.email,env);
+      await throttle('google-details');
+      res.json({item:await googleDetails(token,{env,fetcher,user:req.email})});
+    }catch(error){return fail(res,error);}
+  });
   app.post('/api/admin/prospecting/search',async(req,res)=>{
     const query=searchSchema.parse(req.body),key=`search:${hash(query)}`;
     try {
+      if(query.provider==='google'){
+        res.set('Cache-Control','private, no-store');
+        if(!googleEnabled(env))throw new ProviderError('Cadastre a chave Google Places no servidor para habilitar esta fonte.',503);
+        await throttle('google-search');
+        const items=await searchGoogle(query,{env,fetcher,user:req.email});
+        return res.json({searchId:randomUUID(),items,cached:false,searchedAt:new Date().toISOString(),provider:'google'});
+      }
       if(query.provider==='osm'&&env.PROSPECTING_OSM_DISABLED==='true')throw new ProviderError('A busca OpenStreetMap está temporariamente desativada.',503);
       const previous=await cached(key);if(previous)return res.json({searchId:previous.id,items:previous.payload.items,cached:true,searchedAt:previous.created_at});
       if(query.provider==='web'&&!env.SEARXNG_INTERNAL_URL&&!env.SEARXNG_URL)throw new ProviderError('Configure o servidor SearXNG para habilitar a pesquisa web.',503);
@@ -45,6 +64,7 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
   });
   app.post('/api/admin/prospecting/import',async(req,res)=>{
     const input=importSchema.parse(req.body);
+    if(input.key.startsWith('google:'))return res.status(400).json({error:'Os dados do Google são apenas para consulta. Cadastre no CRM dados obtidos diretamente com a empresa.'});
     const record=(await db().query('SELECT payload FROM aw_prospect_cache WHERE id=$1 AND expires_at>now()',[input.searchId])).rows[0];
     const candidate=record?.payload.items?.find(x=>x.key===input.key);
     if(!candidate)return res.status(409).json({error:'Este resultado expirou. Faça uma nova busca antes de salvar.'});
@@ -60,3 +80,4 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
     }catch(error){await c.query('ROLLBACK');throw error;}finally{c.release();}
   });
 }
+

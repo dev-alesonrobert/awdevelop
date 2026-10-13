@@ -8,6 +8,8 @@ const unsaved = (component: {
     canLeave: () => boolean;
 }) => component.canLeave();
 export const routes: Routes = [
+    { path: 'termos', loadComponent: () => import('./features/legal/legal.component').then(m => m.LegalComponent) },
+    { path: 'privacidade', data: {privacy:true}, loadComponent: () => import('./features/legal/legal.component').then(m => m.LegalComponent) },
     { path: '', pathMatch: 'full', loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent) },
     { path: 'painel/login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
     { path: 'painel/setup', loadComponent: () => import('./features/auth/setup/setup.component').then(m => m.SetupComponent) },

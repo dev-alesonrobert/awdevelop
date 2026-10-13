@@ -1,0 +1,4 @@
+:host { display: block; min-height: 100vh; color: #eee; background: #101116; }
+main { max-width: 820px; margin: auto; padding: 56px 24px; line-height: 1.75; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); } h2 { margin-top: 32px; }
+p { color: #c8c5d0; } a { color: #ba9aff; text-underline-offset: 4px; }

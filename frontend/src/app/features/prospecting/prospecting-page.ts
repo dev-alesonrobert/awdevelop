@@ -6,12 +6,12 @@ import { ProspectingService } from './prospecting.service';
 @Injectable()
 export class ProspectingPage extends AdminPage {
   private readonly service = inject(ProspectingService);
-  readonly config = signal<Config>({categories:[],webEnabled:false,osmEnabled:true});
+  readonly config = signal<Config>({categories:[],webEnabled:false,osmEnabled:true,googleEnabled:false});
   readonly locations = signal<Location[]>([]);
   readonly result = signal<SearchResponse|null>(null);
   readonly selected = signal<Prospect|null>(null);
   readonly saved = signal<Record<string,string>>({});
-  provider: 'osm'|'web' = 'osm'; category = 'restaurant'; locality = 'Botafogo, Rio de Janeiro';
+  provider: 'osm'|'web'|'google' = 'osm'; category = 'restaurant'; locality = 'Botafogo, Rio de Janeiro';
   locationIndex = ''; radius = 3; keyword = ''; contact = ''; site = '';
   form: ImportForm = {name:'',phone:'',email:'',website:'',service:'Site institucional'};
   appliedDescription = '';
@@ -27,10 +27,16 @@ export class ProspectingPage extends AdminPage {
     if(this.locationIndex===''||!location){this.message.set('Localize e selecione a região antes de buscar negócios.');return;}
     const query={provider:this.provider,category:this.category,location,radius:Number(this.radius),keyword:this.keyword};
     const data=await this.request(this.service.search(query));
-    if(data){this.result.set(data);this.selected.set(null);this.clean();this.saved.set({});this.appliedDescription=this.config().categories.find(x=>x.id===query.category)?.label+' · '+location.name+(query.provider==='osm'?' · raio de '+query.radius+' km':'');this.message.set(data.items.length?'Busca concluída. Confira os resultados antes de salvar no CRM.':'Nenhum resultado nesta fonte. Tente outro segmento ou região.');}
+    if(data){this.contact='';this.site='';this.result.set(data);this.selected.set(null);this.clean();this.saved.set({});this.appliedDescription=this.config().categories.find(x=>x.id===query.category)?.label+' · '+location.name+(query.provider==='osm'?' · raio de '+query.radius+' km':'');this.message.set(data.items.length?'Busca concluída. Confira os resultados antes de salvar no CRM.':'Nenhum resultado nesta fonte. Tente outro segmento ou região.');}
   }
   visible() { return this.result()?.items.filter(x=>(!this.contact||(this.contact==='yes'?Boolean(x.phone||x.email):!x.phone&&!x.email))&&(!this.site||(this.site==='yes'?Boolean(x.website):!x.website)))??[]; }
+  async details(prospect:Prospect) {
+    if(!prospect.detailToken||prospect.detailsLoaded)return;
+    const data=await this.request(this.service.googleDetails(prospect.detailToken));
+    if(data){this.result.update(result=>result?{...result,items:result.items.map(item=>item.key===prospect.key?data.item:item)}:null);this.message.set('Detalhes consultados no Google Maps. E-mail não é fornecido por esta fonte.');}
+  }
   review(prospect:Prospect) {
+    if(prospect.source==='Google Maps')return;
     if(!this.canLeave())return;
     this.selected.set(prospect);this.form={name:prospect.name,phone:prospect.phone,email:prospect.email,website:prospect.website,service:'Site institucional'};this.clean();
   }
