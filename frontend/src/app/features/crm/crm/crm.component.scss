@@ -1,2 +1,10 @@
 @use '../../../../styles/admin';
 @include admin.page;
+.advanced-filters { flex-basis: 100%; padding: 1rem; border: 1px solid #ffffff18; border-radius: 12px; }
+summary { cursor: pointer; font-weight: 600; }
+.filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; padding-top: 1rem; }
+.filters-grid label { display: grid; gap: .5rem; font-size: .85rem; }
+.filters-grid input, .filters-grid select { width: 100%; min-width: 0; box-sizing: border-box; }
+.view-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: 1rem 0; }
+.view-toolbar button[aria-pressed=true] { outline: 2px solid currentColor; outline-offset: 2px; }
+.view-toolbar span { color: #a6a9ba; margin-left: auto; }

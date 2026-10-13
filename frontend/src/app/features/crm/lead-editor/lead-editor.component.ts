@@ -25,21 +25,21 @@ export class LeadEditorComponent {
     readonly toggleTask = output<Task>();
     readonly stages = stages;
     readonly wa = whatsapp;
-    form: LeadForm = { name: '', company: '', email: '', phone: '', website: '', service: 'Site institucional', origin: 'Cadastro manual', crmStage: 'new', assignee: '', value: 0, expectedClose: '', idea: '' };
-    readonly textFields = ['name', 'company', 'email', 'phone', 'website', 'service', 'origin'] as const;
-    readonly labels = { name: 'Nome', company: 'Empresa', email: 'E-mail', phone: 'Telefone', website: 'Site HTTPS', service: 'Serviço', origin: 'Origem' };
+    form: LeadForm = { city: '', state: '', neighborhood: '', segment: '', priority: 'medium', instagram: '', name: '', company: '', email: '', phone: '', website: '', service: 'Site institucional', origin: 'Cadastro manual', crmStage: 'new', assignee: '', value: 0, expectedClose: '', idea: '' };
+    readonly textFields = ['name', 'company', 'email', 'phone', 'website', 'service', 'origin', 'city', 'state', 'neighborhood', 'segment', 'instagram'] as const;
+    readonly labels = { name: 'Nome', company: 'Empresa', email: 'E-mail', phone: 'Telefone', website: 'Site HTTPS', service: 'Serviço', origin: 'Origem', city: 'Cidade', state: 'UF', neighborhood: 'Bairro', segment: 'Segmento', instagram: 'Instagram' };
     note = { kind: 'note', body: '' };
     followup = { title: '', dueAt: '', assignee: '' };
     constructor() { effect(() => { this.activitySaved(); this.note = { kind: 'note', body: '' }; }); effect(() => { this.taskSaved(); this.followup = { title: '', dueAt: '', assignee: '' }; }); effect(() => { const lead = this.detail()?.lead; if (!lead && this.currentId) {
         this.currentId = '';
-        this.form = { name: '', company: '', email: '', phone: '', website: '', service: 'Site institucional', origin: 'Cadastro manual', crmStage: 'new', assignee: '', value: 0, expectedClose: '', idea: '' };
+        this.form = { city: '', state: '', neighborhood: '', segment: '', priority: 'medium', instagram: '', name: '', company: '', email: '', phone: '', website: '', service: 'Site institucional', origin: 'Cadastro manual', crmStage: 'new', assignee: '', value: 0, expectedClose: '', idea: '' };
         this.note = { kind: 'note', body: '' };
         this.followup = { title: '', dueAt: '', assignee: '' };
     } if (lead && lead.id !== this.currentId) {
         this.note = { kind: 'note', body: '' };
         this.followup = { title: '', dueAt: '', assignee: '' };
         this.currentId = lead.id;
-        this.form = { name: lead.name, company: lead.company, email: lead.email, phone: lead.phone, website: lead.contact_website || '', service: lead.service, origin: lead.origin, crmStage: lead.crm_stage, assignee: lead.assignee || '', value: Number(lead.estimated_value), expectedClose: lead.expected_close?.slice(0, 10) || '', idea: lead.idea };
+        this.form = { city: lead.city || '', state: lead.state || '', neighborhood: lead.neighborhood || '', segment: lead.segment || '', priority: lead.priority || 'medium', instagram: lead.instagram || '', name: lead.name, company: lead.company, email: lead.email, phone: lead.phone, website: lead.contact_website || '', service: lead.service, origin: lead.origin, crmStage: lead.crm_stage, assignee: lead.assignee || '', value: Number(lead.estimated_value), expectedClose: lead.expected_close?.slice(0, 10) || '', idea: lead.idea };
     } }); }
     submit() { this.saved.emit({ ...this.form, value: Number(this.form.value) }); }
     addTask() { if (!this.followup.dueAt)

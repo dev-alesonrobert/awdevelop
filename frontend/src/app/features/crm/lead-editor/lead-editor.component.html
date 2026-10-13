@@ -5,8 +5,8 @@
 </div>
 <form (ngSubmit)="submit()">
 <fieldset [disabled]="busy()">
-<div class="grid">@for(key of textFields;track key){<label>{{labels[key]}}<input [name]="key" [(ngModel)]="form[key]" (ngModelChange)="changed.emit('lead')" [required]="key==='name'||key==='service'||key==='origin'" [minlength]="key==='name'||key==='service'||key==='origin'?2:0" [maxlength]="key==='website'?2048:200" [type]="key==='email'?'email':'text'">
-</label>}<label>Etapa<select name="crmStage" [(ngModel)]="form.crmStage" (ngModelChange)="changed.emit('lead')">@for(s of stages;track s.id){<option [value]="s.id">{{s.label}}</option>}</select>
+<div class="grid">@for(key of textFields;track key){<label>{{labels[key]}}<input [name]="key" [(ngModel)]="form[key]" (ngModelChange)="changed.emit('lead')" [required]="key==='name'||key==='service'||key==='origin'" [minlength]="key==='name'||key==='service'||key==='origin'?2:0" [maxlength]="key==='website'?2048:key==='state'?2:key==='email'?254:key==='phone'?40:key==='company'?200:key==='service'?150:120" [type]="key==='email'?'email':'text'">
+</label>}<label>Prioridade<select name="priority" [(ngModel)]="form.priority" (ngModelChange)="changed.emit('lead')"><option value="high">Alta</option><option value="medium">Média</option><option value="low">Baixa</option></select></label><label>Etapa<select name="crmStage" [(ngModel)]="form.crmStage" (ngModelChange)="changed.emit('lead')">@for(s of stages;track s.id){<option [value]="s.id">{{s.label}}</option>}</select>
 </label>
 <label>Responsável<select name="assignee" [(ngModel)]="form.assignee" (ngModelChange)="changed.emit('lead')">
 <option value="">Sem responsável</option>@for(m of team();track m.email){<option [value]="m.email">{{m.name}}</option>}</select>

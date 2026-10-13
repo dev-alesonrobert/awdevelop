@@ -1,0 +1,4 @@
+<div class="table-scroll"><table><caption>Leads encontrados</caption>
+<thead><tr><th scope="col">Contato / empresa</th><th scope="col">Serviço</th><th scope="col">Etapa</th><th scope="col">Origem</th><th scope="col">Valor estimado</th><th scope="col">Ficha</th></tr></thead>
+<tbody>@for(lead of leads(); track lead.id){<tr><td><strong>{{lead.company || lead.name}}</strong><small>{{lead.name}}</small><small>{{lead.email || lead.phone}}</small><small>{{lead.contact_website ? 'Com site' : 'Sem site cadastrado'}}</small></td><td>{{lead.service}}</td><td>{{label(lead.crm_stage)}}</td><td>{{lead.origin}}</td><td>{{lead.estimated_value | currency:'BRL':'symbol':'1.2-2'}}</td><td><button type="button" (click)="opened.emit(lead.id)" [attr.aria-label]="'Abrir ficha de ' + lead.name">Abrir ficha</button></td></tr>}@empty{<tr><td colspan="6">Nenhum lead corresponde aos filtros selecionados.</td></tr>}</tbody>
+</table></div>
