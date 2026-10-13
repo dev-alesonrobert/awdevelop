@@ -56,6 +56,22 @@ await getPool().query(`
  CREATE TABLE IF NOT EXISTS aw_activity (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,editor text NOT NULL,action text NOT NULL,details jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now());
  CREATE INDEX IF NOT EXISTS aw_quotes_status_created ON aw_quotes(status,created_at DESC);
 `);
+// Persist budgets across deploys. Seed only once, counting all earlier external calls
+// conservatively against BOTH Google SKUs plus 60 calls of rollout headroom.
+await getPool().query(`BEGIN;
+ SELECT pg_advisory_xact_lock(3909032);
+ CREATE TABLE IF NOT EXISTS aw_google_usage (
+   period text NOT NULL,kind text NOT NULL CHECK(kind IN ('search','details')),
+   count integer NOT NULL DEFAULT 0 CHECK(count>=0),PRIMARY KEY(period,kind)
+ );
+ INSERT INTO aw_google_usage(period,kind,count)
+ SELECT 'month:'||to_char(now() AT TIME ZONE 'America/Los_Angeles','YYYY-MM'),k.kind,
+   (SELECT COALESCE(sum(count),0)+60 FROM aw_prospect_usage
+    WHERE day >= date_trunc('month',now() AT TIME ZONE 'America/Los_Angeles')::date-1)::int
+ FROM (VALUES ('search'),('details')) AS k(kind)
+ WHERE NOT EXISTS(SELECT 1 FROM aw_google_usage)
+ ON CONFLICT(period,kind) DO NOTHING;
+ COMMIT;`);
 for(const [email,name,role] of [[process.env.ADMIN_EMAIL,'Aleson Roberto','owner'],[process.env.PARTNER_ADMIN_EMAIL,'Welligton','admin']]){
  if(email)await getPool().query('INSERT INTO aw_members (email,name,role) VALUES ($1,$2,$3) ON CONFLICT(email) DO NOTHING',[email.toLowerCase(),name,role]);
 }
@@ -80,3 +96,4 @@ for (const [email,token] of [[process.env.ADMIN_EMAIL,process.env.ADMIN_SETUP_TO
 }
 await getPool().end();
 console.log('Banco inicializado. Conteúdo existente preservado.');
+

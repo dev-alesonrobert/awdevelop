@@ -1,3 +1,4 @@
+import { googleLimits, reserveGoogleCall } from './google-budget.js';
 import { googleEnabled, searchGoogle, googleDetails, verifyDetailToken } from './google-places.js';
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
@@ -15,10 +16,14 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
   async function throttle(provider) {
     const row=(await db().query("INSERT INTO aw_prospect_limits(key,next_at) VALUES($1,now()+interval '2 seconds') ON CONFLICT(key) DO UPDATE SET next_at=now()+interval '2 seconds' WHERE aw_prospect_limits.next_at<=now() RETURNING key",[provider])).rows[0];
     if(!row)throw new ProviderError('Aguarde alguns segundos antes de fazer outra busca.',429);
-    const daily=(await db().query("INSERT INTO aw_prospect_usage(day,count) VALUES((now() AT TIME ZONE 'America/Sao_Paulo')::date,1) ON CONFLICT(day) DO UPDATE SET count=aw_prospect_usage.count+1 WHERE aw_prospect_usage.count<60 RETURNING count")).rows[0];
+    if(provider==='google-search'||provider==='google-details'){
+      await reserveGoogleCall(db(),provider==='google-search'?'search':'details',env);
+      return;
+    }
+    const daily=(await db().query("INSERT INTO aw_prospect_usage(day,count) VALUES((now() AT TIME ZONE 'America/Sao_Paulo')::date,1) ON CONFLICT(day) DO UPDATE SET count=aw_prospect_usage.count+1 WHERE aw_prospect_usage.count<200 RETURNING count")).rows[0];
     if(!daily)throw new ProviderError('O limite diário de buscas externas foi atingido. Consultas já armazenadas continuam disponíveis.',429);
   }
-  app.get('/api/admin/prospecting/config',(req,res)=>res.json({categories:categories.map(({id,label})=>({id,label})),webEnabled:Boolean(env.SEARXNG_INTERNAL_URL||env.SEARXNG_URL),osmEnabled:env.PROSPECTING_OSM_DISABLED!=='true',googleEnabled:googleEnabled(env)}));
+  app.get('/api/admin/prospecting/config',(req,res)=>res.json({categories:categories.map(({id,label})=>({id,label})),webEnabled:Boolean(env.SEARXNG_INTERNAL_URL||env.SEARXNG_URL),osmEnabled:env.PROSPECTING_OSM_DISABLED!=='true',googleEnabled:googleEnabled(env),googleLimits:googleLimits(env),otherDailyLimit:200}));
   app.get('/api/admin/prospecting/locations',async(req,res)=>{
     const q=z.string().trim().min(3).max(150).parse(req.query.q),key=`geo:${hash(q.toLocaleLowerCase('pt-BR'))}`;
     try {
@@ -80,4 +85,5 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
     }catch(error){await c.query('ROLLBACK');throw error;}finally{c.release();}
   });
 }
+
 

@@ -11,14 +11,23 @@ const headers={Origin:origin,'Content-Type':'application/json'};
 const query={provider:'osm',category:'restaurant',location:{name:'Botafogo, Rio de Janeiro',lat:-22.95,lon:-43.18},radius:1,keyword:''};
 const osm={elements:[{type:'node',id:7,lat:-22.95,lon:-43.18,tags:{name:'Restaurante Teste',phone:'21999999999',website:'example.com','contact:email':'hello@example.com','addr:city':'Rio de Janeiro','addr:state':'RJ'}}]};
 const json=value=>new Response(JSON.stringify(value),{headers:{'Content-Type':'application/json'}});
-async function fixture(t,{role='owner',session=true,env={},fetcher=async()=>json(osm),throttled=false,duplicate=false}={}){
-  const calls=[],cache=new Map();
+async function fixture(t,{role='owner',session=true,env={},fetcher=async()=>json(osm),throttled=false,duplicate=false,googleMonthlyUsed=0,googleDailyUsed=0,legacyExhausted=false,budgetOffline=false}={}){
+  const calls=[],cache=new Map(),budgets=new Map();let snapshot;
   const execute=async(sql,params=[])=>{
     calls.push({sql,params});
+    if(sql==='BEGIN'){snapshot=new Map(budgets);return {rows:[]};}
+    if(sql==='ROLLBACK'){budgets.clear();for(const entry of snapshot||[])budgets.set(...entry);return {rows:[]};}
+    if(sql.startsWith('SELECT')&&sql.includes("'month:'"))return {rows:[{month:'month:2026-10',day:'day:2026-10-13'}]};
+    if(sql.startsWith('INSERT INTO aw_google_usage')){
+      if(budgetOffline)throw Error('budget database unavailable');
+      const period=params[0].startsWith('month:')?'month':'day',key=period+':'+params[1];
+      const count=budgets.get(key)??(period==='month'?googleMonthlyUsed:googleDailyUsed);
+      if(count>=params[2])return {rows:[]};budgets.set(key,count+1);return {rows:[{count:count+1}]};
+    }
     if(sql.startsWith('SELECT id,payload'))return {rows:cache.has(params[0])?[cache.get(params[0])]:[]};
     if(sql.startsWith('INSERT INTO aw_prospect_cache')){const record={id:params[0],payload:JSON.parse(params[2]),created_at:'2026-10-13T12:00:00Z'};cache.set(params[1],record);return {rows:[record]};}
     if(sql.startsWith('INSERT INTO aw_prospect_limits'))return {rows:throttled?[]:[{key:params[0]}]};
-    if(sql.startsWith('INSERT INTO aw_prospect_usage'))return {rows:[{count:1}]};
+    if(sql.startsWith('INSERT INTO aw_prospect_usage'))return {rows:legacyExhausted?[]:[{count:1}]};
     if(sql.startsWith('SELECT payload'))return {rows:[...cache.values()].filter(x=>x.id===params[0])};
     if(sql.startsWith('SELECT id FROM aw_quotes'))return {rows:duplicate?[{id:'12'}]:[]};
     if(sql.startsWith('INSERT INTO aw_quotes'))return {rows:[{id:'99'}],rowCount:1};
@@ -27,7 +36,7 @@ async function fixture(t,{role='owner',session=true,env={},fetcher=async()=>json
   const client={query:execute,release(){}};
   const app=createApp({auth:()=>({api:{getSession:async()=>session?{user:{id:'u1',email:'owner@example.com'}}:null}}),access:async()=>({active:true,role,name:'Owner'}),db:()=>({query:execute,connect:async()=>client}),prospectingFetch:fetcher,prospectingEnv:env});
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(()=>new Promise(r=>server.close(r)));
-  return {url:`http://127.0.0.1:${server.address().port}`,calls,cache};
+  return {url:`http://127.0.0.1:${server.address().port}`,calls,cache,budgets};
 }
 const search=(f,body=query)=>fetch(f.url+'/api/admin/prospecting/search',{method:'POST',headers,body:JSON.stringify(body)});
 
@@ -134,4 +143,41 @@ test('Referências Google expiram e são vinculadas ao usuário',async()=>{
 test('Google respeita limite e falha de fonte sem consulta ou dados armazenados',async t=>{
   const f=await fixture(t,{env:googleEnv,throttled:true,fetcher:async()=>{throw Error('Não deveria chamar');}});assert.equal((await search(f,googleQuery)).status,429);
   const denied=await fixture(t,{env:googleEnv,fetcher:async()=>new Response('{}',{status:403})});assert.equal((await search(denied,googleQuery)).status,502);assert.equal(denied.cache.size,0);
+});
+
+test('Google tem limites separados, limitados abaixo da franquia mesmo com configuração maior',async()=>{
+  const {googleLimits}=await import('../server/google-budget.js');
+  assert.deepEqual(googleLimits({}),{search:{daily:150,monthly:4500},details:{daily:30,monthly:900}});
+  assert.equal(googleLimits({GOOGLE_PLACES_SEARCH_MONTHLY_LIMIT:'999999'}).search.monthly,4500);
+  assert.equal(googleLimits({GOOGLE_PLACES_DETAILS_MONTHLY_LIMIT:'700'}).details.monthly,700);
+  assert.equal(googleLimits({GOOGLE_PLACES_SEARCH_DAILY_LIMIT:'0'}).search.daily,0);
+  assert.throws(()=>googleLimits({GOOGLE_PLACES_SEARCH_MONTHLY_LIMIT:'invalid'}),/Confira/);
+});
+test('Google continua disponível quando a antiga quota compartilhada foi esgotada',async t=>{
+  let count=0;const f=await fixture(t,{env:googleEnv,legacyExhausted:true,fetcher:async()=>{count++;return json({places:[place]});}});
+  assert.equal((await search(f,googleQuery)).status,200);assert.equal(count,1);
+  assert.equal(f.budgets.get('month:search'),1);assert.equal(f.budgets.get('day:search'),1);
+  assert.ok(!f.calls.some(x=>x.sql.startsWith('INSERT INTO aw_prospect_usage')));
+  assert.ok(f.calls.some(x=>x.sql.includes("'America/Los_Angeles'")));assert.ok(f.calls.some(x=>x.sql.includes('WHERE aw_google_usage.count<$3')));
+});
+test('Teto mensal bloqueia antes do Google e teto diário não consome o saldo mensal',async t=>{
+  for(const limits of [{googleMonthlyUsed:4500},{googleDailyUsed:150}]){
+    let calls=0;const f=await fixture(t,{env:googleEnv,...limits,fetcher:async()=>{calls++;return json({places:[place]});}});
+    const response=await search(f,googleQuery);assert.equal(response.status,429);assert.equal(calls,0);assert.equal(f.budgets.size,0);assert.equal(f.calls.at(-1).sql,'ROLLBACK');
+  }
+});
+test('Última chamada disponível é aceita; a próxima fica bloqueada sem exceder a quota',async t=>{
+  let calls=0;const f=await fixture(t,{env:googleEnv,googleMonthlyUsed:4499,fetcher:async()=>{calls++;return json({places:[place]});}});
+  assert.equal((await search(f,googleQuery)).status,200);assert.equal((await search(f,googleQuery)).status,429);assert.equal(calls,1);assert.equal(f.budgets.get('month:search'),4500);
+});
+test('Detalhes esgotados não bloqueiam buscas; falhas externas preservam a reserva',async t=>{
+  const f=await fixture(t,{env:googleEnv,fetcher:async()=>json({places:[place]})});const result=await (await search(f,googleQuery)).json();
+  f.budgets.set('month:details',900);
+  const response=await fetch(f.url+'/api/admin/prospecting/google-details',{method:'POST',headers,body:JSON.stringify({token:result.items[0].detailToken})});assert.equal(response.status,429);
+  assert.equal((await search(f,googleQuery)).status,200);assert.equal(f.budgets.get('month:search'),2);
+  const failed=await fixture(t,{env:googleEnv,fetcher:async()=>new Response('{}',{status:503})});assert.equal((await search(failed,googleQuery)).status,502);assert.equal(failed.budgets.get('month:search'),1);
+});
+test('Sem registrar orçamento no banco, nenhuma chamada Google é enviada',async t=>{
+  let calls=0;const f=await fixture(t,{env:googleEnv,budgetOffline:true,fetcher:async()=>{calls++;return json({places:[place]});}});
+  assert.equal((await search(f,googleQuery)).status,503);assert.equal(calls,0);assert.equal(f.calls.at(-1).sql,'ROLLBACK');
 });
