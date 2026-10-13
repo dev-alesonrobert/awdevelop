@@ -72,8 +72,8 @@ test('Conector SearXNG usa o serviço configurado e mantém token no servidor',a
 });
 test('Binding privado tem prioridade, autentica com token derivado e limita tamanho da consulta',async()=>{
   const secret='testing-only-authentication-secret-12345';
-  const result=await searchExternal({...query,provider:'web',keyword:'x'.repeat(100),location:{...query.location,name:'r'.repeat(500)}},{env:{SEARXNG_INTERNAL_URL:'http://search.internal',SEARXNG_URL:'https://ignored.example',BETTER_AUTH_SECRET:secret},fetcher:async(url,options)=>{
-    assert.equal(url.hostname,'search.internal');assert.ok(url.searchParams.get('q').length<=500);
+  const result=await searchExternal({...query,provider:'web',keyword:'x'.repeat(100),location:{...query.location,name:'r'.repeat(500)}},{env:{SEARXNG_INTERNAL_URL:'http://search.internal/private/route/',SEARXNG_URL:'https://ignored.example',BETTER_AUTH_SECRET:secret},fetcher:async(url,options)=>{
+    assert.equal(url.hostname,'search.internal');assert.equal(url.pathname,'/private/route/search');assert.ok(url.searchParams.get('q').length<=500);
     assert.equal(options.headers.Authorization,'Bearer '+createHmac('sha256',secret).update('awdevelop:searxng:v1').digest('hex'));
     assert.ok(!options.headers.Authorization.includes(secret));return json({results:[]});
   }});
