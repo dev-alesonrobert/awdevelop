@@ -35,7 +35,7 @@ def create_app():
     session_secret = hmac.new(secret.encode(), b'awdevelop:searxng:session', hashlib.sha256).hexdigest()
     # Do not give the search engines database, Vercel or authentication credentials.
     for key in list(os.environ):
-        if not (key in {'PATH', 'HOME', 'LANG', 'SSL_CERT_DIR', 'SSL_CERT_FILE', 'PYTHONPATH', 'SEARXNG_SETTINGS_PATH'} or key.startswith('GRANIAN_')):
+        if not (key in {'PATH', 'HOME', 'LANG', 'SSL_CERT_DIR', 'SSL_CERT_FILE', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'PYTHONPATH', 'SEARXNG_SETTINGS_PATH'} or key.startswith('GRANIAN_')):
             del os.environ[key]
     os.environ['SEARXNG_SECRET'] = session_secret
     from searx.webapp import app as engine

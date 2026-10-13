@@ -1,4 +1,5 @@
 FROM node:22-bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install --global npm@11.9.0 && npm ci --omit=dev --ignore-scripts
@@ -9,4 +10,4 @@ ENV NODE_USE_SYSTEM_CA=1
 ENV NODE_ENV=production
 ENV PORT=80
 EXPOSE 80
-CMD ["node", "api/container.mjs"]
+CMD ["sh", "-c", "update-ca-certificates && exec node api/container.mjs"]
