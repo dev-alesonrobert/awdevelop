@@ -1,12 +1,15 @@
-# SearXNG na Vercel
+# SearXNG privado na Vercel
 
-Serviço container privado configurado pelo `vercel.json`, acessível apenas ao serviço `web` por binding. Não há rota pública do motor de busca, outro domínio, VPS ou chave Google.
+O projeto usa três serviços: `web` entrega o frontend Angular, `backend` executa a API Express em container e `search` executa o SearXNG. As rotas públicas `/api/:path*` chegam ao backend com o prefixo original. As demais rotas chegam ao frontend.
 
-A Vercel injeta `SEARXNG_INTERNAL_URL` no backend. As chamadas são autenticadas com um HMAC separado, derivado do segredo de autenticação já existente. O segredo original não é transmitido na requisição. O wrapper remove as credenciais do banco e da Vercel do ambiente antes de carregar os mecanismos de busca.
+Somente o backend recebe o binding `SEARXNG_INTERNAL_URL`. O motor não possui rota pública e exige um HMAC derivado do segredo de autenticação existente. O segredo original não é enviado na requisição. Antes de carregar os mecanismos, o gateway remove credenciais do banco e da Vercel do ambiente.
 
-Containers e Services estão em beta em todos os planos e seguem a cobrança de Functions e Service Requests. Não são serviços gratuitos ilimitados. O motor pode sofrer bloqueios dos mecanismos e partidas a frio.
+O Dockerfile da API fica na raiz porque a Vercel usa a pasta do Dockerfile como contexto. Ele fixa npm 11.9.0, compatível com o lockfile, e inicia `api/container.mjs` na porta 80. O Dockerfile do motor fica em `infra/searxng-vercel` e usa imagem SearXNG fixada por digest.
 
-https://vercel.com/docs/functions/runtimes/container
-https://vercel.com/docs/services
+A pesquisa preserva revisão manual, cache, deduplicação e cotas da API. Resultados são sugestões públicas, não uma confirmação de dados comerciais.
 
-A configuração Docker para VPS permanece em `infra/searxng` como alternativa. Quando existe binding Vercel, ele tem prioridade sobre `SEARXNG_URL` externo.
+Containers e Services estão em beta e seguem as cotas e a cobrança da Vercel. Mecanismos externos podem bloquear consultas; partidas a frio podem aumentar a latência.
+
+Referências: https://vercel.com/docs/functions/runtimes/container e https://vercel.com/docs/services
+
+A alternativa para VPS permanece em `infra/searxng`. Um binding Vercel tem prioridade sobre `SEARXNG_URL` externo.
