@@ -5,6 +5,7 @@ export const categories = [
   {id:'restaurant',label:'Restaurantes',key:'amenity',value:'restaurant'},
   {id:'barber',label:'Barbearias e cabeleireiros',key:'shop',value:'hairdresser'},
   {id:'beauty',label:'Salões de beleza',key:'shop',value:'beauty'},
+  {id:'aesthetic',label:'Clínicas de estética',key:'beauty',value:'aesthetic'},
   {id:'cafe',label:'Cafeterias',key:'amenity',value:'cafe'},
   {id:'bar',label:'Bares',key:'amenity',value:'bar'},
   {id:'hardware',label:'Materiais de construção',key:'shop',value:'doityourself|hardware'},
