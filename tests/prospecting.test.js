@@ -104,3 +104,34 @@ test('Gateway privado exige autenticação e só encaminha pesquisa JSON',async 
   assert.equal((await fetch(base+'/other',{headers:{Authorization:'Bearer '+token}})).status,404);
   const response=await fetch(base+'/search?q=lead',{headers:{Authorization:'Bearer '+token}});assert.equal(response.status,200);assert.equal((await response.json()).results.length,1);assert.equal(called,1);
 });
+
+const googleEnv={GOOGLE_PLACES_API_KEY:'testing-only-google-key',BETTER_AUTH_SECRET:'testing-only-authentication-secret-12345'};
+const googleQuery={...query,provider:'google'};
+const place={id:'ChIJ_test',displayName:{text:'Empresa Google Teste'},formattedAddress:'Rua de teste, Rio de Janeiro',googleMapsUri:'https://maps.google.com/?cid=123',attributions:[{provider:'Fornecedor',providerUri:'https://example.com'}]};
+test('Google sem chave fica desabilitado e não consome quota nem expõe configuração',async t=>{
+  const f=await fixture(t);const config=await (await fetch(f.url+'/api/admin/prospecting/config')).json();assert.equal(config.googleEnabled,false);
+  assert.equal((await search(f,googleQuery)).status,503);assert.equal(f.calls.length,0);
+});
+test('Busca Google usa máscara Pro, chave no header e não persiste conteúdo nem reutiliza cache',async t=>{
+  let count=0;const f=await fixture(t,{env:googleEnv,fetcher:async(url,options)=>{count++;assert.equal(String(url),'https://places.googleapis.com/v1/places:searchText');assert.equal(options.headers['X-Goog-Api-Key'],googleEnv.GOOGLE_PLACES_API_KEY);assert.ok(!options.headers['X-Goog-FieldMask'].includes('Phone'));assert.ok(!options.headers['X-Goog-FieldMask'].includes('*'));const body=JSON.parse(options.body);assert.equal(body.pageSize,20);assert.equal(body.regionCode,'BR');assert.equal(body.locationBias.circle.center.latitude,query.location.lat);return json({places:[place,place]});}});
+  for(let i=0;i<2;i++){const response=await search(f,googleQuery);assert.equal(response.status,200);assert.match(response.headers.get('cache-control'),/no-store/);const data=await response.json();assert.equal(data.cached,false);assert.equal(data.items.length,1);assert.equal(data.items[0].source,'Google Maps');assert.equal(data.items[0].phone,'');assert.ok(data.items[0].detailToken);assert.ok(!JSON.stringify(data).includes(googleEnv.GOOGLE_PLACES_API_KEY));}
+  assert.equal(count,2);assert.ok(!f.calls.some(x=>x.sql.includes('aw_prospect_cache')));assert.ok(!JSON.stringify(f.calls).includes(place.displayName.text));
+});
+test('Detalhes Google exigem referência válida, consultam contatos sob demanda e nunca armazenam dados',async t=>{
+  let count=0;const f=await fixture(t,{env:googleEnv,fetcher:async(url,options)=>{count++;if(count===1)return json({places:[place]});assert.equal(new URL(url).pathname,'/v1/places/ChIJ_test');assert.match(options.headers['X-Goog-FieldMask'],/internationalPhoneNumber,websiteUri/);return json({...place,internationalPhoneNumber:'+55 21 99999-9999',websiteUri:'https://empresa.example'});}});
+  const result=await (await search(f,googleQuery)).json();const token=result.items[0].detailToken;
+  const details=token=>fetch(f.url+'/api/admin/prospecting/google-details',{method:'POST',headers,body:JSON.stringify({token})});
+  assert.equal((await details(token+'tampered')).status,409);assert.equal(count,1);
+  const response=await details(token);assert.equal(response.status,200);assert.match(response.headers.get('cache-control'),/no-store/);const item=(await response.json()).item;assert.equal(item.phone,'+55 21 99999-9999');assert.equal(item.email,'');assert.equal(item.detailsLoaded,true);assert.ok(!f.calls.some(x=>x.sql.includes('aw_prospect_cache')));
+  const imported=await fetch(f.url+'/api/admin/prospecting/import',{method:'POST',headers,body:JSON.stringify({searchId:result.searchId,key:item.key,name:item.name,phone:item.phone,email:'',website:item.website,service:'Site'})});assert.equal(imported.status,400);assert.ok(!f.calls.some(x=>x.sql.includes('aw_quotes')));
+});
+test('Referências Google expiram e são vinculadas ao usuário',async()=>{
+  const {detailToken,verifyDetailToken}=await import('../server/google-places.js');const token=detailToken(place.id,'Restaurantes','owner@example.com',googleEnv,1000);
+  assert.equal(verifyDetailToken(token,'owner@example.com',googleEnv,2000).placeId,place.id);
+  assert.throws(()=>verifyDetailToken(token,'another@example.com',googleEnv,2000),/Refaça/);
+  assert.throws(()=>verifyDetailToken(token,'owner@example.com',googleEnv,1000+15*60*1000),/Refaça/);
+});
+test('Google respeita limite e falha de fonte sem consulta ou dados armazenados',async t=>{
+  const f=await fixture(t,{env:googleEnv,throttled:true,fetcher:async()=>{throw Error('Não deveria chamar');}});assert.equal((await search(f,googleQuery)).status,429);
+  const denied=await fixture(t,{env:googleEnv,fetcher:async()=>new Response('{}',{status:403})});assert.equal((await search(denied,googleQuery)).status,502);assert.equal(denied.cache.size,0);
+});

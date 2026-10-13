@@ -1,0 +1,25 @@
+<main>
+<a routerLink="/">← AW Develop</a>
+@if(privacy){
+<h1>Privacidade</h1>
+<p>Esta página descreve o tratamento de informações no site e no painel da AW Develop.</p>
+<h2>Informações utilizadas</h2>
+<p>Solicitações de orçamento e contatos comerciais podem incluir nome, telefone, e-mail e informações enviadas pelo interessado. O painel utiliza uma sessão autenticada e cookies funcionais para permitir acesso às ferramentas da equipe.</p>
+<h2>Consultas externas</h2>
+<p>Ao buscar uma região, o texto informado é enviado ao serviço de localização. Consultas de negócios são enviadas à fonte selecionada. Ao selecionar Google Maps, o segmento, a região, coordenadas e palavras adicionais são enviados à Google Places API. O Google trata essas informações conforme sua <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>, incorporada por referência ao uso dessa integração.</p>
+<p>Resultados e detalhes do Google são exibidos para consulta e não são armazenados pela integração no banco do CRM. Outras fontes podem utilizar cache temporário, conforme indicado no painel. Contadores de uso permitem limitar consultas. Informações obtidas diretamente com uma empresa podem ser cadastradas separadamente pela equipe no CRM.</p>
+<h2>Acesso e solicitações</h2>
+<p>O painel comercial é restrito a administradores autorizados. Para solicitar informações sobre seus dados, correção ou exclusão, utilize o formulário de contato da AW Develop e descreva sua solicitação.</p>
+} @else {
+<h1>Termos de uso</h1>
+<p>O site apresenta serviços da AW Develop. O painel é destinado à equipe autorizada para administrar conteúdo e acompanhar contatos comerciais.</p>
+<h2>Consultas de negócios</h2>
+<p>Resultados externos são referências para pesquisa. A cobertura, disponibilidade e atualização dependem de cada fonte. A ausência de site ou telefone não comprova que a empresa não possui esses canais.</p>
+<h2>Google Maps</h2>
+<p>O uso da integração Google Maps está sujeito aos <a href="https://cloud.google.com/maps-platform/terms" target="_blank" rel="noopener noreferrer">Termos da Plataforma Google Maps</a> e aos <a href="https://www.google.com/help/terms_maps/" target="_blank" rel="noopener noreferrer">Termos adicionais do Google Maps</a>, incorporados por referência. Mantenha as atribuições exibidas e respeite as restrições de armazenamento, extração e redistribuição dos dados.</p>
+<p>A integração não importa os dados do Google para o CRM. As informações para cadastro comercial devem ser obtidas diretamente com a empresa ou em fonte independente com autorização de uso. Consultas e detalhes podem gerar cobrança na conta Google Cloud do responsável pela integração e estão sujeitos às cotas configuradas.</p>
+<h2>Uso responsável</h2>
+<p>Não utilize os resultados para práticas abusivas. Verifique a identidade e os canais da empresa antes de qualquer abordagem. A equipe é responsável pelas informações e pelas comunicações comerciais que cadastrar ou realizar.</p>
+}
+<p><a routerLink="/termos">Termos</a> · <a routerLink="/privacidade">Privacidade</a> · <a routerLink="/">Contato</a></p>
+</main>

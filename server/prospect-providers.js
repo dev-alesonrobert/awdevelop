@@ -18,7 +18,7 @@ export const categories = [
   {id:'hotel',label:'Hotéis',key:'tourism',value:'hotel'}
 ];
 export const searchSchema = z.object({
-  provider:z.enum(['osm','web']), category:z.enum(categories.map(x=>x.id)),
+  provider:z.enum(['osm','web','google']), category:z.enum(categories.map(x=>x.id)),
   location:z.object({name:z.string().trim().min(2).max(500),lat:z.number().min(-34).max(6),lon:z.number().min(-74).max(-34)}),
   radius:z.number().int().min(1).max(10).default(3), keyword:z.string().trim().max(100).default('')
 });
@@ -79,3 +79,4 @@ export async function searchExternal(query,{fetcher=fetch,env=process.env}={}) {
   const prospects=osmProspects(data,query);
   return query.keyword?prospects.filter(x=>x.name.toLocaleLowerCase('pt-BR').includes(query.keyword.toLocaleLowerCase('pt-BR'))):prospects;
 }
+
