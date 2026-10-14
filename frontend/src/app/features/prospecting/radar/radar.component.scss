@@ -1,0 +1,10 @@
+:host { display: block; margin: 24px 0; }
+.heading h2 { margin: 0 0 6px; }
+.heading p { color: var(--muted); margin: 0 0 16px; font-size: .875rem; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+button { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 18px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); text-align: left; }
+button.active { border-color: var(--purple); background: var(--purple-soft); }
+button:focus-visible { outline: 2px solid var(--purple-text); outline-offset: 3px; }
+strong { font-size: 1.75rem; }
+span { font-size: .85rem; }
+@media(max-width: 700px) { .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
