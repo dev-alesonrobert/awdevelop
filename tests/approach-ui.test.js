@@ -63,7 +63,7 @@ test('IA Google acrescenta empresa e remetente automaticamente na mensagem e no 
  const fixture=TestBed.createComponent(ApproachComponent),component=fixture.componentInstance;
  fixture.componentRef.setInput('prospect',{name:'Air Flash - Centro Automotivo',source:'Google Maps',phone:''});
  fixture.componentRef.setInput('sender','Aleson Roberto');fixture.detectChanges();await tick();
- fixture.componentRef.setInput('result',{method:'ai',message:'Criamos sites. Podemos conversar?',followup:'Retomando a proposta de sites.'});
+ fixture.componentRef.setInput('result',{method:'ai',message:'Olá! Sou Aleson Roberto, da AWDevelop. Criamos sites. Podemos conversar?',followup:'Olá! Retomando a proposta de sites.'});
  fixture.detectChanges();await tick();fixture.detectChanges();
  assert.equal(component.message,'Olá, equipe da Air Flash - Centro Automotivo! Sou Aleson Roberto, da AWDevelop.\n\nCriamos sites. Podemos conversar?');
  assert.equal(component.followup,'Olá, equipe da Air Flash - Centro Automotivo!\n\nRetomando a proposta de sites.');
