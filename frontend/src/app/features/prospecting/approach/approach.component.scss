@@ -1,4 +1,13 @@
-:host { display: block; margin-bottom: 24px; }
+ :host { display: contents; }
+dialog { box-sizing: border-box; width: min(1040px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); color: var(--ink); box-shadow: 0 24px 90px #0008; overscroll-behavior: contain; }
+dialog::backdrop { background: #000b; backdrop-filter: blur(4px); }
+.card { margin: 0; border: 0; padding: 0 24px 24px; box-shadow: none; }
+header { position: sticky; top: 0; z-index: 1; padding: 20px 0 16px; background: var(--panel); border-bottom: 1px solid var(--line); }
+header > div { min-width: 0; flex: 1; }
+h2 { overflow-wrap: anywhere; }
+.message:empty { display: none; }
+.message { color: var(--ink); line-height: 1.6; }
+@media(max-width:700px) { dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 24px); border-radius: 14px; } .card { padding: 0 16px 20px; } header { padding-top: 16px; } }
 header, .draft-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 h2 { margin: 8px 0 0; }
 .eyebrow { color: var(--purple-text); font-size: .75rem; letter-spacing: .08em; }

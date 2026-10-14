@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewInit, Component, ElementRef, OnDestroy, effect, inject, input, output, signal, viewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Prospect } from '../prospecting.models';
 import { ApproachMessages, ApproachResult, Offer } from './approach.models';
@@ -11,7 +12,23 @@ import { whatsapp } from '../../../core/commercial-models';
   styleUrl: './approach.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ApproachComponent {
+export class ApproachComponent implements AfterViewInit, OnDestroy {
+  private readonly document = inject(DOCUMENT);
+  private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
+  private previousOverflow = '';
+  readonly status = input('');
+
+  ngAfterViewInit() {
+    this.previousOverflow = this.document.body.style.overflow;
+    this.document.body.style.overflow = 'hidden';
+    this.dialog().nativeElement.showModal();
+  }
+  ngOnDestroy() { this.document.body.style.overflow = this.previousOverflow; }
+  cancel(event: Event) {
+    event.preventDefault();
+    if (!this.busy()) this.closed.emit();
+  }
+
   private offerBody(value: string) {
     // The model can still return a greeting despite the body-only instruction.
     return value.trim()
