@@ -1,0 +1,57 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import ts from 'typescript';
+import {constructorParametersDownlevelTransform} from '@angular/compiler-cli/private/tooling';
+import {fileURLToPath} from 'node:url';
+import '@angular/compiler';
+import {TestBed} from '@angular/core/testing';
+import {BrowserTestingModule,platformBrowserTesting} from '@angular/platform-browser/testing';
+import {parseHTML} from 'linkedom';
+const {document}=parseHTML('<html><body></body></html>');
+globalThis.document=document;globalThis.window=document.defaultView;globalThis.Node=window.Node;globalThis.HTMLElement=window.HTMLElement;
+Object.defineProperty(window.HTMLSelectElement.prototype,'value',{configurable:true,get(){return [...this.options].find(x=>x.selected)?.value??'';},set(value){for(const x of this.options)x.selected=x.value===value;}});
+const create=document.createElement.bind(document);document.createElement=(name,...args)=>{const el=create(name,...args);if(['fieldset','option'].includes(name))Object.defineProperty(el,'disabled',{get(){return this.hasAttribute('disabled');},set(v){this.toggleAttribute('disabled',!!v);}});return el;};
+TestBed.initTestEnvironment(BrowserTestingModule,platformBrowserTesting());
+const directory=new URL('../.angular/approach-tests/',import.meta.url);await mkdir(directory,{recursive:true});
+for(const name of ['core/commercial-models','features/prospecting/approach/approach.component']){
+ let source=await readFile(new URL('../frontend/src/app/'+name+'.ts',import.meta.url),'utf8');
+ const template=source.match(/templateUrl:\s*'([^']+)'/);
+ if(template)source=source.replace(template[0],'template:'+JSON.stringify(await readFile(new URL('../frontend/src/app/features/prospecting/approach/'+template[1],import.meta.url),'utf8')));
+ source=source.replace(/styleUrl:\s*'[^']+'/,'styles:[]');
+ const sourcePath=fileURLToPath(new URL('../frontend/src/app/'+name+'.ts',import.meta.url));
+ const options={module:ts.ModuleKind.ES2022,target:ts.ScriptTarget.ES2022,moduleResolution:ts.ModuleResolutionKind.Bundler,experimentalDecorators:true,skipLibCheck:true};
+ const host=ts.createCompilerHost(options),read=host.readFile;host.readFile=p=>p===sourcePath?source:read(p);
+ const program=ts.createProgram([sourcePath],options,host);let result='';
+ program.emit(program.getSourceFile(sourcePath),(_p,text)=>{result=text;},undefined,false,{before:[constructorParametersDownlevelTransform(program)]});
+ result=result.replace(/from ['"]((?:\.\.\/|\.\/)[^'"]+)['"]/g,(_,path)=>'from "./'+path.split('/').at(-1)+'.mjs"');
+ await writeFile(new URL(name.split('/').at(-1)+'.mjs',directory),result);
+}
+const {ApproachComponent}=await import('../.angular/approach-tests/approach.component.mjs');
+const tick=()=>new Promise(r=>setTimeout(r,0));
+test('Editor renderiza rascunho como texto, copia edição e salva sem registrar envio',async t=>{
+ TestBed.configureTestingModule({imports:[ApproachComponent]});t.after(()=>TestBed.resetTestingModule());
+ const fixture=TestBed.createComponent(ApproachComponent),component=fixture.componentInstance;
+ fixture.componentRef.setInput('prospect',{name:'Empresa <script>teste</script>',source:'OpenStreetMap',phone:'21999999999'});
+ fixture.componentRef.setInput('canSave',true);
+ fixture.componentRef.setInput('result',{method:'template',message:'Olá <script>alert(1)</script>',followup:'Retorno de teste'});
+ fixture.detectChanges();await tick();fixture.detectChanges();
+ assert.match(fixture.nativeElement.textContent,/sem IA/);assert.equal(fixture.nativeElement.querySelectorAll('script').length,0);
+ component.message='Texto revisado & confirmado';
+ let copied='';Object.defineProperty(globalThis,'navigator',{configurable:true,value:{clipboard:{writeText:async text=>{copied=text;}}}});
+ await component.copy('message');assert.equal(copied,component.message);
+ assert.equal(new URL(component.whatsappUrl()).searchParams.get('text'),component.message);
+ let saved;component.saved.subscribe(value=>{saved=value;});fixture.detectChanges();
+ [...fixture.nativeElement.querySelectorAll('button')].find(x=>x.textContent.includes('Salvar rascunho')).click();
+ assert.deepEqual(saved,{message:component.message,followup:component.followup});
+ fixture.destroy();
+});
+test('Copiar sem permissão informa alternativa e não perde mensagem',async t=>{
+ TestBed.configureTestingModule({imports:[ApproachComponent]});t.after(()=>TestBed.resetTestingModule());
+ const fixture=TestBed.createComponent(ApproachComponent),component=fixture.componentInstance;
+ fixture.componentRef.setInput('prospect',{name:'Empresa',source:'Google Maps',phone:''});fixture.detectChanges();await tick();
+ Object.defineProperty(globalThis,'navigator',{configurable:true,value:{clipboard:{writeText:async()=>{throw Error('denied');}}}});
+ component.message='Mensagem preservada';await component.copy('message');
+ assert.match(component.feedback(),/copie manualmente/);assert.equal(component.message,'Mensagem preservada');assert.equal(component.whatsappUrl(),'');
+ fixture.destroy();
+});
