@@ -22,8 +22,9 @@ nav a {
   font-size: 14px;
 }
 nav .active {
-  background: #2b233e;
-  color: #ede5ff;
+  background: var(--purple-soft);
+  box-shadow: inset 3px 0 var(--purple);
+  color: var(--purple-text);
 }
 @media (max-width: 650px) {
   :host {

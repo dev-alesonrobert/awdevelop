@@ -44,14 +44,14 @@ button:focus-visible,a:focus-visible {
   font-size: 14px;
   font-weight: 600;
   min-height: 48px;
-  background: #8760da;
+  background: var(--purple);
   color: #fff
 }
 .button:hover {
-  background: #9873e5
+  background: var(--purple-hover)
 }
 .purple {
-  background: #8760da;
+  background: var(--purple);
   color: white
 }
 .section {

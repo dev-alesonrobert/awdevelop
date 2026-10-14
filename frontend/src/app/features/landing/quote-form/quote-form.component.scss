@@ -44,14 +44,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   font-size: 14px;
   font-weight: 600;
   min-height: 48px;
-  background: #8760da;
+  background: var(--purple);
   color: #fff
 }
 .button:hover {
-  background: #9873e5
+  background: var(--purple-hover)
 }
 .purple {
-  background: #8760da;
+  background: var(--purple);
   color: white
 }
 .outline {
@@ -182,7 +182,7 @@ h3 {
   content: '';
   width: 5px;
   height: 5px;
-  background: #ae89e7;
+  background: var(--purple);
   position: absolute;
   top: 9px;
   left: 0
@@ -205,7 +205,7 @@ h3 {
   display: block;
   height: 100%;
   width: 33.333%;
-  background: #a77ae8;
+  background: var(--purple);
   transition: width .2s
 }
 .step-buttons {
@@ -269,7 +269,7 @@ h3 {
 .quote-consent input {
   width: 18px;
   flex: 0 0 18px;
-  accent-color: #a282f1
+  accent-color: var(--purple)
 }
 .quote-trap {
   position: absolute;
