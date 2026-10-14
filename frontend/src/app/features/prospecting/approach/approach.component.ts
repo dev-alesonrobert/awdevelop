@@ -12,6 +12,12 @@ import { whatsapp } from '../../../core/commercial-models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApproachComponent {
+  private offerBody(value: string) {
+    // The model can still return a greeting despite the body-only instruction.
+    return value.trim()
+      .replace(/^(?:olá|oi|bom dia|boa tarde|boa noite)(?=[\s,!?.])[^.!?\n]*[.!?]\s*/iu, '')
+      .replace(/^(?:eu\s+)?sou\s+[^.!?\n]{1,160}?\bAWDevelop[.!?]\s*/iu, '');
+  }
   readonly prospect = input.required<Prospect>();
   readonly sender = input('Aleson Roberto');
   readonly aiEnabled = input(false);
@@ -34,10 +40,10 @@ export class ApproachComponent {
       const googleAI = result?.method === 'ai' && this.prospect().source === 'Google Maps';
       const company = this.prospect().name.replace(/[\r\n]+/g, ' ').trim().slice(0, 120);
       this.message = googleAI
-        ? `Olá, equipe da ${company}! Sou ${this.form.sender}, da AWDevelop.\n\n${result.message}`
+        ? `Olá, equipe da ${company}! Sou ${this.form.sender}, da AWDevelop.\n\n${this.offerBody(result.message)}`
         : result?.message ?? '';
       this.followup = googleAI
-        ? `Olá, equipe da ${company}!\n\n${result.followup}`
+        ? `Olá, equipe da ${company}!\n\n${this.offerBody(result.followup)}`
         : result?.followup ?? '';
       this.feedback.set('');
     });
