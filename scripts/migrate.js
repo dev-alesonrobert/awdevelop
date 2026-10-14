@@ -35,6 +35,7 @@ await getPool().query(`
  CREATE TABLE IF NOT EXISTS aw_prospect_cache(id uuid PRIMARY KEY,cache_key text UNIQUE NOT NULL,payload jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),expires_at timestamptz NOT NULL);
  CREATE TABLE IF NOT EXISTS aw_prospect_limits(key text PRIMARY KEY,next_at timestamptz NOT NULL);
  CREATE TABLE IF NOT EXISTS aw_prospect_usage(day date PRIMARY KEY,count integer NOT NULL);
+ CREATE TABLE IF NOT EXISTS aw_ai_usage(day date PRIMARY KEY,count integer NOT NULL CHECK(count>=0));
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS prospect_source_key text;
  ALTER TABLE aw_quotes ADD COLUMN IF NOT EXISTS prospect_source_url text NOT NULL DEFAULT '';
  CREATE UNIQUE INDEX IF NOT EXISTS aw_quotes_prospect_key ON aw_quotes(prospect_source_key) WHERE prospect_source_key IS NOT NULL;
@@ -96,4 +97,5 @@ for (const [email,token] of [[process.env.ADMIN_EMAIL,process.env.ADMIN_SETUP_TO
 }
 await getPool().end();
 console.log('Banco inicializado. Conteúdo existente preservado.');
+
 

@@ -2,12 +2,14 @@ import { googleLimits, reserveGoogleCall } from './google-budget.js';
 import { googleEnabled, searchGoogle, googleDetails, verifyDetailToken } from './google-places.js';
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
+import { installApproaches } from './approaches.js';
 import { categories, searchSchema, hash, safeLink, fetchJSON, searchExternal, ProviderError } from './prospect-providers.js';
 
 const email=z.union([z.literal(''),z.email().max(254)]);
 const importSchema=z.object({searchId:z.uuid(),key:z.string().max(120),name:z.string().trim().min(2).max(120),phone:z.string().trim().max(40),email,website:z.union([z.literal(''),z.url().max(2048)]).refine(x=>!x||safeLink(x)),service:z.string().trim().min(2).max(150)});
-export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
+export function installProspecting(app,{db,fetcher=fetch,env=process.env,generate}) {
   app.use('/api/admin/prospecting',(req,res,next)=>['owner','admin'].includes(req.role)?next():res.status(403).json({error:'Sua conta não possui acesso à prospecção.'}));
+  installApproaches(app,{db,env,generate});
   const fail=(res,error)=>{if(error instanceof ProviderError)return res.status(error.status).json({error:error.message});throw error;};
   async function cached(key) {return (await db().query('SELECT id,payload,created_at FROM aw_prospect_cache WHERE cache_key=$1 AND expires_at>now()',[key])).rows[0];}
   async function cache(key,payload,days) {

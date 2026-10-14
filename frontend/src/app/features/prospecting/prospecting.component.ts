@@ -5,8 +5,9 @@ import { RouterLink } from '@angular/router';
 import { PageHeadingComponent } from '../../shared/page-heading/page-heading.component';
 import { RadarComponent } from './radar/radar.component';
 import { PipelineComponent } from '../crm/pipeline/pipeline.component';
+import { ApproachComponent } from './approach/approach.component';
 import { ProspectingPage } from './prospecting-page';
-@Component({ selector: 'aw-prospecting', imports: [FormsModule, DatePipe, RouterLink, PageHeadingComponent, RadarComponent, PipelineComponent], providers: [ProspectingPage], templateUrl: './prospecting.component.html', styleUrl: './prospecting.component.scss', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'aw-prospecting', imports: [FormsModule, DatePipe, RouterLink, PageHeadingComponent, RadarComponent, PipelineComponent, ApproachComponent], providers: [ProspectingPage], templateUrl: './prospecting.component.html', styleUrl: './prospecting.component.scss', changeDetection: ChangeDetectionStrategy.OnPush })
 export class ProspectingComponent {
     readonly page = inject(ProspectingPage);
     constructor() { void this.page.initialize(); }

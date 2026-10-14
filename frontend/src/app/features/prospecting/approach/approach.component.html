@@ -1,0 +1,26 @@
+<section class="card" aria-label="Editor de abordagem">
+  <header><div><span class="eyebrow">ABORDAGEM</span><h2>{{prospect().name}}</h2></div><button type="button" class="secondary" [disabled]="busy()" (click)="closed.emit()">Fechar</button></header>
+  <form (ngSubmit)="generate()"><fieldset [disabled]="busy()">
+    <div class="offer-grid">
+      <label>Seu nome<input name="sender" [(ngModel)]="form.sender" (ngModelChange)="changed.emit()" required minlength="2" maxlength="80"></label>
+      <label>Serviço que você oferece<input name="service" [(ngModel)]="form.service" (ngModelChange)="changed.emit()" required minlength="2" maxlength="150" placeholder="Sites, sistemas ou automações"></label>
+      <label class="benefit">Benefício principal<input name="benefit" [(ngModel)]="form.benefit" (ngModelChange)="changed.emit()" required minlength="2" maxlength="300"></label>
+      <label>Objetivo<select name="objective" [(ngModel)]="form.objective" (ngModelChange)="changed.emit()"><option value="conversation">Iniciar conversa</option><option value="meeting">Marcar reunião</option><option value="proposal">Oferecer proposta</option></select></label>
+      <label>Tom<select name="tone" [(ngModel)]="form.tone" (ngModelChange)="changed.emit()"><option value="natural">Natural</option><option value="professional">Profissional</option></select></label>
+      <label>Geração<select name="mode" [(ngModel)]="form.mode" (ngModelChange)="changed.emit()"><option value="template">Modelo personalizado</option><option value="ai" [disabled]="!aiEnabled()||prospect().source==='Google Maps'">{{aiEnabled()?'Com IA':'Com IA — aguardando configuração'}}</option></select></label>
+    </div>
+    <button class="generate">{{busy()?'Preparando…':'Criar abordagem'}}</button>
+  </fieldset></form>
+  @if(prospect().source==='Google Maps'){<p class="muted">Para este resultado, a mensagem usa apenas o nome informado e sua oferta, sem enviar dados do Google à IA.</p>}
+  @if(result();as result){
+    <div class="draft-heading"><h3>Revise sua mensagem</h3><span class="badge">{{result.method==='ai'?'Rascunho de IA':'Modelo personalizado · sem IA'}}</span></div>
+    <div class="draft-grid">
+      <div><label>Primeiro contato<textarea [(ngModel)]="message" (ngModelChange)="changed.emit()" [disabled]="busy()" maxlength="1500" rows="10"></textarea></label><div class="actions"><button type="button" class="secondary" [disabled]="!message.trim()||busy()" (click)="copy('message')">Copiar mensagem</button>@if(whatsappUrl()&&!busy()){<a [href]="whatsappUrl()" target="_blank" rel="noopener noreferrer">Abrir no WhatsApp ↗</a>}</div></div>
+      <div><label>Follow-up<textarea [(ngModel)]="followup" (ngModelChange)="changed.emit()" [disabled]="busy()" maxlength="1000" rows="10"></textarea></label><button type="button" class="secondary" [disabled]="!followup.trim()||busy()" (click)="copy('followup')">Copiar follow-up</button></div>
+    </div>
+    <p class="muted">Confira os dados e adapte o texto antes de enviar. Abrir o WhatsApp não envia nem registra contato automaticamente.</p>
+    @if(canSave()){<button type="button" [disabled]="busy()||message.trim().length<2||followup.trim().length<2" (click)="saved.emit({message,followup})">Salvar rascunho no CRM</button>}
+    @else{<p class="muted">Salve o lead no CRM para guardar o rascunho no histórico.</p>}
+  }
+  <p role="status" aria-live="polite">{{feedback()}}</p>
+</section>

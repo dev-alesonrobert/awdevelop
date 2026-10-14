@@ -5,6 +5,7 @@ import { ProspectingService } from './prospecting.service';
 import { opportunity } from './opportunity';
 import { Board, stages } from '../../core/commercial-models';
 import { CrmStatus } from './prospecting.models';
+import { Offer, ApproachMessages, ApproachResult } from './approach/approach.models';
 @Injectable()
 export class ProspectingPage extends AdminPage {
     private readonly service = inject(ProspectingService);
@@ -16,6 +17,36 @@ export class ProspectingPage extends AdminPage {
     readonly crmStatuses = signal<Record<string, CrmStatus>>({});
     readonly board = signal<Board>({ items: [], stats: [], next: null });
     readonly boardLoaded = signal(false);
+    readonly approachProspect = signal<Prospect | null>(null);
+    readonly approachResult = signal<ApproachResult | null>(null);
+    readonly aiEnabled = signal(false);
+    openApproach(prospect: Prospect) {
+        if (!this.canLeave()) return;
+        this.selected.set(null);
+        this.approachProspect.set(prospect);
+        this.approachResult.set(null);
+        this.clean();
+        this.message.set('');
+    }
+    closeApproach() {
+        if (!this.canLeave()) return;
+        this.approachProspect.set(null);
+        this.approachResult.set(null);
+        this.clean();
+    }
+    async generateApproach(offer: Offer) {
+        const prospect = this.approachProspect(), result = this.result();
+        if (!prospect || !result) return;
+        const messages = await this.request(this.service.approach(result.searchId, prospect, offer));
+        if (messages) { this.approachResult.set(messages); this.changed(); }
+    }
+    async saveApproach(messages: ApproachMessages) {
+        const prospect = this.approachProspect();
+        const id = prospect ? this.saved()[prospect.key] : null;
+        if (!id) return;
+        const result = await this.request(this.service.saveApproach(id, messages));
+        if (result) { this.clean(); this.message.set('Rascunho salvo no histórico do CRM. Nenhuma mensagem foi enviada.'); }
+    }
     view: 'search' | 'pipeline' = 'search';
     radar = '';
     sort = 'priority';
@@ -51,8 +82,12 @@ export class ProspectingPage extends AdminPage {
     site = '';
     form: ImportForm = { name: '', phone: '', email: '', website: '', service: 'Site institucional' };
     appliedDescription = '';
-    async initialize() { const config = await this.request(this.service.config()); if (config)
-        this.config.set(config); }
+    async initialize() {
+        const config = await this.request(this.service.config());
+        if (config) this.config.set(config);
+        const approach = await this.request(this.service.approachConfig());
+        if (approach) this.aiEnabled.set(approach.aiEnabled);
+    }
     async findLocation() {
         if (this.locality.trim().length < 3) {
             this.message.set('Informe um bairro e cidade ou uma cidade com UF.');
@@ -81,6 +116,8 @@ export class ProspectingPage extends AdminPage {
             this.site = '';
             this.radar = '';
             this.result.set(data);
+            this.approachProspect.set(null);
+            this.approachResult.set(null);
             this.selected.set(null);
             this.clean();
             this.saved.set({});
@@ -112,6 +149,8 @@ export class ProspectingPage extends AdminPage {
             return;
         if (!this.canLeave())
             return;
+        this.approachProspect.set(null);
+        this.approachResult.set(null);
         this.selected.set(prospect);
         this.form = { name: prospect.name, phone: prospect.phone, email: prospect.email, website: prospect.website, service: 'Site institucional' };
         this.clean();

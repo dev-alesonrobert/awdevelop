@@ -1,0 +1,17 @@
+:host { display: block; margin-bottom: 24px; }
+header, .draft-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+h2 { margin: 8px 0 0; }
+.eyebrow { color: var(--purple-text); font-size: .75rem; letter-spacing: .08em; }
+fieldset { border: 0; padding: 0; margin: 24px 0 0; min-width: 0; }
+.offer-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.benefit { grid-column: 1 / -1; }
+label { display: grid; gap: 8px; font-size: .85rem; }
+input, select, textarea { box-sizing: border-box; width: 100%; min-width: 0; }
+.generate { margin-top: 20px; }
+.draft-heading { margin-top: 28px; }
+.draft-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+textarea { resize: vertical; line-height: 1.6; min-height: 180px; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.draft-grid button { margin-top: 12px; }
+.muted { font-size: .85rem; line-height: 1.6; }
+@media(max-width:700px) { .offer-grid, .draft-grid { grid-template-columns: minmax(0,1fr); } }
