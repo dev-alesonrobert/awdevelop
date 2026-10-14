@@ -1,4 +1,4 @@
-@if(content();as c){<div class="landing" [style.--bg]="c.settings.background" [style.--accent]="c.settings.accent">@if(preview()){<div class="notice" role="status">PRÉVIA — este conteúdo não está sendo publicado.</div>}
+@if(content();as c){<div class="landing" [style.--bg]="c.settings.background">@if(preview()){<div class="notice" role="status">PRÉVIA — este conteúdo não está sendo publicado.</div>}
 @if(message()){<p class="notice" role="status">{{message()}}</p>}
 <header>
 <a class="brand" href="/" aria-label="Página inicial">
@@ -26,7 +26,7 @@
 <a class="brand" href="/">
 <img [src]="c.settings.logo" [alt]="c.settings.brand">
 </a>
-<p>Sites e sistemas sob medida.</p>@if(active('contato')){<a href="#contato">Vamos conversar</a>}<small>© {{year}} {{c.settings.brand}}</small>
+@if(active('contato')){<a href="#contato">Vamos conversar</a>}<small>© {{year}} {{c.settings.brand}}</small>
 </footer>
 </div>}
 @else{<p class="notice" role="status">{{message()||'Carregando…'}}</p>}

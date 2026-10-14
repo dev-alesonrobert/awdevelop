@@ -1,19 +1,6 @@
-:host {
-  display: block;
-}
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: center;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 20px;
-}
-.eyebrow {
-  margin: 0 0 8px;
-}
-.topbar-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center
-}
+:host { display: block; }
+.topbar { min-height: 86px; display: flex; justify-content: space-between; gap: 20px; align-items: center; border-bottom: 1px solid var(--line); }
+.eyebrow { margin: 0 0 4px; font-size: 9px; }
+.topbar span { font-size: 13px; font-weight: 500; }
+.topbar-actions { display: flex; gap: 10px; align-items: center; }
+.topbar-actions button { font-size: 12px; min-height: 40px; padding: 9px 14px; }

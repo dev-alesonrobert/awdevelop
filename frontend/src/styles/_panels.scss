@@ -1,11 +1,11 @@
 @mixin card {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 22px;
   h3 {
     font-size: 18px;
-    font-weight: 550;
+    font-weight: 600;
     overflow-wrap: anywhere;
   }
   p {

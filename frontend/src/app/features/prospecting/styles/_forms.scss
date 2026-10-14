@@ -56,3 +56,7 @@ input, select {
   .search-grid, .results-filters { grid-template-columns: minmax(0, 1fr); }
   .search-button { width: 100%; }
 }
+
+.search-button { padding-inline: 28px; }
+.location-row button { background: var(--panel-raised); color: #fff; border: 1px solid #484858; }
+.location-row button:hover:not(:disabled) { background: #30303d; }

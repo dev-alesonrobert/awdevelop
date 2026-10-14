@@ -4,7 +4,7 @@
   min-width: 0;
   --prospect-gap: 1rem;
   --prospect-padding: 1.5rem;
-  --prospect-radius: 1rem;
+  --prospect-radius: .75rem;
 }
 
 .card {
@@ -30,10 +30,10 @@
   display: inline-flex;
   align-items: center;
   padding: .35rem .65rem;
-  border: 1px solid #40354f;
+  border: 1px solid #7f61f530;
   border-radius: 999px;
-  background: #292633;
-  color: #e1d7f5;
+  background: var(--purple-soft);
+  color: var(--purple-text);
   font-size: .75rem;
   line-height: 1.4;
 }
@@ -64,3 +64,8 @@
   .intro { align-items: flex-start; flex-direction: column; }
   .section-heading { align-items: flex-start; }
 }
+
+.search-card-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.search-card-header h2 { font-size: 16px; font-weight: 600; margin: 0; }
+.search-card-header span { font-size: 11px; color: var(--muted); }
+.search-card-header + form label { font-weight: 500; }

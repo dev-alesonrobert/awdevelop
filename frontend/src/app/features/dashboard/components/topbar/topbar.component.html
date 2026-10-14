@@ -1,7 +1,7 @@
 <header class="topbar">
   <div>
-    <p class="eyebrow">ÁREA DA EQUIPE</p>
+    <p class="eyebrow">AW DEVELOP</p>
     <span>{{ name() }}</span>
   </div>
-  <div class="topbar-actions">@if(commercial()){<aw-notification-bell />}<button class="secondary" (click)="logout.emit()" [disabled]="busy()">{{ busy() ? 'Saindo…' : 'Sair ↗' }}</button></div>
+  <div class="topbar-actions">@if(commercial()){<aw-notification-bell />}<button class="secondary" (click)="logout.emit()" [disabled]="busy()">{{ busy() ? 'Saindo…' : 'Sair' }}</button></div>
 </header>
