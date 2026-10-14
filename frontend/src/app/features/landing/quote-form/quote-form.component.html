@@ -3,11 +3,7 @@
 <span class="eyebrow">CONTATO</span>
 <h2>{{content().contact.title}}</h2>
 <p>{{content().contact.description}}</p>
-<ul class="contact-benefits">
-<li>O problema que você quer resolver</li>
-<li>O ponto de partida do projeto</li>
-<li>O melhor jeito de conversar</li>
-</ul>
+
 <div class="contact-channels">
 <a [href]="'mailto:'+content().contact.email">{{content().contact.email}}</a>@if(content().contact.whatsapp){<a [href]="'https://wa.me/'+content().contact.whatsapp" target="_blank" rel="noopener">WhatsApp</a>}
 @if(content().contact.instagram){<a [href]="content().contact.instagram" target="_blank" rel="noopener">Instagram</a>}
@@ -60,7 +56,7 @@
 <p>{{form.controls.stage.value}} · {{form.controls.timeline.value}}</p>
 <div class="step-buttons">
 <button class="button" type="button" (click)="send()" [disabled]="busy()">{{busy()?'Enviando…':'Confirmar envio'}}</button>@if(canEdit){<button class="button outline" type="button" (click)="back()" [disabled]="busy()">Editar dados</button>}</div>
-</div>}<p class="form-help">Revise e confirme o envio na última etapa.</p>
+</div>}
 <p role="status">{{message()}}</p>
 </form>
 </section>

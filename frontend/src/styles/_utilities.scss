@@ -1,7 +1,7 @@
 .secondary {
-  background: #292633;
-  color: #e1d7f5;
-  border: 1px solid #40354f;
+  background: var(--panel-raised);
+  color: #fff;
+  border: 1px solid var(--line);
 }
 .eyebrow {
   font-size: 11px;
@@ -29,3 +29,6 @@
 [hidden] {
   display: none !important;
 }
+
+.secondary:hover:not(:disabled) { background: #30303d; border-color: #555467; }
+.message:empty { display: none; }

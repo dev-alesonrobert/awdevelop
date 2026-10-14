@@ -48,5 +48,21 @@ export class LandingComponent {
             this.message.set('Exibindo a versão de referência enquanto o conteúdo está indisponível.');
         }
     } }
-    private apply(content: LandingContent) { this.content.set(content); this.title.setTitle(content.settings.title); this.meta.updateTag({ name: 'description', content: content.settings.description }); }
+    private apply(content: LandingContent) {
+        // Correct legacy imported copy without changing text edited by the team.
+        const legacyCopy: Record<string, string> = {
+            'Um processo claro,do escopo à publicação.': 'Do planejamento à publicação.',
+            'Cada etapa tem uma entrega.Cada entrega passa pela sua revisão.': 'Etapas definidas, com revisão em cada entrega.',
+            'O que seu negócioprecisa fazer melhor?': 'Soluções para sua empresa.',
+            'A solução depende da sua operação.Estas são algumas possibilidades.': 'Sites, sistemas e integrações para o dia a dia do negócio.',
+            'Seu negócio.Sem fronteiras.': 'Seu negócio. Sem fronteiras.',
+            'Vamos definir o quevale a pena construir.': 'Vamos planejar seu projeto.',
+            'Exemplos visuais do que podemos desenvolver.Escolha um projeto para conhecer a proposta.': 'Explore as propostas de design e as funcionalidades de cada conceito.',
+        };
+        const displayContent: LandingContent = {
+            ...content,
+            blocks: Object.fromEntries(Object.entries(content.blocks).map(([key, value]) => [key, legacyCopy[value] ?? value])),
+            portfolio: { ...content.portfolio, description: legacyCopy[content.portfolio.description] ?? content.portfolio.description },
+        };
+        this.content.set(displayContent); this.title.setTitle(content.settings.title); this.meta.updateTag({ name: 'description', content: content.settings.description }); }
 }
