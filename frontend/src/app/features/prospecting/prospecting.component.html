@@ -22,7 +22,7 @@
 @if(!page.config().googleEnabled){<p class="provider-note">Google Maps indisponível. Configure a integração no servidor.</p>}
 </section>
 <p class="message" role="status" aria-live="polite">{{page.message()}}</p>
-@if(page.approachProspect();as prospect){<aw-approach-editor [prospect]="prospect" [sender]="page.auth.profile()?.name||'Aleson Roberto'" [aiEnabled]="page.aiEnabled()" [busy]="page.busy()" [canSave]="!!page.saved()[prospect.key]" [result]="page.approachResult()" (generated)="page.generateApproach($event)" (saved)="page.saveApproach($event)" (changed)="page.changed()" (closed)="page.closeApproach()" />}
+@if(page.approachProspect();as prospect){<aw-approach-editor [prospect]="prospect" [sender]="page.auth.profile()?.name||'Aleson Roberto'" [status]="page.message()" [aiEnabled]="page.aiEnabled()" [busy]="page.busy()" [canSave]="!!page.saved()[prospect.key]" [result]="page.approachResult()" (generated)="page.generateApproach($event)" (saved)="page.saveApproach($event)" (changed)="page.changed()" (closed)="page.closeApproach()" />}
 @if(page.selected();as selected){<section class="card review"><div class="section-heading"><h2>Revisar antes de salvar</h2><button type="button" class="secondary" (click)="page.close()" [disabled]="page.busy()">Fechar</button></div><p>Fonte: <a [href]="selected.sourceUrl" target="_blank" rel="noopener noreferrer">{{selected.source}}</a>. Confira os dados; campos vazios poderão ser preenchidos depois.</p>
 @if(selected.source==='Pesquisa web'){<p class="provider-note">Uma página encontrada pode ser um diretório ou artigo. Informe o site da empresa somente depois de confirmar que é oficial.</p>}
 <form (ngSubmit)="page.save()"><fieldset [disabled]="page.busy()"><div class="search-grid">

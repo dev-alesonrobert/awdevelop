@@ -1,5 +1,7 @@
+<dialog #dialog aria-labelledby="approach-title" (cancel)="cancel($event)">
 <section class="card" aria-label="Editor de abordagem">
-  <header><div><span class="eyebrow">ABORDAGEM</span><h2>{{prospect().name}}</h2></div><button type="button" class="secondary" [disabled]="busy()" (click)="closed.emit()">Fechar</button></header>
+  <header><div><span class="eyebrow">ABORDAGEM</span><h2 id="approach-title">{{prospect().name}}</h2></div><button type="button" class="secondary" autofocus [disabled]="busy()" (click)="closed.emit()">Fechar</button></header>
+  <p class="message" role="status" aria-live="polite">{{status()}}</p>
   <form (ngSubmit)="generate()"><fieldset [disabled]="busy()">
     <div class="offer-grid">
       <label>Seu nome<input name="sender" [(ngModel)]="form.sender" (ngModelChange)="changed.emit()" required minlength="2" maxlength="80"></label>
@@ -24,3 +26,5 @@
   }
   <p role="status" aria-live="polite">{{feedback()}}</p>
 </section>
+
+</dialog>

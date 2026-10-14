@@ -11,7 +11,7 @@ import {parseHTML} from 'linkedom';
 const {document}=parseHTML('<html><body></body></html>');
 globalThis.document=document;globalThis.window=document.defaultView;globalThis.Node=window.Node;globalThis.HTMLElement=window.HTMLElement;
 Object.defineProperty(window.HTMLSelectElement.prototype,'value',{configurable:true,get(){return [...this.options].find(x=>x.selected)?.value??'';},set(value){for(const x of this.options)x.selected=x.value===value;}});
-const create=document.createElement.bind(document);document.createElement=(name,...args)=>{const el=create(name,...args);if(['fieldset','option'].includes(name))Object.defineProperty(el,'disabled',{get(){return this.hasAttribute('disabled');},set(v){this.toggleAttribute('disabled',!!v);}});return el;};
+const create=document.createElement.bind(document);document.createElement=(name,...args)=>{const el=create(name,...args);if(name==='dialog')el.showModal=()=>el.setAttribute('open','');if(['fieldset','option'].includes(name))Object.defineProperty(el,'disabled',{get(){return this.hasAttribute('disabled');},set(v){this.toggleAttribute('disabled',!!v);}});return el;};
 TestBed.initTestEnvironment(BrowserTestingModule,platformBrowserTesting());
 const directory=new URL('../.angular/approach-tests/',import.meta.url);await mkdir(directory,{recursive:true});
 for(const name of ['core/commercial-models','features/prospecting/approach/approach.component']){
@@ -70,4 +70,22 @@ test('IA Google acrescenta empresa e remetente automaticamente na mensagem e no 
  let copied;Object.defineProperty(globalThis,'navigator',{configurable:true,value:{clipboard:{writeText:async text=>{copied=text;}}}});
  await component.copy('message');assert.equal(copied,component.message);
  fixture.destroy();
+});
+
+test('Abordagem abre modal, bloqueia fundo e respeita Escape durante geração',async t=>{
+ TestBed.configureTestingModule({imports:[ApproachComponent]});t.after(()=>TestBed.resetTestingModule());
+ document.body.style.overflow='auto';
+ const fixture=TestBed.createComponent(ApproachComponent),component=fixture.componentInstance;
+ fixture.componentRef.setInput('prospect',{name:'Empresa',source:'Google Maps',phone:''});
+ fixture.componentRef.setInput('status','Aguarde antes de tentar novamente.');
+ fixture.detectChanges();await tick();fixture.detectChanges();
+ const dialog=fixture.nativeElement.querySelector('dialog');
+ assert.equal(dialog.hasAttribute('open'),true);assert.equal(dialog.getAttribute('aria-labelledby'),'approach-title');
+ assert.equal(document.body.style.overflow,'hidden');assert.match(dialog.textContent,/Aguarde antes/);
+ let closed=0;component.closed.subscribe(()=>closed++);
+ fixture.componentRef.setInput('busy',true);fixture.detectChanges();
+ const cancel=new window.Event('cancel',{cancelable:true});dialog.dispatchEvent(cancel);
+ assert.equal(cancel.defaultPrevented,true);assert.equal(closed,0);
+ fixture.componentRef.setInput('busy',false);fixture.detectChanges();dialog.dispatchEvent(new window.Event('cancel',{cancelable:true}));assert.equal(closed,1);
+ fixture.destroy();assert.equal(document.body.style.overflow,'auto');
 });
