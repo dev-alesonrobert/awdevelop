@@ -84,6 +84,14 @@ export function installProspecting(app,{db,fetcher=fetch,env=process.env}) {
       await c.query('COMMIT');res.status(201).json({id:quote.id,duplicate:false});
     }catch(error){await c.query('ROLLBACK');throw error;}finally{c.release();}
   });
+  app.post('/api/admin/prospecting/crm-status',async(req,res)=>{
+    const keys=z.array(z.string().min(1).max(120)).max(100).parse(req.body.keys);
+    const unique=[...new Set(keys)].filter(key=>!key.startsWith('google:'));
+    if(!unique.length)return res.json({items:[]});
+    const {rows}=await db().query('SELECT id,prospect_source_key AS key,crm_stage AS stage FROM aw_quotes WHERE prospect_source_key=ANY($1::text[])',[unique]);
+    res.set('Cache-Control','private, no-store').json({items:rows});
+  });
 }
+
 
 

@@ -1,0 +1,9 @@
+<section aria-label="Radar de oportunidades">
+  <div class="heading"><h2>Radar de oportunidades</h2><p>Prioridade baseada nos dados disponíveis. Não indica interesse em contratar.</p></div>
+  <div class="metrics">
+    <button type="button" [class.active]="filter()===''" [attr.aria-pressed]="filter()===''" (click)="filtered.emit('')"><strong>{{counts().total}}</strong><span>Todos os resultados</span></button>
+    <button type="button" [class.active]="filter()==='high'" [attr.aria-pressed]="filter()==='high'" (click)="filtered.emit('high')"><strong>{{counts().high}}</strong><span>Alta prioridade</span></button>
+    <button type="button" [class.active]="filter()==='pending'" [attr.aria-pressed]="filter()==='pending'" (click)="filtered.emit('pending')"><strong>{{counts().pending}}</strong><span>Aguardando detalhes</span></button>
+    <button type="button" [class.active]="filter()==='saved'" [attr.aria-pressed]="filter()==='saved'" (click)="filtered.emit('saved')"><strong>{{counts().saved}}</strong><span>Já estão no CRM</span></button>
+  </div>
+</section>
