@@ -31,8 +31,14 @@ export class ApproachComponent {
     effect(() => { this.form.sender = this.sender(); });
     effect(() => {
       const result = this.result();
-      this.message = result?.message ?? '';
-      this.followup = result?.followup ?? '';
+      const googleAI = result?.method === 'ai' && this.prospect().source === 'Google Maps';
+      const company = this.prospect().name.replace(/[\r\n]+/g, ' ').trim().slice(0, 120);
+      this.message = googleAI
+        ? `Olá, equipe da ${company}! Sou ${this.form.sender}, da AWDevelop.\n\n${result.message}`
+        : result?.message ?? '';
+      this.followup = googleAI
+        ? `Olá, equipe da ${company}!\n\n${result.followup}`
+        : result?.followup ?? '';
       this.feedback.set('');
     });
   }

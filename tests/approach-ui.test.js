@@ -57,3 +57,17 @@ test('Copiar sem permissão informa alternativa e não perde mensagem',async t=>
  assert.match(component.feedback(),/copie manualmente/);assert.equal(component.message,'Mensagem preservada');assert.equal(component.whatsappUrl(),'');
  fixture.destroy();
 });
+
+test('IA Google acrescenta empresa e remetente automaticamente na mensagem e no follow-up',async t=>{
+ TestBed.configureTestingModule({imports:[ApproachComponent]});t.after(()=>TestBed.resetTestingModule());
+ const fixture=TestBed.createComponent(ApproachComponent),component=fixture.componentInstance;
+ fixture.componentRef.setInput('prospect',{name:'Air Flash - Centro Automotivo',source:'Google Maps',phone:''});
+ fixture.componentRef.setInput('sender','Aleson Roberto');fixture.detectChanges();await tick();
+ fixture.componentRef.setInput('result',{method:'ai',message:'Criamos sites. Podemos conversar?',followup:'Retomando a proposta de sites.'});
+ fixture.detectChanges();await tick();fixture.detectChanges();
+ assert.equal(component.message,'Olá, equipe da Air Flash - Centro Automotivo! Sou Aleson Roberto, da AWDevelop.\n\nCriamos sites. Podemos conversar?');
+ assert.equal(component.followup,'Olá, equipe da Air Flash - Centro Automotivo!\n\nRetomando a proposta de sites.');
+ let copied;Object.defineProperty(globalThis,'navigator',{configurable:true,value:{clipboard:{writeText:async text=>{copied=text;}}}});
+ await component.copy('message');assert.equal(copied,component.message);
+ fixture.destroy();
+});

@@ -11,7 +11,7 @@
     </div>
     <button class="generate">{{busy()?'Preparando…':'Criar abordagem'}}</button>
   </fieldset></form>
-  @if(prospect().source==='Google Maps'){<p class="muted">Neste resultado do Google, a IA usa apenas sua oferta. Acrescente o nome da empresa ao revisar o texto. Os dados do Google não são enviados ao modelo.</p>}
+  @if(prospect().source==='Google Maps'){<p class="muted">Neste resultado do Google, a IA usa apenas sua oferta. O painel acrescenta automaticamente o nome da empresa ao texto gerado. Os dados do Google não são enviados ao modelo.</p>}
   @if(result();as result){
     <div class="draft-heading"><h3>Revise sua mensagem</h3><span class="badge">{{result.method==='ai'?'Rascunho de IA':'Modelo personalizado · sem IA'}}</span></div>
     <div class="draft-grid">
