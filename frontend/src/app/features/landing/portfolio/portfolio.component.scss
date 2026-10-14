@@ -21,7 +21,7 @@ dialog::backdrop { background: #000b; backdrop-filter: blur(5px); }
 dialog > img { width: 100%; height: auto; display: block; }
 .dialog-content { padding: 32px; }
 .dialog-content .button { margin: 12px 10px 0 0; }
-.close { position: absolute; right: 16px; top: 16px; width: 44px; padding: 0; font-size: 26px; color: #fff; background: #15151fe6; border: 1px solid #626073; }
+.close { position: sticky; top: 12px; display: block; margin: 12px 12px -56px auto; z-index: 2; width: 44px; padding: 0; font-size: 26px; color: #fff; background: #15151fe6; border: 1px solid #626073; }
 .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .tags span { padding: 6px 10px; font-size: 11px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); }
 @media (max-width: 800px) { .portfolio-banner { grid-template-columns: 1fr; } .banner-art img { aspect-ratio: 3 / 2; } .banner-info { padding: 28px; border-left: 0; border-top: 1px solid var(--line); } .carousel-toolbar { padding: 14px; flex-wrap: wrap; } .carousel-actions { width: 100%; justify-content: flex-end; } }
