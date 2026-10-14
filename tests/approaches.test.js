@@ -55,8 +55,17 @@ test('Google usa somente template transitório, sem consultar banco nem enviar d
   const f=await fixture(t,{env:enabled});
   const google={...input,key:'google:example',googleName:'Empresa Google'};
   const res=await f.post(google);assert.equal(res.status,200);assert.match((await res.json()).message,/Empresa Google/);
-  assert.equal((await f.post({...google,mode:'ai'})).status,400);
   assert.equal(f.calls.length,0);assert.equal(f.generated,0);
+});
+test('Google permite IA somente com oferta, sem dados da empresa, referência ou consulta à fonte',async t=>{
+  const f=await fixture(t,{env:enabled,generate:async options=>{
+    const prompt=JSON.parse(options.prompt);assert.deepEqual(prompt.context,{});assert.equal(prompt.offer.sender,offer.sender);
+    assert.ok(!options.prompt.includes('Empresa Google'));assert.ok(!options.prompt.includes('google:example'));
+    return {output:{message:'Olá! Sou Aleson da AWDevelop.',followup:'Podemos conversar sobre sua presença digital?'}};
+  }});
+  const res=await f.post({...input,key:'google:example',googleName:'Empresa Google',mode:'ai'});
+  assert.equal(res.status,200);assert.equal((await res.json()).method,'ai');assert.equal(f.generated,1);
+  assert.ok(!f.calls.some(x=>x.sql.startsWith('SELECT payload')));
 });
 test('IA recebe contexto mínimo, saída estruturada, timeout e nenhuma repetição automática',async t=>{
   const f=await fixture(t,{env:enabled,generate:async options=>{

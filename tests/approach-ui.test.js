@@ -49,7 +49,9 @@ test('Editor renderiza rascunho como texto, copia edição e salva sem registrar
 test('Copiar sem permissão informa alternativa e não perde mensagem',async t=>{
  TestBed.configureTestingModule({imports:[ApproachComponent]});t.after(()=>TestBed.resetTestingModule());
  const fixture=TestBed.createComponent(ApproachComponent),component=fixture.componentInstance;
- fixture.componentRef.setInput('prospect',{name:'Empresa',source:'Google Maps',phone:''});fixture.detectChanges();await tick();
+ fixture.componentRef.setInput('prospect',{name:'Empresa',source:'Google Maps',phone:''});fixture.componentRef.setInput('aiEnabled',true);fixture.detectChanges();await tick();
+ assert.equal(fixture.nativeElement.querySelector('option[value="ai"]').disabled,false);
+ assert.match(fixture.nativeElement.textContent,/IA usa apenas sua oferta/);
  Object.defineProperty(globalThis,'navigator',{configurable:true,value:{clipboard:{writeText:async()=>{throw Error('denied');}}}});
  component.message='Mensagem preservada';await component.copy('message');
  assert.match(component.feedback(),/copie manualmente/);assert.equal(component.message,'Mensagem preservada');assert.equal(component.whatsappUrl(),'');

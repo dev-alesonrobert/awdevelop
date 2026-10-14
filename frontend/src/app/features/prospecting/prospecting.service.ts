@@ -27,7 +27,7 @@ export class ProspectingService {
     approach(searchId: string, prospect: Prospect, offer: Offer) {
         return this.http.post<ApproachResult>(this.base + '/approach', {
             ...offer, searchId, key: prospect.key,
-            ...(prospect.source === 'Google Maps' ? {googleName: prospect.name} : {}),
+            ...(prospect.source === 'Google Maps' && offer.mode === 'template' ? {googleName: prospect.name} : {}),
         });
     }
     saveApproach(id: string, messages: ApproachMessages) {

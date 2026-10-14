@@ -7,11 +7,11 @@
       <label class="benefit">Benefício principal<input name="benefit" [(ngModel)]="form.benefit" (ngModelChange)="changed.emit()" required minlength="2" maxlength="300"></label>
       <label>Objetivo<select name="objective" [(ngModel)]="form.objective" (ngModelChange)="changed.emit()"><option value="conversation">Iniciar conversa</option><option value="meeting">Marcar reunião</option><option value="proposal">Oferecer proposta</option></select></label>
       <label>Tom<select name="tone" [(ngModel)]="form.tone" (ngModelChange)="changed.emit()"><option value="natural">Natural</option><option value="professional">Profissional</option></select></label>
-      <label>Geração<select name="mode" [(ngModel)]="form.mode" (ngModelChange)="changed.emit()"><option value="template">Modelo personalizado</option><option value="ai" [disabled]="!aiEnabled()||prospect().source==='Google Maps'">{{aiEnabled()?'Com IA':'Com IA — aguardando configuração'}}</option></select></label>
+      <label>Geração<select name="mode" [(ngModel)]="form.mode" (ngModelChange)="changed.emit()"><option value="template">Modelo personalizado</option><option value="ai" [disabled]="!aiEnabled()">{{aiEnabled()?'Com IA':'Com IA — aguardando configuração'}}</option></select></label>
     </div>
     <button class="generate">{{busy()?'Preparando…':'Criar abordagem'}}</button>
   </fieldset></form>
-  @if(prospect().source==='Google Maps'){<p class="muted">Para este resultado, a mensagem usa apenas o nome informado e sua oferta, sem enviar dados do Google à IA.</p>}
+  @if(prospect().source==='Google Maps'){<p class="muted">Neste resultado do Google, a IA usa apenas sua oferta. Acrescente o nome da empresa ao revisar o texto. Os dados do Google não são enviados ao modelo.</p>}
   @if(result();as result){
     <div class="draft-heading"><h3>Revise sua mensagem</h3><span class="badge">{{result.method==='ai'?'Rascunho de IA':'Modelo personalizado · sem IA'}}</span></div>
     <div class="draft-grid">
