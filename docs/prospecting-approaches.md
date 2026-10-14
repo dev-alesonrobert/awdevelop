@@ -8,7 +8,7 @@ Quando o resultado já está vinculado ao CRM, Salvar rascunho no CRM grava uma 
 
 Modelo personalizado funciona sem um provedor externo. Usa o nome da empresa e a oferta informada, sem inventar informações sobre presença digital ou interesse. A interface identifica o resultado como sem IA.
 
-Com IA usa AI SDK 7.0.140 pelo Vercel AI Gateway e permanece desabilitado até a configuração explícita do servidor. O modelo recebe nome da empresa, segmento, cidade, existência de site informado na fonte e os campos da oferta. Telefones, e-mails, descrições livres e URLs não são enviados. Dados Google ficam exclusivamente no modo de texto personalizado e não são persistidos nem enviados ao modelo.
+Com IA usa AI SDK 7.0.140 pelo Vercel AI Gateway e permanece desabilitado até a configuração explícita do servidor. O modelo recebe nome da empresa, segmento, cidade, existência de site informado na fonte e os campos da oferta. Telefones, e-mails, descrições livres e URLs não são enviados. Em resultados Google, a IA usa somente os campos da oferta informados pelo usuário, sem nome, segmento, localização, site ou referência do resultado. O usuário pode acrescentar o nome ao revisar a mensagem. No modelo sem IA, o nome é usado de forma transitória. Dados Google não são persistidos nem enviados ao modelo.
 
 A IA não foi ativada ou chamada em produção nesta implementação. Não há um modelo escolhido automaticamente nem criação de credenciais.
 
