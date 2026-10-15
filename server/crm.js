@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {installWorkflow,contactKinds} from './crm-workflow.js';
 import {randomUUID} from 'node:crypto';
 import { leadFiltersSchema, buildLeadFilters } from './lead-filters.js';
 import {digest} from './management.js';
@@ -11,6 +12,7 @@ const legacyStatus={new:'new',contact:'talking',meeting:'talking',proposal:'prop
 export function installCRM(app,{db}){
  const commercial=(req,res,next)=>['owner','admin'].includes(req.role)?next():res.status(403).json({error:'Sua conta não possui acesso ao CRM.'});
  app.use('/api/admin/crm',commercial);
+ installWorkflow(app,{db});
  const assignable=async(c,email)=>!email||(await c.query("SELECT email FROM aw_members WHERE email=$1 AND active=true AND role IN ('owner','admin')",[email])).rowCount>0;
  const event=(c,lead,req,kind,body)=>c.query('INSERT INTO aw_crm_events (quote_id,actor,kind,body) VALUES ($1,$2,$3,$4)',[lead,req.email,kind,body]);
  app.get('/api/admin/crm/team',async(req,res)=>{res.json({items:(await db().query("SELECT email,name FROM aw_members WHERE active=true AND role IN ('owner','admin') ORDER BY name")).rows});});
@@ -45,7 +47,7 @@ export function installCRM(app,{db}){
   }catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}
  });
  app.post('/api/admin/crm/leads/:id/events',async(req,res)=>{
-  const leadId=id.parse(req.params.id),data=z.object({kind:z.enum(['note','call','meeting','proposal']),body:z.string().trim().min(2).max(5000)}).parse(req.body);
+  const leadId=id.parse(req.params.id),data=z.object({kind:z.enum(contactKinds),body:z.string().trim().min(2).max(5000)}).parse(req.body);
   const result=await db().query('INSERT INTO aw_crm_events (quote_id,actor,kind,body) SELECT id,$2,$3,$4 FROM aw_quotes WHERE id=$1 RETURNING id',[leadId,req.email,data.kind,data.body]);if(!result.rowCount)return res.status(404).json({error:'Oportunidade não encontrada.'});res.status(201).json({ok:true});
  });
  app.post('/api/admin/crm/leads/:id/tasks',async(req,res)=>{

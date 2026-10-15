@@ -1,5 +1,6 @@
 <aw-page-heading eyebrow="VISÃO GERAL" title="Visão geral" description="Oportunidades, orçamentos e retornos da equipe." />
 @if (commercial) {
+  <a class="daily-link" href="/painel/crm?view=today">Abrir contatos de hoje →</a>
   <div class="metrics">
     <aw-metric-card label="Oportunidades" [value]="total()" />
     <aw-metric-card label="Valor em aberto" [value]="(openValue() | currency:'BRL':'symbol':'1.0-0':'pt-BR') ?? ''" />

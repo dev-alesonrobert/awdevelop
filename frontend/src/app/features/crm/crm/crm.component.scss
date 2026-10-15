@@ -8,3 +8,7 @@ summary { cursor: pointer; font-weight: 600; }
 .view-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: 1rem 0; }
 .view-toolbar button[aria-pressed=true] { outline: 2px solid currentColor; outline-offset: 2px; }
 .view-toolbar span { color: #a6a9ba; margin-left: auto; }
+
+.queue-controls {display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin-top:24px;}
+.queue-controls label {min-width:220px;margin:0;}
+.view-toolbar button[aria-pressed=true] {background:var(--purple);color:#fff;outline:2px solid var(--purple-text);}

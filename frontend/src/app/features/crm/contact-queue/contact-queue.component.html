@@ -1,0 +1,16 @@
+<section aria-label="Contatos de hoje">
+<div class="queue-heading"><div><h2>Contatos de hoje</h2><p>Retornos atrasados, agendamentos de hoje e leads que ainda precisam do primeiro contato.</p></div>
+<label>Mostrar<select [(ngModel)]="bucket"><option value="">Todos</option><option value="overdue">Atrasados</option><option value="today">Hoje</option><option value="first">Primeiro contato</option></select></label></div>
+<p class="queue-count">{{data().total}} pendências · Horário de Brasília@if(data().total>data().items.length){ · Exibindo as primeiras {{data().items.length}}. Atualize após concluir os contatos.}</p>
+<div class="queue-grid">
+@for(item of visible();track item.kind+item.id){
+<article class="queue-card" [class.overdue]="item.bucket==='overdue'">
+<span class="queue-badge">{{labels[item.bucket]}}</span><h3>{{item.company||item.name}}</h3>
+<p>{{item.title}}</p>
+@if(item.due_at){<time>{{item.due_at|date:'dd/MM/yyyy HH:mm':'-0300'}}</time>}
+<small>{{item.assignee||'Sem responsável'}}</small>
+<div class="queue-actions"><button type="button" (click)="opened.emit(item.lead_id)" [disabled]="busy()">Abrir ficha</button>
+@if(item.kind==='task'){<button type="button" class="secondary" (click)="completed.emit(item)" [disabled]="busy()">Concluir retorno</button>}</div>
+</article>
+}@empty{<p class="queue-empty">Nenhum contato pendente nesta seleção.</p>}
+</div></section>

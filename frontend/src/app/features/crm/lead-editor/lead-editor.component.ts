@@ -1,8 +1,9 @@
 import { Component, ChangeDetectionStrategy, inject, signal, input, output, DestroyRef, effect } from '@angular/core';
+import { DuplicateReviewComponent } from '../../../shared/duplicate-review/duplicate-review.component';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { LeadDetail, LeadForm, TeamMember, Task, stages, whatsapp } from '../../../core/commercial-models';
-@Component({ selector: 'aw-lead-editor', imports: [FormsModule, DatePipe], templateUrl: './lead-editor.component.html', styleUrl: './lead-editor.component.scss', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'aw-lead-editor', imports: [FormsModule, DatePipe, DuplicateReviewComponent], templateUrl: './lead-editor.component.html', styleUrl: './lead-editor.component.scss', changeDetection: ChangeDetectionStrategy.OnPush })
 export class LeadEditorComponent {
     readonly detail = input<LeadDetail | null>(null);
     readonly team = input<TeamMember[]>([]);
@@ -23,6 +24,7 @@ export class LeadEditorComponent {
         assignee: string;
     }>();
     readonly toggleTask = output<Task>();
+    readonly eventLabels: Record<string,string> = {note:'Anotação',call:'Ligação',meeting:'Reunião',proposal:'Proposta',whatsapp:'WhatsApp',email:'E-mail',approach:'Abordagem enviada',response:'Resposta recebida',created:'Cadastro',updated:'Atualização',task:'Agendamento',imported:'Importação'};
     readonly stages = stages;
     readonly wa = whatsapp;
     form: LeadForm = { city: '', state: '', neighborhood: '', segment: '', priority: 'medium', instagram: '', name: '', company: '', email: '', phone: '', website: '', service: 'Site institucional', origin: 'Cadastro manual', crmStage: 'new', assignee: '', value: 0, expectedClose: '', idea: '' };
