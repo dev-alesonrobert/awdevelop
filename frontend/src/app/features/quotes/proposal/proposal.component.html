@@ -1,0 +1,29 @@
+<section class="proposal" aria-label="Proposta comercial">
+  <div class="heading"><div><span class="eyebrow">DOCUMENTO COMERCIAL</span><h3>Proposta em PDF</h3></div>
+    <button type="button" class="secondary" [attr.aria-expanded]="expanded()" aria-controls="proposal-editor" (click)="expanded.set(!expanded())" [disabled]="disabled() || generating()">{{expanded() ? 'Recolher' : 'Preparar proposta'}}</button>
+  </div>
+  <div id="proposal-editor" [hidden]="!expanded()">
+    <p class="hint">Revise os dados antes de gerar. A edição fica apenas nesta tela; baixe o PDF para guardar a proposta.</p>
+    <form #form="ngForm" (ngSubmit)="visualize()">
+      <fieldset [disabled]="disabled() || generating()">
+        <div class="fields">
+          <label>Responsável pelo cliente<input name="client" [(ngModel)]="draft.client" (ngModelChange)="changed()" required maxlength="160"></label>
+          <label>Empresa <span class="optional">(opcional)</span><input name="company" [(ngModel)]="draft.company" (ngModelChange)="changed()" maxlength="160"></label>
+        </div>
+        <label>Título da proposta<input name="title" [(ngModel)]="draft.title" (ngModelChange)="changed()" required maxlength="160"></label>
+        <label>Escopo e entregas<textarea name="scope" [(ngModel)]="draft.scope" (ngModelChange)="changed()" required maxlength="6000" rows="6" placeholder="Descreva o que será entregue e os limites do projeto."></textarea></label>
+        <label>Prazo e início<textarea name="deadline" [(ngModel)]="draft.deadline" (ngModelChange)="changed()" required maxlength="300" rows="2" placeholder="Informe o prazo e o que é necessário para iniciar."></textarea></label>
+        <div class="fields">
+          <label>Investimento total (R$)<input type="number" name="amount" [(ngModel)]="draft.amount" (ngModelChange)="changed()" required min="0.01" max="99999999.99" step="0.01" placeholder="0,00"></label>
+          <label>Válida até<input type="date" name="validUntil" [(ngModel)]="draft.validUntil" (ngModelChange)="changed()" required [min]="today"></label>
+        </div>
+        <label>Condições de pagamento<textarea name="conditions" [(ngModel)]="draft.conditions" (ngModelChange)="changed()" required maxlength="3000" rows="4" placeholder="Parcelas, vencimentos e demais condições combinadas."></textarea></label>
+        <div class="actions"><button type="submit">{{generating() ? 'Gerando PDF…' : 'Visualizar PDF'}}</button>
+          @if(preview()){<button type="button" class="secondary" (click)="download()">Baixar PDF</button>}
+        </div>
+      </fieldset>
+    </form>
+    <p class="message" role="status">{{message()}}</p>
+    @if(preview(); as source){<iframe [src]="source" title="Prévia da proposta comercial em PDF"></iframe>}
+  </div>
+</section>
