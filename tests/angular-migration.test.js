@@ -18,7 +18,7 @@ globalThis.location={hash:'#test-invite-token-not-real',pathname:'/painel/setup'
 Object.defineProperty(window.HTMLSelectElement.prototype,'value',{configurable:true,get(){return [...this.options].find(x=>x.selected)?.value??'';},set(value){for(const x of this.options)x.selected=x.value===value;}});
 const create=document.createElement.bind(document);document.createElement=(name,...args)=>{const el=create(name,...args);if(name==='fieldset')Object.defineProperty(el,'disabled',{get(){return this.hasAttribute('disabled');},set(v){this.toggleAttribute('disabled',!!v);}});return el;};
 TestBed.initTestEnvironment(BrowserTestingModule,platformBrowserTesting());
-const names=['features/sections/models','features/landing/landing.component','features/landing/hero/hero.component','features/landing/focus-strip/focus-strip.component','features/landing/portfolio/portfolio.component','features/landing/process/process.component','features/landing/services/services.component','features/landing/globe/globe.component','features/landing/globe/globe-renderer','features/landing/invitation/invitation.component','features/landing/about/about.component','features/landing/faq/faq.component','core/auth','core/api','core/draft-state','core/admin-page','core/commercial-models','features/content/content-editor','features/crm/crm-page','features/history/history-page','features/quotes/quotes-page','features/auth/setup/setup.component','shared/brand/brand.component','features/crm/lead-editor/lead-editor.component','features/landing/quote-form/quote-form.component','features/dashboard/components/notification-bell/notification-bell.component'];
+const names=['core/duplicate.service','shared/duplicate-review/duplicate-review.component','features/sections/models','features/landing/landing.component','features/landing/hero/hero.component','features/landing/focus-strip/focus-strip.component','features/landing/portfolio/portfolio.component','features/landing/process/process.component','features/landing/services/services.component','features/landing/globe/globe.component','features/landing/globe/globe-renderer','features/landing/invitation/invitation.component','features/landing/about/about.component','features/landing/faq/faq.component','core/auth','core/api','core/draft-state','core/admin-page','core/commercial-models','features/content/content-editor','features/crm/crm-page','features/history/history-page','features/quotes/quotes-page','features/auth/setup/setup.component','shared/brand/brand.component','features/crm/lead-editor/lead-editor.component','features/landing/quote-form/quote-form.component','features/dashboard/components/notification-bell/notification-bell.component'];
 const directory=new URL('../.angular/migration-tests/',import.meta.url);await mkdir(directory,{recursive:true});const sources=new Map();
 for(const name of names){const sourcePath=fileURLToPath(new URL('../frontend/src/app/'+name+'.ts',import.meta.url));let text=await readFile(sourcePath,'utf8');const template=text.match(/templateUrl\s*:\s*['"]([^'"]+)['"]/);if(template)text=text.replace(template[0],'template:'+JSON.stringify(await readFile(path.resolve(path.dirname(sourcePath),template[1]),'utf8')));text=text.replace(/styleUrl\s*:\s*['"][^'"]+['"]/g,'styles:[]');sources.set(sourcePath,text);}
 const options={module:ts.ModuleKind.ES2022,moduleResolution:ts.ModuleResolutionKind.Bundler,target:ts.ScriptTarget.ES2022,experimentalDecorators:true,skipLibCheck:true,resolveJsonModule:true,esModuleInterop:true};const host=ts.createCompilerHost(options),originalRead=host.readFile;host.readFile=p=>sources.get(p)??originalRead(p);const program=ts.createProgram([...sources.keys()],options,host);
@@ -50,3 +50,31 @@ test('Sino Angular abre sem marcar leitura; confirmação usa somente o cursor e
 const {LandingComponent}=await import('../.angular/migration-tests/landing.component.mjs');
 test('Prévia Angular sem sessão não revela fallback público como rascunho',async t=>{location.search='?preview=1';t.after(()=>{location.search='';});const{page:p,http}=fixture(t,LandingComponent);http.expectOne('/api/admin/content').flush({error:'Sem sessão'},{status:401,statusText:'Unauthorized'});await tick();assert.equal(p.content(),null);assert.match(p.message(),/Entre no painel/);http.expectNone('/api/content');});
 test('Página Angular aplica ordem de seções publicada e remove navegação de contato excluído',async t=>{location.search='';const{page:p,http}=fixture(t,LandingComponent);http.expectOne('/api/content').flush({content:{...defaults,sections:[{id:'sobre',type:'builtin'},{id:'portfolio',type:'builtin'}]}});await tick();assert.deepEqual(p.sections().map(x=>x.id),['sobre','portfolio']);assert.equal(p.active('contato'),false);assert.deepEqual(p.navigation().map(x=>x.id),['sobre','portfolio']);});
+
+const {DuplicateReviewComponent}=await import('../.angular/migration-tests/duplicate-review.component.mjs');
+test('Revisão de duplicidade mantém a ficha sem salvar até uma confirmação explícita',async t=>{
+ const {http}=fixture(t,DuplicateReviewComponent);
+ const component=TestBed.createComponent(DuplicateReviewComponent);
+ component.componentRef.setInput('identity',{name:'Empresa',email:'contato@example.com'});
+ const guard=component.componentInstance;let approved=0;guard.approved.subscribe(()=>approved++);
+ const check=guard.review(true);http.expectOne('/api/admin/crm/duplicates').flush({items:[{id:'7',name:'Empresa',reasons:['E-mail']}]});await check;
+ assert.equal(approved,0);assert.equal(guard.matches().length,1);
+ guard.acknowledged=true;
+ const retry=guard.review(true);http.expectOne('/api/admin/crm/duplicates').flush({items:[{id:'7',name:'Empresa',reasons:['E-mail']}]});await retry;
+ assert.equal(approved,1);
+ component.componentRef.setInput('identity',{name:'Outra empresa',email:'outro@example.com'});
+ const changed=guard.review(true);http.expectOne('/api/admin/crm/duplicates').flush({items:[{id:'8',name:'Outra',reasons:['E-mail']}]});await changed;
+ assert.equal(approved,1);assert.equal(guard.acknowledged,false);component.destroy();
+});
+test('Falha na verificação de duplicidade não aprova o salvamento',async t=>{
+ const {http}=fixture(t,DuplicateReviewComponent);const component=TestBed.createComponent(DuplicateReviewComponent);
+ component.componentRef.setInput('identity',{name:'Empresa'});let approved=0;component.componentInstance.approved.subscribe(()=>approved++);
+ const check=component.componentInstance.review(true);http.expectOne('/api/admin/crm/duplicates').flush({error:'Falha'},{status:503,statusText:'Unavailable'});await check;
+ assert.equal(approved,0);assert.match(component.componentInstance.message(),/Tente novamente/);component.destroy();
+});
+test('Fila Angular consulta o escopo selecionado e preserva a ficha com edição pendente',async t=>{
+ const {page:p,http}=fixture(t,CrmPage);p.queueScope='mine';const loading=p.loadQueue();
+ const request=http.expectOne('/api/admin/crm/contact-queue?scope=mine');request.flush({items:[],total:0,timezone:'America/Sao_Paulo'});await loading;
+ p.dirty.set(true);await p.completeQueue({id:'7',lead_id:'9',kind:'task',title:'Retorno',assignee:'owner@example.com',revision:0,due_at:'2026-10-15T10:00:00Z',bucket:'today'});
+ http.expectNone('/api/admin/crm/tasks/7');assert.match(p.message(),/Salve ou feche/);
+});
