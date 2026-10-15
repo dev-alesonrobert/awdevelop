@@ -18,5 +18,6 @@
 </div>
 </fieldset>
 </form>
+<aw-proposal [quote]="quote()" [disabled]="busy()" (pendingChange)="proposalPending.emit($event)" (workingChange)="proposalWorking.emit($event)" />
 </article>
 

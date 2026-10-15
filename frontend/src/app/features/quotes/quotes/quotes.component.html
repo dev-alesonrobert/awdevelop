@@ -13,6 +13,6 @@
 </button>}
 @empty{<p class="empty">Nenhuma solicitação encontrada.</p>}
 @if(page.next()){<button (click)="page.load(true)" [disabled]="page.busy()">Carregar mais</button>}</div>
-<div>@if(page.selected();as q){<aw-quote-detail [quote]="q" [busy]="page.busy()" (changed)="page.changed()" (save)="page.save($event)" />}</div>
+<div>@if(page.selected();as q){<aw-quote-detail [quote]="q" [busy]="page.busy()" (changed)="page.followupChanged()" (proposalPending)="page.proposalChanged($event)" (proposalWorking)="page.proposalWorking($event)" (save)="page.save($event)" />}</div>
 </div>
 

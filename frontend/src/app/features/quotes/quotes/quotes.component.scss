@@ -1,2 +1,6 @@
 @use '../../../../styles/admin';
 @include admin.page;
+.grid { grid-template-columns:minmax(220px,.7fr) minmax(0,1.5fr); align-items:start; }
+.list { align-content:start; }
+.list button p { margin-bottom:0; }
+@media(max-width:900px) { .grid { grid-template-columns:1fr; } }

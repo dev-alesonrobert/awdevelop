@@ -88,3 +88,17 @@ test('Visão geral usa agregados comerciais sem baixar fichas de leads nem chama
  assert.equal(p.total(),253);assert.equal(p.openValue(),1000);assert.equal(p.insights().commercial.winRate,66.7);
  http.expectNone('/api/admin/crm/leads');http.expectNone('/api/admin/prospecting/search');
 });
+
+test('Proposta e acompanhamento preservam proteções independentes de alterações',async t=>{
+ const {page:p,http}=fixture(t,QuotesPage);
+ p.open({...lead,status:'new',notes:'',stage:'',timeline:''});
+ p.followupChanged();p.proposalChanged(true);p.proposalChanged(false);
+ assert.equal(p.dirty(),true,'baixar proposta não descarta anotações pendentes');
+ p.proposalChanged(true);
+ const saving=p.save({status:'proposal',notes:'Acompanhamento revisado'});
+ http.expectOne('/api/admin/quotes/8').flush({revision:4});await saving;
+ assert.equal(p.dirty(),true,'salvar acompanhamento não descarta proposta não baixada');
+ p.open(p.selected());assert.equal(p.dirty(),true,'reabrir o mesmo pedido preserva o formulário');
+ p.proposalWorking(true);assert.equal(p.canLeave(),false);assert.equal(p.draftState.working(),true);
+ p.proposalWorking(false);p.proposalChanged(false);assert.equal(p.dirty(),false);
+});
