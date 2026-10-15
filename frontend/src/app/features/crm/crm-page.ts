@@ -82,7 +82,7 @@ export class CrmPage extends AdminPage {
         this.saved('activity');
         this.activitySaved.update(x => x + 1);
         await this.refreshDetail();
-        await this.loadQueue();
+        if(this.view==='today')await this.loadQueue();
         this.message.set('Contato registrado.');
     } }
     async addTask(form: {
@@ -97,14 +97,14 @@ export class CrmPage extends AdminPage {
         this.saved('task');
         this.taskSaved.update(x => x + 1);
         await this.refreshDetail();
-        await this.loadQueue();
+        if(this.view==='today')await this.loadQueue();
         this.message.set('Tarefa agendada.');
     } }
     async toggleTask(task: Task) { const result = await this.request(this.http.patch<{
         revision: number;
     }>('/api/admin/crm/tasks/' + task.id, { done: !task.done, revision: task.revision })); if (result) {
         await this.refreshDetail();
-        await this.loadQueue();
+        if(this.view==='today')await this.loadQueue();
         this.message.set('Tarefa atualizada.');
     } }
 }
