@@ -1,0 +1,15 @@
+<details class="usage" open>
+<summary>Uso das integrações <span>Limites e saldo do painel</span></summary>
+<div class="usage-grid">
+@for(item of budgets();track item.id){
+<article class="usage-card">
+<div class="usage-heading"><h3>{{item.label}}</h3>@if(!item.enabled){<span>Indisponível</span>}</div>
+<div class="quota"><div><span>Hoje</span><strong>{{item.daily.used}} / {{item.daily.limit}}</strong></div>
+<progress max="100" [value]="item.daily.percent" [attr.aria-label]="item.label+': uso diário'"></progress>
+<p>{{item.daily.remaining}} disponíveis · Renova {{item.daily.resetsAt|date:'dd/MM HH:mm':'-0300'}}</p></div>
+@if(item.monthly;as month){<div class="quota"><div><span>Este mês</span><strong>{{month.used}} / {{month.limit}}</strong></div><progress max="100" [value]="month.percent" [attr.aria-label]="item.label+': uso mensal'"></progress><p>{{month.remaining}} disponíveis · Renova {{month.resetsAt|date:'dd/MM HH:mm':'-0300'}}</p></div>}
+</article>}
+</div>
+<p class="usage-note">Horários de Brasília. Contadores do painel, incluindo tentativas contabilizadas; o faturamento dos provedores não é consultado. Outros aplicativos na mesma conta Google também consomem a franquia.</p>
+<small>Atualizado em {{updatedAt()|date:'dd/MM/yyyy HH:mm':'-0300'}}</small>
+</details>

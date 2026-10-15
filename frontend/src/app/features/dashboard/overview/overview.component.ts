@@ -1,3 +1,6 @@
+import {CommercialInsightsComponent} from '../components/commercial-insights/commercial-insights.component';
+import {IntegrationUsageComponent} from '../components/integration-usage/integration-usage.component';
+import {Insights} from '../../../core/insights.models';
 import { PageHeadingComponent } from '../../../shared/page-heading/page-heading.component';
 import { MetricCardComponent } from '../components/metric-card/metric-card.component';
 import { NotificationCardComponent } from '../components/notification-card/notification-card.component';
@@ -9,9 +12,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Auth } from '../../../core/auth';
 import { CommercialApi, apiMessage } from '../../../core/api';
-import { NotificationSummary, Pipeline } from '../../../core/models';
+import { NotificationSummary } from '../../../core/models';
 @Component({
-    selector: 'aw-overview', imports: [CurrencyPipe, PageHeadingComponent, MetricCardComponent, NotificationCardComponent], templateUrl: './overview.component.html', styleUrl: './overview.component.scss', changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'aw-overview', imports: [CommercialInsightsComponent, IntegrationUsageComponent, CurrencyPipe, PageHeadingComponent, MetricCardComponent, NotificationCardComponent], templateUrl: './overview.component.html', styleUrl: './overview.component.scss', changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OverviewComponent {
     private readonly auth = inject(Auth);
@@ -22,13 +25,13 @@ export class OverviewComponent {
     readonly busy = signal(false);
     readonly message = signal('');
     readonly notifications = signal<NotificationSummary | null>(null);
-    readonly pipeline = signal<Pipeline | null>(null);
-    readonly total = computed(() => this.pipeline()?.stats.reduce((n, s) => n + s.count, 0) ?? 0);
-    readonly openValue = computed(() => this.pipeline()?.stats.filter(s => !['won', 'lost'].includes(s.crm_stage)).reduce((n, s) => n + Number(s.value), 0) ?? 0);
+    readonly insights = signal<Insights | null>(null);
+    readonly total = computed(() => this.insights()?.commercial.total ?? 0);
+    readonly openValue = computed(() => this.insights()?.commercial.openValue ?? 0);
     constructor() {
         this.destroy.onDestroy(() => {
             this.notifications.set(null);
-            this.pipeline.set(null);
+            this.insights.set(null);
         });
         if (this.commercial) {
             void this.refresh();
@@ -44,12 +47,12 @@ export class OverviewComponent {
         this.busy.set(true);
         try {
             const data = await firstValueFrom(forkJoin({
-                notifications: this.api.notifications(), pipeline: this.api.pipeline()
+                notifications: this.api.notifications(), insights: this.api.insights()
             }));
             if (this.destroy.destroyed)
                 return;
             this.notifications.set(data.notifications);
-            this.pipeline.set(data.pipeline);
+            this.insights.set(data.insights);
             this.message.set('');
         }
         catch (e) {

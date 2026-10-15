@@ -7,6 +7,7 @@
     <aw-metric-card label="Orçamentos não lidos" [value]="notifications()?.count ?? 0" />
     <aw-metric-card label="Retornos vencidos" [value]="notifications()?.taskCount ?? 0" />
   </div>
+  @if(insights();as data){<aw-commercial-insights [data]="data.commercial" /><aw-integration-usage [budgets]="data.usage" [updatedAt]="data.updatedAt" />}
   <div class="section-heading">
     <h2>Solicitações e retornos</h2>
     <button class="secondary" (click)="refresh()" [disabled]="busy()">{{ busy() ? 'Atualizando…' : 'Atualizar' }}</button>

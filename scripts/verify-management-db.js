@@ -1,3 +1,4 @@
+import {commercialSummarySql,usageSummarySql,summarizeCommercial} from '../server/crm-insights.js';
 import { contactQueueSql, duplicateSql, identityKeys, duplicateSchema } from '../server/crm-workflow.js';
 import { reservationSql } from '../server/google-budget.js';
 import 'dotenv/config';
@@ -70,6 +71,13 @@ try{
  const duplicateInput=duplicateSchema.parse({email});
  assert.ok((await c.query(duplicateSql,identityKeys(duplicateInput))).rows.some(x=>x.id===quoteId&&x.reasons.includes('E-mail')&&x.last_contact_at));
  assert.equal((await c.query(duplicateSql,identityKeys({...duplicateInput,excludeId:quoteId}))).rowCount,0);
+ const insights=summarizeCommercial((await c.query(commercialSummarySql)).rows);
+ assert.ok(insights.total>0);assert.ok(insights.contacted>0);
+ const usage=(await c.query(usageSummarySql)).rows[0];
+ assert.ok(new Date(usage.day_reset)>new Date(usage.updated_at));
+ assert.ok(new Date(usage.month_reset)>new Date(usage.updated_at));
+ assert.ok(Number.isInteger(usage.search_day));assert.ok(Number.isInteger(usage.ai_day));
+ console.log('COMMERCIAL INSIGHTS DATABASE CHECKS PASSED: aggregate counts and quota reset clocks.');
  console.log('CRM WORKFLOW DATABASE CHECKS PASSED: first contact, overdue follow-up, duplicate reasons and self-exclusion.');
  console.log('MANAGEMENT DATABASE CHECKS PASSED: membership, invite consumption, quote idempotency/revisions, history and image library. Test rows rolled back.');
 }finally{await c.query('ROLLBACK');c.release();await pool.end();}
