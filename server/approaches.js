@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import {aiDailyLimit,aiEnabled} from './usage-policy.js';
 import { createHash } from 'node:crypto';
 import { createGateway, generateText, Output } from 'ai';
 
@@ -15,7 +16,7 @@ export const approachSchema = offerSchema.extend({
   // Google content is used only in a transient template; never sent to the model.
   googleName: z.string().trim().min(2).max(500).optional(),
 });
-export const aiAvailable = env => Boolean(env.PROSPECTING_AI_ENABLED === 'true' && env.AI_GATEWAY_MODEL?.trim() && env.AI_GATEWAY_API_KEY?.trim());
+export const aiAvailable = aiEnabled;
 
 export function templateApproach(company, offer) {
   company = String(company).replace(/[\r\n]+/g, ' ').slice(0, 120);
@@ -67,7 +68,7 @@ export function installApproaches(app, { db, env = process.env, generate = gener
     const key = 'approach:' + createHash('sha256').update(req.email).digest('hex');
     const slot = (await db().query("INSERT INTO aw_prospect_limits(key,next_at) VALUES($1,now()+interval '30 seconds') ON CONFLICT(key) DO UPDATE SET next_at=now()+interval '30 seconds' WHERE aw_prospect_limits.next_at<=now() RETURNING key", [key])).rows[0];
     if (!slot) return res.status(429).json({ error: 'Aguarde 30 segundos antes de gerar outra abordagem com IA.' });
-    const limit = Math.min(200, Math.max(1, Number.parseInt(env.PROSPECTING_AI_DAILY_LIMIT, 10) || 20));
+    const limit = aiDailyLimit(env);
     const quota = (await db().query("INSERT INTO aw_ai_usage(day,count) VALUES((now() AT TIME ZONE 'America/Sao_Paulo')::date,1) ON CONFLICT(day) DO UPDATE SET count=aw_ai_usage.count+1 WHERE aw_ai_usage.count<$1 RETURNING count", [limit])).rows[0];
     if (!quota) return res.status(429).json({ error: 'O limite diário de abordagens com IA foi atingido. O modelo personalizado continua disponível.' });
     try {

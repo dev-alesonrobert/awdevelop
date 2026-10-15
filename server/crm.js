@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {installInsights} from './crm-insights.js';
 import {installWorkflow,contactKinds} from './crm-workflow.js';
 import {randomUUID} from 'node:crypto';
 import { leadFiltersSchema, buildLeadFilters } from './lead-filters.js';
@@ -13,6 +14,7 @@ export function installCRM(app,{db}){
  const commercial=(req,res,next)=>['owner','admin'].includes(req.role)?next():res.status(403).json({error:'Sua conta não possui acesso ao CRM.'});
  app.use('/api/admin/crm',commercial);
  installWorkflow(app,{db});
+ installInsights(app,{db});
  const assignable=async(c,email)=>!email||(await c.query("SELECT email FROM aw_members WHERE email=$1 AND active=true AND role IN ('owner','admin')",[email])).rowCount>0;
  const event=(c,lead,req,kind,body)=>c.query('INSERT INTO aw_crm_events (quote_id,actor,kind,body) VALUES ($1,$2,$3,$4)',[lead,req.email,kind,body]);
  app.get('/api/admin/crm/team',async(req,res)=>{res.json({items:(await db().query("SELECT email,name FROM aw_members WHERE active=true AND role IN ('owner','admin') ORDER BY name")).rows});});

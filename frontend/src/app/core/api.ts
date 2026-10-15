@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {Insights} from './insights.models';
 import { NotificationSummary, Pipeline } from './models';
 export function apiMessage(error: unknown): string {
     if (error instanceof HttpErrorResponse) {
@@ -21,6 +22,7 @@ export class CommercialApi {
     notifications() {
         return this.http.get<NotificationSummary>('/api/admin/notifications');
     }
+    insights() { return this.http.get<Insights>('/api/admin/crm/insights'); }
     pipeline() {
         return this.http.get<Pipeline>('/api/admin/crm/leads');
     }

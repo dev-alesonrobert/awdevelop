@@ -1,0 +1,13 @@
+<section class="insights" aria-label="Indicadores comerciais">
+<div class="section-title"><h2>Funil comercial</h2><span>Distribuição atual da equipe</span></div>
+<div class="insights-grid">
+<div class="stage-table"><table><caption class="sr-only">Quantidade e valor estimado por etapa atual</caption>
+<thead><tr><th>Etapa</th><th>Leads</th><th>Valor estimado</th></tr></thead>
+<tbody>@for(item of stages;track item.id){<tr><th scope="row"><span class="stage-dot" [class.won]="item.id==='won'" [class.lost]="item.id==='lost'"></span>{{item.label}}</th><td>{{stage(item.id).count}}</td><td>{{stage(item.id).value|currency:'BRL':'symbol':'1.0-0':'pt-BR'}}</td></tr>}</tbody>
+</table></div>
+<div class="outcomes">
+<article><span>Leads com contato registrado</span><strong>{{data().contacted}}</strong><small>Com ligação, mensagem, reunião, proposta ou resposta no histórico.</small></article>
+<article><span>Negócios ganhos</span><strong>{{data().won}}</strong></article>
+<article><span>Taxa de ganho nos encerrados</span><strong>{{data().winRate===null?'—':data().winRate+'%'}}</strong><small>{{data().won}} ganhos e {{data().lost}} perdidos. Negócios abertos ficam fora do cálculo.</small></article>
+</div>
+</div></section>
