@@ -1,0 +1,7 @@
+:host {display:block;margin-top:22px;}
+.warning {margin-top:16px;padding:20px;border:1px solid #7f61f566;background:var(--purple-soft);border-radius:10px;}
+h3 {font-size:16px;margin:0 0 10px;} p,small {font-size:12px;line-height:1.6;color:var(--muted);}
+article {display:grid;gap:5px;padding:12px 0;border-top:1px solid var(--line);}
+article a {font-size:13px;}
+.ack {display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.6;}
+.ack input {width:18px;height:18px;flex-shrink:0;margin-top:2px;}

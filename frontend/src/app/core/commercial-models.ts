@@ -109,3 +109,14 @@ export const quoteStatuses: {
     label: string;
 }[] = [{ id: 'new', label: 'Novo' }, { id: 'talking', label: 'Em conversa' }, { id: 'proposal', label: 'Proposta' }, { id: 'won', label: 'Ganho' }, { id: 'lost', label: 'Perdido' }];
 export function whatsapp(phone: string) { const digits = phone.replace(/\D/g, ''); return /^\d{10,15}$/.test(digits) ? 'https://wa.me/' + (digits.length <= 11 ? '55' : '') + digits : ''; }
+
+export interface DuplicateLead {
+ id: string; name: string; company: string; assignee: string | null; crm_stage: string;
+ reasons: string[]; last_contact_at: string | null;
+}
+export interface ContactQueueItem {
+ kind: 'task' | 'first'; id: string; lead_id: string; name: string; company: string;
+ title: string; due_at: string | null; assignee: string | null; revision: number;
+ bucket: 'overdue' | 'today' | 'first';
+}
+export interface ContactQueue { items: ContactQueueItem[]; total: number; timezone: string; }

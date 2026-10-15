@@ -1,3 +1,4 @@
+import { contactQueueSql, duplicateSql, identityKeys, duplicateSchema } from '../server/crm-workflow.js';
 import { reservationSql } from '../server/google-budget.js';
 import 'dotenv/config';
 import assert from 'node:assert/strict';
@@ -59,6 +60,17 @@ try{
  await c.query('ROLLBACK TO SAVEPOINT budget_daily_check');
  assert.equal((await c.query('SELECT count FROM aw_google_usage WHERE period=$1 AND kind=\'details\'',[budgetPeriod])).rowCount,0);
  assert.ok((await c.query("SELECT period FROM aw_google_usage WHERE period LIKE 'month:%'")).rowCount>=2);
+ // Verify the real queue and duplicate SQL; all fixtures remain inside this rollback.
+ await c.query("UPDATE aw_quotes SET crm_stage='new' WHERE id=$1",[quoteId]);
+ assert.equal((await c.query(contactQueueSql,[email])).rows.find(x=>x.lead_id===quoteId)?.kind,'first');
+ await c.query("INSERT INTO aw_crm_events(quote_id,actor,kind,body) VALUES($1,$2,'approach','Disposable approach')",[quoteId,email]);
+ assert.equal((await c.query(contactQueueSql,[email])).rowCount,0);
+ await c.query("UPDATE aw_crm_tasks SET done=false,due_at=now()-interval '2 days' WHERE id=$1",[taskId]);
+ assert.equal((await c.query(contactQueueSql,[email])).rows[0].bucket,'overdue');
+ const duplicateInput=duplicateSchema.parse({email});
+ assert.ok((await c.query(duplicateSql,identityKeys(duplicateInput))).rows.some(x=>x.id===quoteId&&x.reasons.includes('E-mail')&&x.last_contact_at));
+ assert.equal((await c.query(duplicateSql,identityKeys({...duplicateInput,excludeId:quoteId}))).rowCount,0);
+ console.log('CRM WORKFLOW DATABASE CHECKS PASSED: first contact, overdue follow-up, duplicate reasons and self-exclusion.');
  console.log('MANAGEMENT DATABASE CHECKS PASSED: membership, invite consumption, quote idempotency/revisions, history and image library. Test rows rolled back.');
 }finally{await c.query('ROLLBACK');c.release();await pool.end();}
 

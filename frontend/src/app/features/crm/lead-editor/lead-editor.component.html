@@ -3,7 +3,7 @@
 <h2>{{detail()?'Ficha da oportunidade':'Novo lead'}}</h2>
 <button class="secondary" (click)="closed.emit()" [disabled]="busy()">Fechar</button>
 </div>
-<form (ngSubmit)="submit()">
+<form (ngSubmit)="duplicateReview.review(true)">
 <fieldset [disabled]="busy()">
 <div class="grid">@for(key of textFields;track key){<label>{{labels[key]}}<input [name]="key" [(ngModel)]="form[key]" (ngModelChange)="changed.emit('lead')" [required]="key==='name'||key==='service'||key==='origin'" [minlength]="key==='name'||key==='service'||key==='origin'?2:0" [maxlength]="key==='website'?2048:key==='state'?2:key==='email'?254:key==='phone'?40:key==='company'?200:key==='service'?150:120" [type]="key==='email'?'email':'text'">
 </label>}<label>Prioridade<select name="priority" [(ngModel)]="form.priority" (ngModelChange)="changed.emit('lead')"><option value="high">Alta</option><option value="medium">Média</option><option value="low">Baixa</option></select></label><label>Etapa<select name="crmStage" [(ngModel)]="form.crmStage" (ngModelChange)="changed.emit('lead')">@for(s of stages;track s.id){<option [value]="s.id">{{s.label}}</option>}</select>
@@ -19,8 +19,9 @@
 <label>Necessidade do cliente<textarea name="idea" [(ngModel)]="form.idea" (ngModelChange)="changed.emit('lead')" maxlength="5000" rows="4">
 </textarea>
 </label>
+<aw-duplicate-review #duplicateReview [identity]="form" [excludeId]="detail()?.lead?.id" (approved)="submit()" />
 <div class="actions">
-<button>Salvar oportunidade</button>@if(form.email){<a [href]="'mailto:'+form.email">Enviar e-mail</a>}
+<button [disabled]="duplicateReview.busy()">Salvar oportunidade</button>@if(form.email){<a [href]="'mailto:'+form.email">Enviar e-mail</a>}
 @if(wa(form.phone)){<a [href]="wa(form.phone)" target="_blank" rel="noopener">WhatsApp ↗</a>}</div>
 </fieldset>
 </form>
@@ -50,6 +51,7 @@
 <fieldset [disabled]="busy()">
 <label>Tipo<select name="kind" [(ngModel)]="note.kind" (ngModelChange)="changed.emit('activity')">
 <option value="note">Anotação</option>
+<option value="approach">Abordagem enviada</option><option value="response">Resposta recebida</option><option value="whatsapp">WhatsApp</option><option value="email">E-mail</option>
 <option value="call">Ligação</option>
 <option value="meeting">Reunião</option>
 <option value="proposal">Proposta</option>
@@ -64,6 +66,7 @@
 </fieldset>
 </form>
 <div class="timeline">@for(e of d.events;track e.id){<article>
+<strong>{{eventLabels[e.kind]||e.kind}}</strong>
 <small>{{e.created_at | date:'dd/MM/yyyy HH:mm'}} · {{e.actor}}</small>
 <p>{{e.body}}</p>
 </article>}

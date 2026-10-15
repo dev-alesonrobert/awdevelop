@@ -1,0 +1,16 @@
+<div class="duplicate-review">
+<button type="button" class="secondary" (click)="review()" [disabled]="busy()">{{busy()?'Verificando…':'Verificar duplicidade'}}</button>
+@if(matches().length){
+ <section class="warning" aria-label="Possíveis leads duplicados">
+ <h3>Esta empresa pode já estar no CRM</h3>
+ <p>Confira a ficha e os contatos anteriores antes de criar outra oportunidade.</p>
+ @for(item of matches();track item.id){
+ <article><a routerLink="/painel/crm" [queryParams]="{lead:item.id}">{{item.company||item.name}} · Abrir ficha ↗</a>
+ <small>Coincidência: {{item.reasons.join(', ')}} · Responsável: {{item.assignee||'Não atribuído'}}</small>
+ @if(item.last_contact_at){<small>Último contato: {{item.last_contact_at|date:'dd/MM/yyyy HH:mm'}}</small>}
+ </article>}
+ <label class="ack"><input type="checkbox" [ngModel]="acknowledged" (ngModelChange)="acknowledged=$event" [ngModelOptions]="{standalone:true}">Revisei as fichas e quero salvar esta oportunidade mesmo assim.</label>
+ </section>
+}
+@if(message()){<p role="status">{{message()}}</p>}
+</div>

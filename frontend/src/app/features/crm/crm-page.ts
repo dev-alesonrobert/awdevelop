@@ -2,7 +2,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Injectable, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdminPage } from '../../core/admin-page';
-import { Board, LeadDetail, LeadForm, Task, TeamMember } from '../../core/commercial-models';
+import { Board, ContactQueue, ContactQueueItem, LeadDetail, LeadForm, Task, TeamMember } from '../../core/commercial-models';
 @Injectable()
 export class CrmPage extends AdminPage {
     private readonly route = inject(ActivatedRoute);
@@ -15,7 +15,18 @@ export class CrmPage extends AdminPage {
     search = '';
     assignee = '';
     filters: Record<string, string> = { city: '', state: '', neighborhood: '', segment: '', priority: '', stage: '', service: '', origin: '', website: '', phone: '', email: '', minValue: '', maxValue: '', from: '', to: '', followup: '' };
-    view: 'pipeline' | 'list' = 'pipeline';
+    view: 'pipeline' | 'list' | 'today' = 'pipeline';
+    readonly queue = signal<ContactQueue>({items:[],total:0,timezone:'America/Sao_Paulo'});
+    queueScope: 'mine' | 'team' = 'team';
+    async loadQueue() {
+        const data=await this.request(this.http.get<ContactQueue>('/api/admin/crm/contact-queue',{params:{scope:this.queueScope}}));
+        if(data)this.queue.set(data);
+    }
+    async showQueue() { this.view='today'; await this.loadQueue(); }
+    async completeQueue(item:ContactQueueItem) {
+        if(this.dirty()){this.message.set('Salve ou feche a ficha antes de concluir um retorno.');return;}
+        await this.toggleTask({id:item.id,title:item.title,assignee:item.assignee||'',due_at:item.due_at||'',done:false,revision:item.revision});
+    }
     private appliedFilters: Record<string, string> = {};
     resetFilters() { this.search = ''; this.assignee = ''; for (const key of Object.keys(this.filters)) this.filters[key] = ''; void this.load(); }
     private leadRequestId = crypto.randomUUID();
@@ -24,7 +35,7 @@ export class CrmPage extends AdminPage {
     async initialize() { const team = await this.request(this.http.get<{
         items: TeamMember[];
     }>('/api/admin/crm/team')); if (team)
-        this.team.set(team.items); await this.load(); this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => { const id = params.get('lead'); if (id && /^\d+$/.test(id) && id !== this.detail()?.lead.id)
+        this.team.set(team.items); await this.load(); this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => { if(params.get('view')==='today')void this.showQueue(); const id = params.get('lead'); if (id && /^\d+$/.test(id) && id !== this.detail()?.lead.id)
         void this.open(id); }); }
     override changed(scope = 'lead') { this.scopes.add(scope); super.changed(); }
     private saved(scope: string) { this.scopes.delete(scope); if (!this.scopes.size)
@@ -71,6 +82,7 @@ export class CrmPage extends AdminPage {
         this.saved('activity');
         this.activitySaved.update(x => x + 1);
         await this.refreshDetail();
+        await this.loadQueue();
         this.message.set('Contato registrado.');
     } }
     async addTask(form: {
@@ -85,12 +97,14 @@ export class CrmPage extends AdminPage {
         this.saved('task');
         this.taskSaved.update(x => x + 1);
         await this.refreshDetail();
+        await this.loadQueue();
         this.message.set('Tarefa agendada.');
     } }
     async toggleTask(task: Task) { const result = await this.request(this.http.patch<{
         revision: number;
     }>('/api/admin/crm/tasks/' + task.id, { done: !task.done, revision: task.revision })); if (result) {
         await this.refreshDetail();
+        await this.loadQueue();
         this.message.set('Tarefa atualizada.');
     } }
 }
