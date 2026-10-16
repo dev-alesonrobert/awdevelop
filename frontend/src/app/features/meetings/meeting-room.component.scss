@@ -1,0 +1,4 @@
+:host {display:block;min-width:0;}
+.meeting-host {height: min(75vh, 800px);min-height:480px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#101014;}
+p {color:var(--muted);font-size:13px;}
+@media(max-width:600px){.meeting-host{height:70vh;min-height:400px;}}

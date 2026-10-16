@@ -1,4 +1,5 @@
 import express from 'express';
+import {installMeetings} from './meetings.js';
 import {installProspecting} from './prospecting.js';
 import {installCRM} from './crm.js';
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
@@ -9,7 +10,7 @@ import { getAuth, createAuth } from './auth.js';
 import { getPool } from './db.js';
 import { contentSchema, saveSchema } from './content-schema.js';
 
-export function createApp({ auth = getAuth, db = getPool, upload = put, provision = () => createAuth({ provisioning:true }), access = email => memberFor(db(),email), prospectingFetch = fetch, prospectingEnv = process.env, approachGenerate } = {}) {
+export function createApp({ auth = getAuth, db = getPool, upload = put, provision = () => createAuth({ provisioning:true }), access = email => memberFor(db(),email), prospectingFetch = fetch, prospectingEnv = process.env, approachGenerate, meetingsEnv = process.env } = {}) {
 const app = express();
 app.disable('x-powered-by');
 app.use('/api', (req, res, next) => {
@@ -84,6 +85,7 @@ app.use('/api/admin', async (req, res, next) => {
 });
 app.use('/api/admin',express.json({limit:'256kb',type:'application/json'}));
 installManagement(app,{db});
+installMeetings(app,{env:meetingsEnv});
 installCRM(app,{db});
 installProspecting(app,{db,fetcher:prospectingFetch,env:prospectingEnv,generate:approachGenerate});
 app.get('/api/admin/content', async (req, res) => {
