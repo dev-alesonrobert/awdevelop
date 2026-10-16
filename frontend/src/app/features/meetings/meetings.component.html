@@ -1,0 +1,25 @@
+<aw-page-heading eyebrow="EQUIPE" title="Reuniões" description="Converse com a equipe e apresente seus projetos." />
+<p role="status" class="message">{{message()}}</p>
+@if(status();as connection){
+ <div class="status-row"><span class="status" [class.ready]="connection.configured">{{connection.configured?'Integração configurada':'Configuração pendente'}}</span><span>Vídeo · Áudio · Compartilhamento de tela</span></div>
+ @if(!connection.configured){
+  <section class="setup-card"><span class="eyebrow">COMECE AQUI</span><h2>Ative as reuniões da equipe</h2><p>Conecte uma conta JaaS para disponibilizar as chamadas neste painel. A integração ainda não está ativa.</p>
+   <a class="setup-link" href="https://jaas.8x8.vc/" target="_blank" rel="noopener noreferrer">Abrir JaaS ↗</a><button class="secondary" type="button" [disabled]="busy()" (click)="refresh()">Verificar configuração</button>
+   <p class="hint">O responsável pelo sistema precisa configurar as credenciais no servidor. Não envie sua chave privada pelo chat.</p>
+  </section>
+ }
+ @if(!session()){
+  <div class="meeting-options">
+   <section class="option-card"><span class="eyebrow">NOVA REUNIÃO</span><h2>Reúna a equipe</h2><p>Crie uma sala e compartilhe o convite com os participantes.</p><button type="button" [disabled]="busy()||!connection.configured||!connection.canCreate" (click)="create()">Criar reunião</button>@if(!connection.canCreate){<p class="hint">Peça a um administrador para criar a sala.</p>}</section>
+   <section class="option-card"><span class="eyebrow">TENHO UM CONVITE</span><h2>Entre em uma sala</h2><form (ngSubmit)="openInvite()"><label>Link da reunião<input name="invite" [(ngModel)]="invite" type="url" required maxlength="500" placeholder="Cole o link recebido"></label><button type="submit" class="secondary" [disabled]="busy()||!connection.configured">Abrir convite</button></form></section>
+  </div>
+ }
+ @if(room()){
+  <section class="room-card"><div class="room-heading"><div><span class="eyebrow">SALA DA EQUIPE</span><h2>Reunião · {{room().slice(0,8)}}</h2></div><div class="actions"><button type="button" class="secondary" (click)="copy()">Copiar convite</button>@if(session()){<button type="button" class="secondary" (click)="leave()">Sair da sala</button>}@else{<button type="button" [disabled]="busy()||!connection.configured" (click)="join()">Entrar na reunião</button>}</div></div>
+   <label class="invitation">Convite da equipe<input aria-label="Convite da equipe" [value]="invitation" readonly></label>
+   @if(session();as current){<aw-meeting-room [session]="current" (closed)="leave()" (failed)="failed($event)" />}
+   @else{<p class="hint">Ao entrar, você se conecta ao JaaS/8x8 com seu nome de exibição. Autorize câmera e microfone somente quando desejar. Para apresentar sua tela, prefira o navegador no computador.</p>}
+  </section>
+ }
+ <p class="footnote">Acesso para membros autenticados da equipe. Gravação, transcrição, transmissão ao vivo e chamadas telefônicas desativadas. O uso está sujeito ao plano da conta JaaS.</p>
+} @else {<button type="button" class="secondary" [disabled]="busy()" (click)="refresh()">{{busy()?'Carregando…':'Tentar novamente'}}</button>}

@@ -15,6 +15,7 @@ export const routes: Routes = [
     { path: 'painel/setup', loadComponent: () => import('./features/auth/setup/setup.component').then(m => m.SetupComponent) },
     { path: 'admin/setup.html', loadComponent: () => import('./features/auth/setup/setup.component').then(m => m.SetupComponent) },
     { path: 'painel', canActivate: [sessionGuard], loadComponent: () => import('./features/dashboard/shell/shell.component').then(m => m.ShellComponent), children: [
+            { path: 'meetings', canDeactivate: [unsaved], loadComponent: () => import('./features/meetings/meetings.component').then(m => m.MeetingsComponent) },
             { path: 'overview', loadComponent: () => import('./features/dashboard/overview/overview.component').then(m => m.OverviewComponent) },
             { path: 'sections', canDeactivate: [unsaved], loadComponent: () => import('./features/sections/sections.component').then(m => m.SectionsComponent) },
             { path: 'content', canDeactivate: [unsaved], loadComponent: () => import('./features/content/content/content.component').then(m => m.ContentComponent) },
