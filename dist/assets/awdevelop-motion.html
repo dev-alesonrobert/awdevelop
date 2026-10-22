@@ -6,9 +6,9 @@
 <title>awdevelop — Motion</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#14161c;--purple:#6d28ff;--u:min(5.3vw,9vh);box-sizing:border-box}
+:root{--bg:#0d111a;--purple:#6d28ff;--u:min(5.3vw,9vh);box-sizing:border-box}
 *{box-sizing:border-box;margin:0}
-html,body{height:100%;background:transparent;overflow:hidden;font-family:'Outfit',system-ui,sans-serif}
+html,body{height:100%;background:var(--bg);overflow:hidden;font-family:'Outfit',system-ui,sans-serif}
 .scene{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:out .5s 6.5s ease-in both}
 .glow{position:absolute;width:70vmax;height:70vmax;border-radius:50%;background:radial-gradient(circle,rgba(109,40,255,.35),transparent 60%);opacity:0;animation:glow 2s .1s ease-out both,pulse 2.2s 4.4s ease-in-out both}
 .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:6vmin 6vmin;mask-image:radial-gradient(circle,#000 10%,transparent 65%);-webkit-mask-image:radial-gradient(circle,#000 10%,transparent 65%);opacity:0;animation:fade 1.5s .2s both}
