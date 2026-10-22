@@ -11,10 +11,11 @@
 </div>
 </div>
 <div class="globe-visual">
-<iframe #motion class="brand-motion" src="/assets/awdevelop-motion.html" title="Animação da marca AWDevelop — Soluções em tecnologia" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+<canvas #canvas="" id="aw-globe" role="img" aria-label="Globo ilustrativo em pontos roxos, com linhas conectando diferentes regiões">
+</canvas>
 <div class="globe-caption">
 <span>IDEIAS QUE SE CONECTAM</span>
-<button [attr.aria-pressed]="paused()" (click)="toggle()" id="globe-toggle" type="button" aria-pressed="false" [attr.aria-label]="paused() ? 'Reproduzir animação' : 'Pausar animação'">{{paused()?'Reproduzir animação':'Pausar animação'}}</button>
+<button [attr.aria-pressed]="paused()" (click)="toggle()" id="globe-toggle" type="button" aria-pressed="false" aria-label="Pausar rotação do globo">{{paused()?'Reproduzir rotação':'Pausar rotação'}}</button>
 </div>
 </div>
 </section>
