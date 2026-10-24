@@ -70,7 +70,7 @@ async function fixture(t,{role='owner'}={}){
   t.after(()=>{http.verify();TestBed.resetTestingModule();window.confirm=()=>true;});return {component,http,navigations,auth};
 }
 test('Mover, excluir e reincluir seções preserva conteúdo e salva apenas o rascunho',async t=>{
-  const {component:c,http}=await fixture(t);c.move(2,-1);assert.equal(c.sections()[1].id,'portfolio');
+  const {component:c,http}=await fixture(t);const portfolioIndex=c.sections().findIndex(s=>s.id==='portfolio');c.move(portfolioIndex,1-portfolioIndex);assert.equal(c.sections()[1].id,'portfolio');
   c.remove(c.sections().findIndex(s=>s.id==='servicos'));assert.ok(c.available().some(s=>s.id==='servicos'));
   c.addType='servicos';c.add();assert.equal(c.sections().at(-1).id,'servicos');assert.equal(c.sections().filter(s=>s.id==='servicos').length,1);
   const save=c.save(),req=http.expectOne('/api/admin/content');assert.equal(req.request.method,'PUT');assert.equal(req.request.body.revision,5);
@@ -114,3 +114,4 @@ test('Componentes renderizados propagam adicionar, editar, mover e salvar sem pu
   req.flush({revision:6,published_revision:4});await tick();rendered.detectChanges();
   assert.equal(rendered.componentInstance.dirty(),false);http.expectNone('/api/admin/publish');
 });
+

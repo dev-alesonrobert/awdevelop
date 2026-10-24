@@ -1,5 +1,6 @@
 import { randomBytes, createHash } from 'node:crypto';
 import { z } from 'zod';
+import { normalizeContent } from './content-normalizer.js';
 import { contentSchema } from './content-schema.js';
 export const digest = value => createHash('sha256').update(value).digest('hex');
 export async function memberFor(pool,email){
@@ -17,7 +18,7 @@ export function installManagement(app,{db}){
  });
  app.get('/api/admin/history/:id',async(req,res)=>{
   if(!/^\d+$/.test(req.params.id))return res.status(400).json({error:'Versão inválida.'});
-  const {rows}=await db().query('SELECT id,content,revision,created_at FROM aw_publications WHERE id=$1',[req.params.id]);if(!rows[0])return res.status(404).json({error:'Versão não encontrada.'});res.json(rows[0]);
+  const {rows}=await db().query('SELECT id,content,revision,created_at FROM aw_publications WHERE id=$1',[req.params.id]);if(!rows[0])return res.status(404).json({error:'Versão não encontrada.'});res.json({...rows[0],content:normalizeContent(rows[0].content)});
  });
  app.post('/api/admin/history/:id/restore',async(req,res)=>{
   const {revision}=revisionSchema.parse(req.body);if(!/^\d+$/.test(req.params.id))return res.status(400).json({error:'Versão inválida.'});
@@ -73,3 +74,4 @@ export function installManagement(app,{db}){
  });
  app.delete('/api/admin/presence/:id',async(req,res)=>{if(z.uuid().safeParse(req.params.id).success)await db().query('DELETE FROM aw_presence WHERE tab_id=$1 AND editor=$2',[req.params.id,req.editor]);res.json({ok:true});});
 }
+

@@ -9,3 +9,5 @@ dist/angular/
 
 __pycache__/
 *.pyc
+
+dist/assets/aw-motion.js

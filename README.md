@@ -292,3 +292,16 @@ O envio automático de e-mails ainda não está disponível. Convites são compa
 ---
 
 **AWDevelop** · Plataforma institucional e comercial da empresa.
+
+## Landing page Motion + painel administrativo
+
+A rota pública `/` agora carrega a landing page Motion. O painel continua em Angular nas rotas `/painel/*`; autenticação, CRM, orçamentos, mídia e histórico mantêm suas APIs existentes.
+
+- `frontend/motion/`: experiência pública React e Framer Motion, carregada apenas na rota pública.
+- `frontend/src/app/features/motion-landing/`: integração com o Angular Router, conteúdo e metadados.
+- `scripts/build-motion.mjs`: gera o módulo estático antes da compilação Angular (`npm run build:angular`).
+- `server/content-normalizer.js`: atualiza apenas valores de referência antigos; conteúdo personalizado pelo administrador é preservado. Não altera registros do banco.
+- Textos, projetos, imagens, cores, ordem de seções e prévias usam `/api/content` e `/api/admin/content`. O formulário envia solicitações para `/api/quotes`, com consentimento e chave de idempotência, e elas aparecem no painel.
+- A prévia `/?preview=1` exige sessão administrativa e bloqueia o envio de solicitações. `/painel/login` permanece disponível no rodapé.
+
+Validação: `npm run build:angular` e `npm test`. As configurações de banco, autenticação e serviços da Vercel são preservadas; nenhum segredo é incluído no frontend.

@@ -1,62 +1,62 @@
 {
   "hero": {
-    "title": "Seu próximo site.\nSeu próprio sistema.",
-    "accent": "Do jeito que precisa.",
-    "description": "Sites, lojas e sistemas com escopo, etapas e investimento definidos antes de começar.",
-    "button": "Conversar sobre meu projeto"
+    "title": "Mais clientes.",
+    "accent": "Menos complicação.",
+    "description": "Criamos sites e automações para seu negócio crescer.",
+    "button": "Falar com um especialista"
   },
   "portfolio": {
-    "title": "Projetos para negócios diferentes.",
-    "description": "Exemplos visuais do que podemos desenvolver.Escolha um projeto para conhecer a proposta.",
-    "note": "Conceitos com marcas fictícias, criados para demonstrar possibilidades de design. Não são projetos entregues a clientes.",
+    "title": "Ideias que ganham forma.",
+    "description": "Conheça alguns dos nossos projetos.",
+    "note": "",
     "projects": [
       {
-        "id": "forma",
-        "title": "Forma Studio",
-        "category": "SITE INSTITUCIONAL",
-        "summary": "Portfólio e apresentação de serviços para um estúdio de arquitetura.",
-        "description": "Portfólio e apresentação de serviços para um estúdio de arquitetura.",
-        "image": "assets/forma.webp",
-        "alt": "Prévia do site conceitual Forma Studio",
+        "id": "mix-motos",
+        "title": "Mix Motos",
+        "category": "Sites",
+        "summary": "Locação de motos com catálogo e contato para orçamento.",
+        "description": "Locação de motos com catálogo e contato para orçamento.",
+        "image": "assets/mix-motos.webp",
+        "alt": "Página inicial do projeto Mix Motos",
         "tags": [
-          "SITE INSTITUCIONAL"
+          "Sites"
         ],
-        "concept": true,
-        "url": ""
+        "concept": false,
+        "url": "https://mix-motos.agilegrove2.chatgpt.site"
       },
       {
-        "id": "pulse",
-        "title": "Pulse Athletics",
-        "category": "E-COMMERCE",
-        "summary": "Catálogo de produtos e direção visual para uma loja esportiva.",
-        "description": "Catálogo de produtos e direção visual para uma loja esportiva.",
-        "image": "assets/pulse.webp",
-        "alt": "Prévia do site conceitual Pulse Athletics",
+        "id": "comandai",
+        "title": "Comandaí",
+        "category": "Sistemas",
+        "summary": "Cardápio digital e gestão de pedidos para negócios de alimentação.",
+        "description": "Cardápio digital e gestão de pedidos para negócios de alimentação.",
+        "image": "assets/comandai.webp",
+        "alt": "Página inicial do projeto Comandaí",
         "tags": [
-          "E-COMMERCE"
+          "Sistemas"
         ],
-        "concept": true,
-        "url": ""
+        "concept": false,
+        "url": "https://comandai-sistema.agilegrove2.chatgpt.site"
       },
       {
-        "id": "salvia",
-        "title": "Sálvia Restaurante",
-        "category": "LANDING PAGE",
-        "summary": "Apresentação do restaurante, pratos e informações para visitar.",
-        "description": "Apresentação do restaurante, pratos e informações para visitar.",
-        "image": "assets/salvia.webp",
-        "alt": "Prévia do site conceitual Sálvia Restaurante",
+        "id": "tk-veiculos",
+        "title": "TK Veículos",
+        "category": "Conceitos",
+        "summary": "Vitrine digital para apresentar veículos e conectar compradores.",
+        "description": "Vitrine digital para apresentar veículos e conectar compradores.",
+        "image": "assets/tk-veiculos.webp",
+        "alt": "Página inicial do projeto TK Veículos",
         "tags": [
-          "LANDING PAGE"
+          "Conceitos"
         ],
         "concept": true,
-        "url": ""
+        "url": "https://tk-veiculos-conceito.agilegrove2.chatgpt.site"
       }
     ]
   },
   "contact": {
-    "title": "Conte seu projeto.\nVamos avaliar juntos.",
-    "description": "Algumas informações ajudam a entender sua necessidade e preparar a próxima conversa.",
+    "title": "Vamos tirar sua ideia do papel?",
+    "description": "Conte sua ideia. Nós ajudamos com o próximo passo.",
     "email": "contato@awdevelop.com",
     "whatsapp": "",
     "instagram": "",
@@ -65,10 +65,10 @@
   "settings": {
     "brand": "awdevelop",
     "logo": "assets/logo-dark.png",
-    "title": "awdevelop — Sites e sistemas sob medida",
-    "description": "Desenvolvimento de sites, landing pages e sistemas para empresas. Conheça os conceitos da awdevelop e conte o que você precisa construir.",
-    "accent": "#9b79ed",
-    "background": "#0d111a",
+    "title": "awdevelop — Soluções em tecnologia",
+    "description": "Criamos sites e automações para seu negócio crescer.",
+    "accent": "#6d28ff",
+    "background": "#14161c",
     "globe": true,
     "rotationSeconds": 6
   },
@@ -138,6 +138,46 @@
     "globo-01": "Seu negócio.Sem fronteiras.",
     "globo-02": "Um site abre novas portas. Um sistema conecta sua operação. Construímos os dois para acompanhar o próximo passo da sua empresa.",
     "convite-01": "Vamos definir o quevale a pena construir.",
-    "convite-02": "Você não precisa chegar com todas as telas prontas. Conte como trabalha hoje e onde está a dificuldade. O primeiro passo é organizar as prioridades."
-  }
+    "convite-02": "Você não precisa chegar com todas as telas prontas. Conte como trabalha hoje e onde está a dificuldade. O primeiro passo é organizar as prioridades.",
+    "motion-service-0-title": "Landing pages",
+    "motion-service-0-copy": "Apresente sua oferta. Conquiste novos clientes.",
+    "motion-service-1-title": "Sites & plataformas",
+    "motion-service-1-copy": "Sua empresa online, com tudo o que precisa.",
+    "motion-service-2-title": "Automações & integrações",
+    "motion-service-2-copy": "Conecte ferramentas e simplifique sua rotina.",
+    "motion-step-0-title": "Alinhamento & estratégia",
+    "motion-step-0-copy": "Entendemos o que você precisa.",
+    "motion-step-1-title": "Design UI/UX",
+    "motion-step-1-copy": "Você visualiza e aprova a ideia.",
+    "motion-step-2-title": "Desenvolvimento & automação",
+    "motion-step-2-copy": "Construímos e conectamos tudo.",
+    "motion-step-3-title": "Entrega & otimização",
+    "motion-step-3-copy": "Seu projeto pronto para evoluir."
+  },
+  "sections": [
+    {
+      "id": "inicio",
+      "type": "builtin"
+    },
+    {
+      "id": "faixa",
+      "type": "builtin"
+    },
+    {
+      "id": "servicos",
+      "type": "builtin"
+    },
+    {
+      "id": "portfolio",
+      "type": "builtin"
+    },
+    {
+      "id": "processo",
+      "type": "builtin"
+    },
+    {
+      "id": "contato",
+      "type": "builtin"
+    }
+  ]
 }

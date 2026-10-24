@@ -1,0 +1,143 @@
+{
+  "hero": {
+    "title": "Seu próximo site.\nSeu próprio sistema.",
+    "accent": "Do jeito que precisa.",
+    "description": "Sites, lojas e sistemas com escopo, etapas e investimento definidos antes de começar.",
+    "button": "Conversar sobre meu projeto"
+  },
+  "portfolio": {
+    "title": "Projetos para negócios diferentes.",
+    "description": "Exemplos visuais do que podemos desenvolver.Escolha um projeto para conhecer a proposta.",
+    "note": "Conceitos com marcas fictícias, criados para demonstrar possibilidades de design. Não são projetos entregues a clientes.",
+    "projects": [
+      {
+        "id": "forma",
+        "title": "Forma Studio",
+        "category": "SITE INSTITUCIONAL",
+        "summary": "Portfólio e apresentação de serviços para um estúdio de arquitetura.",
+        "description": "Portfólio e apresentação de serviços para um estúdio de arquitetura.",
+        "image": "assets/forma.webp",
+        "alt": "Prévia do site conceitual Forma Studio",
+        "tags": [
+          "SITE INSTITUCIONAL"
+        ],
+        "concept": true,
+        "url": ""
+      },
+      {
+        "id": "pulse",
+        "title": "Pulse Athletics",
+        "category": "E-COMMERCE",
+        "summary": "Catálogo de produtos e direção visual para uma loja esportiva.",
+        "description": "Catálogo de produtos e direção visual para uma loja esportiva.",
+        "image": "assets/pulse.webp",
+        "alt": "Prévia do site conceitual Pulse Athletics",
+        "tags": [
+          "E-COMMERCE"
+        ],
+        "concept": true,
+        "url": ""
+      },
+      {
+        "id": "salvia",
+        "title": "Sálvia Restaurante",
+        "category": "LANDING PAGE",
+        "summary": "Apresentação do restaurante, pratos e informações para visitar.",
+        "description": "Apresentação do restaurante, pratos e informações para visitar.",
+        "image": "assets/salvia.webp",
+        "alt": "Prévia do site conceitual Sálvia Restaurante",
+        "tags": [
+          "LANDING PAGE"
+        ],
+        "concept": true,
+        "url": ""
+      }
+    ]
+  },
+  "contact": {
+    "title": "Conte seu projeto.\nVamos avaliar juntos.",
+    "description": "Algumas informações ajudam a entender sua necessidade e preparar a próxima conversa.",
+    "email": "contato@awdevelop.com",
+    "whatsapp": "",
+    "instagram": "",
+    "linkedin": ""
+  },
+  "settings": {
+    "brand": "awdevelop",
+    "logo": "assets/logo-dark.png",
+    "title": "awdevelop — Sites e sistemas sob medida",
+    "description": "Desenvolvimento de sites, landing pages e sistemas para empresas. Conheça os conceitos da awdevelop e conte o que você precisa construir.",
+    "accent": "#9b79ed",
+    "background": "#0d111a",
+    "globe": true,
+    "rotationSeconds": 6
+  },
+  "blocks": {
+    "metodo-01": "Um processo claro,do escopo à publicação.",
+    "metodo-02": "Cada etapa tem uma entrega.Cada entrega passa pela sua revisão.",
+    "metodo-03": "Planejamento",
+    "metodo-04": "Entendemos como seu negócio funciona e o que você precisa. A proposta define páginas, funcionalidades, prazo e investimento.",
+    "metodo-05": "Objetivos e prioridades",
+    "metodo-06": "Proposta com entregas definidas",
+    "metodo-07": "Construção",
+    "metodo-08": "Apresentamos a direção visual, alinhamos os ajustes e desenvolvemos o projeto. Você participa das revisões durante a construção.",
+    "metodo-09": "Layout para aprovação",
+    "metodo-10": "Versão de testes para revisar",
+    "metodo-11": "Publicação e evolução",
+    "metodo-12": "Conferimos o que foi combinado, publicamos e orientamos o uso. Suporte, manutenção e novas funcionalidades podem fazer parte da proposta.",
+    "metodo-13": "Validação em celular e computador",
+    "metodo-14": "Publicação e orientações de uso",
+    "metodo-15": "Site para uma empresa de serviços",
+    "metodo-16": "Antes de desenvolver, estes pontos ficam definidos:",
+    "metodo-17": "Páginas",
+    "metodo-18": "Início, serviços, sobre e contato",
+    "metodo-19": "Contato",
+    "metodo-20": "Formulário e canal de orçamento",
+    "metodo-21": "Conteúdo",
+    "metodo-22": "Textos, fotos e identidade da marca",
+    "metodo-23": "Entrega",
+    "metodo-24": "Site responsivo e publicado",
+    "solucoes-01": "O que seu negócioprecisa fazer melhor?",
+    "solucoes-02": "A solução depende da sua operação.Estas são algumas possibilidades.",
+    "solucoes-03": "PRESENÇA DIGITAL",
+    "solucoes-04": "Sites e landing pages",
+    "solucoes-05": "Apresentação da empresa, serviços, localização e contato. Uma página de campanha ou um site completo.",
+    "solucoes-06": "Sua empresa fácil de encontrar.",
+    "solucoes-07": "VENDAS ONLINE",
+    "solucoes-08": "Lojas e catálogos",
+    "solucoes-09": "Produtos, categorias e jornada de compra. Planejamento das integrações com pedidos e pagamentos.",
+    "solucoes-10": "Um caminho mais claro para comprar.",
+    "solucoes-11": "OPERAÇÃO",
+    "solucoes-12": "Painéis de gestão",
+    "solucoes-13": "Pedidos, clientes e informações organizados. Um sistema que acompanha os processos da sua equipe.",
+    "solucoes-14": "Menos controle espalhado em planilhas.",
+    "solucoes-15": "ATENDIMENTO",
+    "solucoes-16": "Agendas e solicitações",
+    "solucoes-17": "Agendamentos, formulários e acompanhamento das solicitações em um fluxo definido para seu negócio.",
+    "solucoes-18": "Mais organização do primeiro contato à entrega.",
+    "solucoes-19": "CONEXÕES",
+    "solucoes-20": "Integrações entre ferramentas",
+    "solucoes-21": "Troca de dados entre sistemas, serviços e APIs. A integração é avaliada conforme as ferramentas utilizadas.",
+    "solucoes-22": "Informação sem precisar copiar de um lugar para outro.",
+    "solucoes-23": "ROTINA DA EQUIPE",
+    "solucoes-24": "Automações de processos",
+    "solucoes-25": "Notificações, atualizações e tarefas repetitivas organizadas em fluxos, com regras alinhadas antes de implementar.",
+    "solucoes-26": "Tempo para cuidar do que exige atenção.",
+    "sobre-01": "Aleson Roberto",
+    "sobre-02": "Desenvolvimento web · awdevelop",
+    "sobre-03": "Trabalho com Angular, TypeScript e Node.js. Aqui na awdevelop, o projeto começa entendendo o que a sua empresa precisa fazer na prática: apresentar um serviço, receber um contato ou organizar uma operação.",
+    "duvidas-01": "Antes de contratar.",
+    "duvidas-02": "Quanto custa desenvolver um site?",
+    "duvidas-03": "Depende do número de páginas, das funcionalidades e das integrações. Depois de entender sua ideia, enviamos uma proposta com o que está incluído e o investimento.",
+    "duvidas-04": "Em quanto tempo meu projeto fica pronto?",
+    "duvidas-05": "O prazo é definido junto com o escopo. Conteúdo, aprovações e complexidade influenciam a entrega. As etapas ficam claras antes do início.",
+    "duvidas-06": "Já tenho um site. Vocês podem melhorar?",
+    "duvidas-07": "Sim. Podemos avaliar o visual, a experiência no celular e a estrutura para propor uma melhoria ou um novo desenvolvimento.",
+    "duvidas-08": "Domínio, hospedagem e manutenção estão incluídos?",
+    "duvidas-09": "Esses itens são definidos na proposta. Explicamos as opções e os custos recorrentes para você decidir com clareza.",
+    "globo-01": "Seu negócio.Sem fronteiras.",
+    "globo-02": "Um site abre novas portas. Um sistema conecta sua operação. Construímos os dois para acompanhar o próximo passo da sua empresa.",
+    "convite-01": "Vamos definir o quevale a pena construir.",
+    "convite-02": "Você não precisa chegar com todas as telas prontas. Conte como trabalha hoje e onde está a dificuldade. O primeiro passo é organizar as prioridades."
+  }
+}

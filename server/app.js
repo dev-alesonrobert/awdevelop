@@ -1,4 +1,5 @@
 import express from 'express';
+import { normalizeContent } from './content-normalizer.js';
 import {installMeetings} from './meetings.js';
 import {installProspecting} from './prospecting.js';
 import {installCRM} from './crm.js';
@@ -69,7 +70,7 @@ app.post('/api/quotes',express.json({limit:'16kb'}),async(req,res)=>{
 app.get('/api/content', async (req, res) => {
   const { rows } = await db().query('SELECT published, published_at FROM aw_content WHERE id=1');
   if (!rows[0]) return res.status(503).json({ error: 'Conteúdo não inicializado.' });
-  res.json({ content: rows[0].published, publishedAt: rows[0].published_at });
+  res.json({ content: normalizeContent(rows[0].published), publishedAt: rows[0].published_at });
 });
 app.use('/api/admin', async (req, res, next) => {
   const session = await auth().api.getSession({ headers: fromNodeHeaders(req.headers) });
@@ -91,7 +92,7 @@ installProspecting(app,{db,fetcher:prospectingFetch,env:prospectingEnv,generate:
 app.get('/api/admin/content', async (req, res) => {
   const { rows } = await db().query('SELECT draft, revision, published_revision, updated_at, published_at FROM aw_content WHERE id=1');
   if (!rows[0]) return res.status(503).json({ error:'Conteúdo não inicializado. Execute a migração do banco.' });
-  res.json(rows[0]);
+  res.json({...rows[0], draft: normalizeContent(rows[0].draft)});
 });
 app.put('/api/admin/content', express.json({ limit: '256kb' }), async (req, res) => {
   const { revision, content } = saveSchema.parse(req.body);
@@ -138,4 +139,5 @@ app.use((error, req, res, next) => {
 return app;
 }
 export const app = createApp();
+
 
