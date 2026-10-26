@@ -1,0 +1,74 @@
+@if (section(); as item) {
+  @if (item.type === "custom") {
+    <section class="section wrap" [id]="item.id">
+      <h2>{{ item.title }}</h2>
+      <p class="hero-copy">{{ item.description }}</p>
+      @if (item.image) {
+        <img
+          class="extra-image"
+          [src]="item.image"
+          [alt]="item.alt"
+          loading="lazy"
+        />
+      }
+      @if (item.url) {
+        <a class="button primary" [href]="item.url">{{ item.button }}</a>
+      }
+    </section>
+  } @else {
+    @switch (item.id) {
+      @case ("faixa") {
+        <section class="pillars" aria-label="Diferenciais awdevelop">
+          <div class="wrap pillar-grid">
+            @for (pillar of pillars; track pillar.title) {
+              <div class="pillar">
+                <aw-motion-icon [type]="pillar.icon" [size]="23" />
+                <div>
+                  <strong>{{ pillar.title }}</strong>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+      @case ("sobre") {
+        <section id="sobre" class="section wrap">
+          <span class="eyebrow">Sobre</span>
+          <h2>{{ content().blocks["sobre-01"] }}</h2>
+          <p class="hero-copy">{{ content().blocks["sobre-03"] }}</p>
+        </section>
+      }
+      @case ("convite") {
+        <section id="convite" class="section wrap">
+          <h2>{{ content().blocks["convite-01"] }}</h2>
+          <p class="hero-copy">{{ content().blocks["convite-02"] }}</p>
+          <a class="button primary" href="#contato">Vamos conversar</a>
+        </section>
+      }
+      @case ("conexoes") {
+        @if (content().settings.globe) {
+          <section id="conexoes" class="section wrap">
+            <h2>{{ content().blocks["globo-01"] }}</h2>
+            <p class="hero-copy">{{ content().blocks["globo-02"] }}</p>
+            <img
+              class="extra-image"
+              src="/assets/automation.svg"
+              alt="Fluxo de integração entre ferramentas"
+            />
+          </section>
+        }
+      }
+      @case ("duvidas") {
+        <section id="duvidas" class="section wrap">
+          <h2>{{ content().blocks["duvidas-01"] }}</h2>
+          @for (index of [2, 4, 6, 8]; track index) {
+            <details class="faq-item">
+              <summary>{{ content().blocks["duvidas-0" + index] }}</summary>
+              <p>{{ content().blocks["duvidas-0" + (index + 1)] }}</p>
+            </details>
+          }
+        </section>
+      }
+    }
+  }
+}

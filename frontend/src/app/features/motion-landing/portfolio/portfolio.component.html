@@ -1,0 +1,95 @@
+<section
+  class="section portfolio-section"
+  id="portfolio"
+  aria-labelledby="motion-portfolio"
+>
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Nosso portfólio</span>
+        <h2 id="motion-portfolio">{{ content().portfolio.title }}</h2>
+      </div>
+      <p>{{ content().portfolio.description }}</p>
+    </div>
+    <div
+      class="portfolio-filters"
+      role="group"
+      aria-label="Filtrar projetos por categoria"
+    >
+      @for (category of categories(); track category) {
+        <button
+          class="filter-button"
+          [class.active]="filter() === category"
+          [attr.aria-pressed]="filter() === category"
+          (click)="changeFilter(category, track)"
+        >
+          {{ category }}
+        </button>
+      }
+    </div>
+    <div
+      class="portfolio-grid mobile-carousel"
+      #track
+      tabindex="0"
+      aria-label="Projetos — deslize no celular para explorar"
+      (scroll)="slide.set(activeSlide(track))"
+    >
+      @for (project of projects(); track project.id) {
+        <article class="project-card">
+          <a
+            class="project-image"
+            [href]="project.url || '#contato'"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="
+              'Visitar ' + project.title + ' (abre em nova aba)'
+            "
+            ><div class="project-browser" aria-hidden="true">
+              <i></i><i></i><i></i><span>{{ project.title }}</span
+              ><aw-motion-icon [size]="13" />
+            </div>
+            <img
+              [src]="project.image"
+              [alt]="project.alt"
+              width="1200"
+              height="750"
+              loading="lazy" /><span class="project-open" aria-hidden="true"
+              >Explorar projeto <aw-motion-icon [size]="16" /></span
+          ></a>
+          <div class="project-info">
+            <span class="project-type">{{
+              project.concept ? "Projeto conceito" : project.category
+            }}</span>
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.summary || project.description }}</p>
+            <a
+              class="project-link"
+              [href]="project.url || '#contato'"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="
+                'Conhecer projeto ' + project.title + ' (abre em nova aba)'
+              "
+              >Conhecer projeto <aw-motion-icon [size]="16"
+            /></a>
+          </div>
+        </article>
+      }
+    </div>
+    @if (projects().length > 1) {
+      <aw-motion-carousel-controls
+        label="Portfólio"
+        [items]="titles()"
+        [active]="slide()"
+        (navigate)="goToSlide(track, $event)"
+      />
+    }
+    @if (content().portfolio.note) {
+      <p class="example-note">{{ content().portfolio.note }}</p>
+    }
+    <div class="portfolio-bottom">
+      <p>O próximo projeto pode ser o seu.</p>
+      <a href="#contato">Vamos conversar <aw-motion-icon [size]="15" /></a>
+    </div>
+  </div>
+</section>

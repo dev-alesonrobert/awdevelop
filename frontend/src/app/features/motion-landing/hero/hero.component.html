@@ -1,0 +1,79 @@
+<section class="hero" id="inicio" aria-labelledby="motion-title">
+  <div class="grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    <div class="hero-leading">
+      @for (key of [replay()]; track key) {
+        <div
+          class="motion-stage"
+          role="img"
+          aria-label="awdevelop — Soluções em tecnologia"
+        >
+          <div class="motion-logo" aria-hidden="true">
+            <aw-motion-logo
+              class="hero-logo"
+              [src]="content().settings.logo"
+              [accent]="content().settings.accent"
+            />
+            <div class="motion-word">
+              <div class="letters">
+                @for (letter of letters; track $index) {
+                  <span [style.--letter-index]="$index">{{ letter }}</span>
+                }
+              </div>
+              <div class="sweep"></div>
+            </div>
+          </div>
+          <p class="motion-tag" aria-hidden="true">Soluções em tecnologia</p>
+          <div class="motion-line"></div>
+          <button
+            class="replay"
+            (click)="replay.update(increment)"
+            aria-label="Repetir animação da marca"
+          >
+            <aw-motion-icon type="replay" [size]="12" />Rever motion
+          </button>
+        </div>
+      }
+      <div class="hero-message">
+        <span class="badge"><i></i>Sites · Plataformas · Automações</span>
+        <h1 id="motion-title">
+          {{ content().hero.title }}<br /><span class="accent">{{
+            content().hero.accent
+          }}</span>
+        </h1>
+        <p class="hero-copy">{{ content().hero.description }}</p>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="button primary" href="#contato"
+        ><span class="desktop-cta-label">{{ content().hero.button }}</span
+        ><span class="mobile-cta-label">Iniciar projeto</span
+        ><aw-motion-icon [size]="17" /></a
+      ><a class="button" href="#portfolio">Ver nossos projetos</a>
+    </div>
+    <div
+      class="visual-showcase"
+      aria-label="Exemplos visuais das nossas soluções"
+    >
+      @for (tile of tiles; track tile.image) {
+        <a
+          href="#servicos"
+          class="preview-tile"
+          [class.main-preview]="tile.image === 'platform'"
+          [class.side]="tile.image !== 'platform'"
+          ><img
+            [src]="'/assets/' + tile.image + '.svg'"
+            [alt]="tile.alt"
+            width="900"
+            height="620"
+          /><span>{{ tile.title }}</span></a
+        >
+      }
+    </div>
+    <p class="example-note">Prévias ilustrativas de soluções sob medida.</p>
+    <a href="#servicos" class="scroll-hint"
+      ><span></span>Veja nossas soluções</a
+    >
+  </div>
+</section>

@@ -153,7 +153,7 @@ São 38 componentes standalone. Os componentes de apresentação recebem dados e
 
 O Angular CLI está configurado para gerar componentes com HTML externo, SCSS externo e `OnPush`. Para criar um componente, use `npx ng generate component <caminho>` dentro da estrutura da funcionalidade. Não coloque estilos específicos de telas no arquivo global.
 
-Todas as telas ativas usam componentes Angular com HTML e SCSS externos e encapsulados. Os mixins `panels` e `admin` compartilham padrões visuais sem estilos de página no arquivo global. As funcionalidades são carregadas por rotas lazy. O globo cancela animações e observers ao sair; carrossel, notificações e presença limpam seus timers.
+Todas as telas ativas usam componentes Angular com HTML e SCSS externos. No painel, os estilos são encapsulados. Na página Motion, os seletores são limitados à raiz `.aw`, permitindo manter a identidade visual entre componentes sem atingir o painel. Os mixins `panels` e `admin` compartilham padrões visuais sem estilos de página no arquivo global. As funcionalidades são carregadas por rotas lazy. O globo cancela animações e observers ao sair; carrossel, notificações e presença limpam seus timers.
 
 ## Executar localmente
 
@@ -297,11 +297,12 @@ O envio automático de e-mails ainda não está disponível. Convites são compa
 
 A rota pública `/` agora carrega a landing page Motion. O painel continua em Angular nas rotas `/painel/*`; autenticação, CRM, orçamentos, mídia e histórico mantêm suas APIs existentes.
 
-- `frontend/motion/`: experiência pública React e Framer Motion, carregada apenas na rota pública.
-- `frontend/src/app/features/motion-landing/`: integração com o Angular Router, conteúdo e metadados.
-- `scripts/build-motion.mjs`: gera o módulo estático antes da compilação Angular (`npm run build:angular`).
+- `frontend/src/app/features/motion-landing/`: página pública Angular, dividida em componentes standalone.
+- Cada componente mantém seu TypeScript, HTML e SCSS em arquivos separados; conteúdo e orçamentos usam `LandingApiService`.
+- `npm run build:angular`: compila diretamente o site e o painel com Angular CLI; não há renderizador React ou bundle separado.
 - `server/content-normalizer.js`: atualiza apenas valores de referência antigos; conteúdo personalizado pelo administrador é preservado. Não altera registros do banco.
 - Textos, projetos, imagens, cores, ordem de seções e prévias usam `/api/content` e `/api/admin/content`. O formulário envia solicitações para `/api/quotes`, com consentimento e chave de idempotência, e elas aparecem no painel.
 - A prévia `/?preview=1` exige sessão administrativa e bloqueia o envio de solicitações. `/painel/login` permanece disponível no rodapé.
 
 Validação: `npm run build:angular` e `npm test`. As configurações de banco, autenticação e serviços da Vercel são preservadas; nenhum segredo é incluído no frontend.
+

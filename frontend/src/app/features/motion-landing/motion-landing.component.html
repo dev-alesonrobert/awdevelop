@@ -1,0 +1,46 @@
+@if (content(); as c) {
+  <div
+    class="aw"
+    [style.--purple]="c.settings.accent"
+    [style.--bg]="c.settings.background"
+  >
+    @if (preview()) {
+      <div class="preview-notice" role="status">
+        PRÉVIA — conteúdo ainda não publicado.
+        <a href="/painel/content">Voltar ao painel</a>
+      </div>
+    }
+    <aw-motion-header [content]="c" />
+    <main id="principal">
+      @for (section of sections(); track section.id) {
+        @switch (section.id) {
+          @case ("inicio") {
+            <aw-motion-hero [content]="c" />
+          }
+          @case ("servicos") {
+            <aw-motion-services
+              [content]="c"
+              (selectService)="contact()?.chooseService($event)"
+            />
+          }
+          @case ("portfolio") {
+            <aw-motion-portfolio [content]="c" />
+          }
+          @case ("processo") {
+            <aw-motion-process [content]="c" />
+          }
+          @case ("contato") {
+            <aw-motion-contact [content]="c" [preview]="preview()" />
+          }
+          @default {
+            <aw-motion-extra-section [content]="c" [section]="section" />
+          }
+        }
+      }
+    </main>
+    <aw-motion-footer [content]="c" />
+  </div>
+}
+@if (message()) {
+  <p role="status">{{ message() }}</p>
+}

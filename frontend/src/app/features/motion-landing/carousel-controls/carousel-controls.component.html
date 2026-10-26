@@ -1,0 +1,31 @@
+<div class="carousel-controls" [attr.aria-label]="'Navegação: ' + label()">
+  <span class="swipe-hint">Deslize para explorar</span>
+  <div class="carousel-dots">
+    @for (item of items(); track $index) {
+      <button
+        type="button"
+        [class.selected]="$index === active()"
+        [attr.aria-label]="'Mostrar ' + item"
+        [attr.aria-current]="$index === active() ? 'true' : null"
+        (click)="navigate.emit($index)"
+      ></button>
+    }
+  </div>
+  <div class="carousel-arrows">
+    <button
+      type="button"
+      [disabled]="active() === 0"
+      [attr.aria-label]="label() + ': anterior'"
+      (click)="navigate.emit(active() - 1)"
+    >
+      ‹</button
+    ><button
+      type="button"
+      [disabled]="active() >= items().length - 1"
+      [attr.aria-label]="label() + ': próximo'"
+      (click)="navigate.emit(active() + 1)"
+    >
+      ›
+    </button>
+  </div>
+</div>

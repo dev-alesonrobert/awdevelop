@@ -1,0 +1,28 @@
+@if (src() && src() !== "assets/logo-dark.png") {
+  <img [src]="src()" alt="" width="32" height="32" />
+} @else {
+  <svg
+    width="32"
+    height="32"
+    viewBox="158 160 940 930"
+    fill="none"
+    aria-hidden="true"
+  >
+    <rect
+      x="158"
+      y="160"
+      width="940"
+      height="930"
+      rx="190"
+      [attr.fill]="accent()"
+    />
+    <path
+      fill="#fff"
+      d="M150 868L375 482Q436 410 497 480L660 782Q672 805 650 825L568 830Q550 830 545 815L436 617L290 880Q280 893 262 893L150 893Z"
+    />
+    <path
+      fill="#fff"
+      d="M565 505Q560 480 585 478L682 478Q692 478 697 488L790 660L962 370Q972 351 995 351L1100 351L1100 375L850 795Q825 833 790 833Q750 833 725 795Z"
+    />
+  </svg>
+}

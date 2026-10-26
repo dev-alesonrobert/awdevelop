@@ -1,0 +1,16 @@
+<footer class="footer">
+  <div class="wrap footer-row">
+    <a class="brand" href="#inicio" aria-label="awdevelop — voltar ao início"
+      ><aw-motion-logo
+        [src]="content().settings.logo"
+        [accent]="content().settings.accent"
+      />{{ content().settings.brand }}<span class="accent">.</span></a
+    ><a class="admin-link" href="/painel/login">Área administrativa</a>
+    <nav class="footer-links" aria-label="Navegação do rodapé">
+      @for (link of links(); track link.id) {
+        <a [href]="'#' + link.id">{{ link.label }}</a>
+      }
+    </nav>
+    <p>© {{ year }} awdevelop. Todos os direitos reservados.</p>
+  </div>
+</footer>
