@@ -1,0 +1,106 @@
+<section class="section wrap" id="contato" aria-labelledby="motion-contact">
+  <div class="contact-panel">
+    <div class="contact-copy">
+      <span class="eyebrow">Vamos construir juntos</span>
+      <h2 id="motion-contact">{{ content().contact.title }}</h2>
+      <p>{{ content().contact.description }}</p>
+      <div class="contact-note">
+        <aw-motion-icon type="check" [size]="18" />Primeiro contato, sem
+        compromisso.
+      </div>
+    </div>
+    <form class="form" [formGroup]="form" (ngSubmit)="send()">
+      <fieldset [disabled]="busy() || sent() || preview() || pending()">
+        <label
+          >Seu nome<input
+            formControlName="name"
+            name="name"
+            autocomplete="name"
+            placeholder="Como podemos chamar você?"
+            required
+            minlength="2"
+            maxlength="100" /></label
+        ><label
+          >Empresa <span class="sr-only">(opcional)</span
+          ><input
+            formControlName="company"
+            autocomplete="organization"
+            placeholder="Nome da sua empresa (opcional)"
+            maxlength="120" /></label
+        ><label
+          >E-mail profissional<input
+            formControlName="email"
+            type="email"
+            autocomplete="email"
+            placeholder="voce@empresa.com.br"
+            required
+            maxlength="200" /></label
+        ><label
+          >O que você quer construir?<select formControlName="service" required>
+            <option value="" disabled>Selecione uma solução</option>
+            @for (service of services; track service) {
+              <option [value]="service">{{ service }}</option>
+            }
+          </select></label
+        ><label
+          >WhatsApp (opcional)<input
+            formControlName="phone"
+            type="tel"
+            autocomplete="tel"
+            maxlength="40"
+            placeholder="DDD + número" /></label
+        ><label
+          >Sobre seu projeto<textarea
+            formControlName="idea"
+            required
+            minlength="10"
+            placeholder="Qual desafio podemos resolver juntos?"
+            maxlength="2000"
+          ></textarea></label
+        ><label class="quote-consent"
+          ><input
+            formControlName="consent"
+            name="consent"
+            type="checkbox"
+            required
+          />Autorizo o contato sobre meu projeto.
+          <a href="/privacidade">Privacidade</a></label
+        ><label class="quote-honeypot" aria-hidden="true"
+          >Site<input
+            formControlName="website"
+            tabindex="-1"
+            autocomplete="off"
+            maxlength="200"
+        /></label>
+      </fieldset>
+      <button
+        type="submit"
+        [disabled]="busy() || sent() || preview()"
+        class="button primary"
+      >
+        {{
+          sent()
+            ? "Solicitação enviada"
+            : busy()
+              ? "Enviando…"
+              : "Solicitar contato"
+        }}
+        <aw-motion-icon [size]="16" />
+      </button>
+      <p class="form-info">
+        {{
+          pending() && !sent() && !busy()
+            ? "Não enviado. Tente novamente para reenviar a mesma solicitação."
+            : "Seus dados serão usados para responder à sua solicitação."
+        }}
+      </p>
+      <p class="status" role="status" aria-live="polite">{{ status() }}</p>
+      <p class="fallback">
+        Prefere escrever diretamente?
+        <a [href]="'mailto:' + content().contact.email">{{
+          content().contact.email
+        }}</a>
+      </p>
+    </form>
+  </div>
+</section>

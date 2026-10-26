@@ -1,0 +1,42 @@
+:host {
+  display: contents;
+}
+.aw .footer a:hover {
+  color: #bc9aff;
+}
+.aw .footer {
+  border-top: 1px solid #ffffff10;
+  padding: 32px 0;
+}
+.aw .footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.aw .footer p {
+  font-size: 10px;
+  color: var(--muted);
+}
+.aw .footer-links {
+  display: flex;
+  gap: 21px;
+  font-size: 11px;
+  color: var(--silver);
+}
+@media (max-width: 760px) {
+  .aw .footer-row {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 760px) {
+  .aw .footer-links {
+    flex-wrap: wrap;
+  }
+}
+.aw .admin-link {
+  font-size: 11px;
+  color: #a9a3c4;
+}

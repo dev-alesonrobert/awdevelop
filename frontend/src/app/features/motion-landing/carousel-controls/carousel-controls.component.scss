@@ -1,0 +1,70 @@
+:host {
+  display: contents;
+}
+
+.aw .carousel-controls {
+  display: none;
+}
+@media (max-width: 760px) {
+  .aw .carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+    min-height: 44px;
+  }
+  .aw .swipe-hint {
+    font-size: 10px;
+    color: #a9a3c4;
+  }
+  .aw .carousel-dots {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .aw .carousel-dots button {
+    width: 28px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    position: relative;
+  }
+  .aw .carousel-dots button:after {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9px;
+    margin: auto;
+    background: #ffffff30;
+    transition:
+      width 0.2s,
+      background 0.2s;
+  }
+  .aw .carousel-dots button.selected:after {
+    width: 20px;
+    background: #8c59ff;
+  }
+  .aw .carousel-arrows {
+    display: flex;
+    gap: 7px;
+  }
+  .aw .carousel-arrows button {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #ffffff20;
+    background: #ffffff04;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+  }
+  .aw .carousel-arrows button:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+}

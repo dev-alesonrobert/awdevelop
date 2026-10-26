@@ -1,0 +1,36 @@
+<a href="#principal" class="skip">Pular para o conteúdo</a>
+<header class="header">
+  <div class="wrap nav">
+    <a class="brand" href="#inicio" aria-label="awdevelop — início"
+      ><aw-motion-logo
+        [src]="content().settings.logo"
+        [accent]="content().settings.accent"
+      />{{ content().settings.brand }}<span class="accent">.</span></a
+    >
+    <nav class="navlinks" aria-label="Navegação principal">
+      @for (link of links(); track link.id) {
+        <a [href]="'#' + link.id">{{ link.label }}</a>
+      }
+    </nav>
+    <button
+      class="button menu"
+      [attr.aria-label]="open() ? 'Fechar menu' : 'Abrir menu'"
+      [attr.aria-expanded]="open()"
+      aria-controls="motion-mobile-nav"
+      (click)="open.set(!open())"
+    >
+      <aw-motion-icon [type]="open() ? 'close' : 'menu'" />
+    </button>
+  </div>
+  @if (open()) {
+    <nav
+      class="mobile-nav"
+      id="motion-mobile-nav"
+      aria-label="Navegação mobile"
+    >
+      @for (link of links(); track link.id) {
+        <a [href]="'#' + link.id" (click)="open.set(false)">{{ link.label }}</a>
+      }
+    </nav>
+  }
+</header>

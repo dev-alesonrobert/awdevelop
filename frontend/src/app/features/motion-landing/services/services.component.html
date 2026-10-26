@@ -1,0 +1,39 @@
+<section class="section wrap" id="servicos" aria-labelledby="motion-services">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">O que construímos</span>
+      <h2 id="motion-services">O que seu negócio precisa?</h2>
+    </div>
+  </div>
+  <div
+    class="service-grid mobile-carousel"
+    #track
+    tabindex="0"
+    aria-label="Serviços — deslize no celular para explorar"
+    (scroll)="slide.set(activeSlide(track))"
+  >
+    @for (item of services(); track $index) {
+      <article class="card">
+        <div class="service-symbol">
+          <span class="icon-box"
+            ><aw-motion-icon [type]="item.icon" [size]="25"
+          /></span>
+        </div>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.text }}</p>
+        <a
+          class="card-cta"
+          href="#contato"
+          (click)="selectService.emit(item.short)"
+          >{{ item.label }}<aw-motion-icon [size]="16"
+        /></a>
+      </article>
+    }
+  </div>
+  <aw-motion-carousel-controls
+    label="Serviços"
+    [items]="titles()"
+    [active]="slide()"
+    (navigate)="goToSlide(track, $event)"
+  />
+</section>

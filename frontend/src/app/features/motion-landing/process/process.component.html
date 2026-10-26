@@ -1,0 +1,19 @@
+<section class="section process" id="processo" aria-labelledby="motion-process">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Da ideia à evolução</span>
+        <h2 id="motion-process">Da ideia ao ar, em 4 passos.</h2>
+      </div>
+    </div>
+    <div class="step-grid">
+      @for (step of steps(); track $index) {
+        <div class="step">
+          <div class="step-number">0{{ $index + 1 }}</div>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.text }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>

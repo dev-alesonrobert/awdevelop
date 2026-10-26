@@ -1,0 +1,119 @@
+:host {
+  display: contents;
+}
+
+.aw .contact-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--purple) 33%, transparent);
+  border-radius: 28px;
+  padding: 50px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 65px;
+  background:
+    radial-gradient(
+      ellipse at 0 0,
+      color-mix(in srgb, var(--purple) 13%, transparent),
+      transparent 65%
+    ),
+    #191b23;
+}
+.aw .contact-copy > p {
+  font-size: 13px;
+  color: var(--silver);
+  margin-top: 22px;
+  max-width: 350px;
+}
+.aw .contact-note {
+  margin-top: 35px;
+  color: var(--muted);
+  font-size: 11px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+.aw .form {
+  display: grid;
+  gap: 15px;
+}
+.aw .form .button {
+  width: 100%;
+}
+.aw .form-info {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.aw .status {
+  font-size: 12px;
+  color: #d6c4ff;
+}
+.aw .fallback {
+  font-size: 11px;
+  color: var(--muted);
+  word-break: break-word;
+}
+.aw .fallback a {
+  text-decoration: underline;
+}
+@media (max-width: 760px) {
+  .aw .contact-panel {
+    grid-template-columns: 1fr;
+    padding: 28px 22px;
+    gap: 30px;
+  }
+  .aw .contact-note {
+    margin-top: 20px;
+  }
+}
+.aw .contact-panel {
+  gap: 50px;
+}
+.aw .contact-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.aw .contact-copy:after {
+  content: "";
+  display: block;
+  width: 100%;
+  aspect-ratio: 900/620;
+  margin-top: 25px;
+  background: url("/assets/automation.svg") center/contain no-repeat;
+  border: 1px solid #ffffff10;
+  border-radius: 16px;
+}
+.aw .contact-note {
+  margin-top: 20px;
+}
+@media (max-width: 760px) {
+  .aw .contact-copy:after {
+    display: none;
+  }
+  .aw .contact-panel {
+    gap: 25px;
+  }
+}
+.aw .quote-consent {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+}
+.aw .quote-consent input {
+  width: 16px;
+  min-height: 16px;
+  margin: 0;
+}
+.aw .quote-consent a {
+  text-decoration: underline;
+}
+.aw .quote-honeypot {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}

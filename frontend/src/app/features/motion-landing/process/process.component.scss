@@ -1,0 +1,66 @@
+:host {
+  display: contents;
+}
+.aw .process {
+  background: #ffffff02;
+  border-block: 1px solid #ffffff0a;
+}
+.aw .step-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  margin-top: 45px;
+}
+.aw .step-number {
+  position: relative;
+  border-top: 1px solid #ffffff1a;
+  padding-top: 20px;
+  color: #b699ff;
+  font: 12px monospace;
+  margin-bottom: 20px;
+}
+.aw .step-number:before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--purple);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--purple) 40%, transparent);
+}
+.aw .step h3 {
+  font-size: 16px;
+  min-height: 44px;
+}
+.aw .step p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
+  line-height: 1.85;
+}
+@media (max-width: 760px) {
+  .aw .step-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 20px;
+  }
+}
+.aw .step-grid {
+  margin-top: 30px;
+}
+.aw .step h3 {
+  min-height: 0;
+  font-size: 15px;
+}
+.aw .step p {
+  margin-top: 8px;
+}
+@media (max-width: 760px) {
+  .aw .step-grid {
+    gap: 24px 18px;
+  }
+  .aw .step h3 {
+    font-size: 14px;
+  }
+}
